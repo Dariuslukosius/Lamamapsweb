@@ -22,4 +22,12 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-.vercel
+
+# Media files that shouldn't be in repo
+*.gif
+*.mp4
+*.mov
+*.avi
+
+# Temporary files
+*_frames
