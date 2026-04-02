@@ -2,7 +2,8 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import heroPhone from "@/assets/hero-phone.webp";
+
+const heroImageUrl = "https://s3.amazonaws.com/appforest_uf/f1672599233546x566628593753708100/mapseronis.json";
 
 const heroHighlights = [
   { value: "8x", label: "Average client growth" },
@@ -52,11 +53,6 @@ const HeroSection = () => (
                 Get Your Free SEO Audit <ArrowRight className="ml-1 w-4 h-4" />
               </Button>
             </Link>
-            <Link to="/case-studies">
-              <Button variant="hero-outline" size="lg" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground">
-                View Case Studies
-              </Button>
-            </Link>
           </div>
         </motion.div>
 
@@ -70,7 +66,7 @@ const HeroSection = () => (
           <div className="relative">
             <div className="absolute inset-0 bg-accent/20 blur-3xl rounded-full scale-75" />
             <img
-              src={heroPhone}
+              src={heroImageUrl}
               alt="Google Maps ranking showing top 3 position for local business"
               className="relative z-10 w-full max-w-sm rounded-3xl shadow-2xl"
             />

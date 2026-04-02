@@ -8,7 +8,6 @@ import googlePartnerLogo from "@/assets/partners/google-partner-logo-png_seeklog
 const navLinks = [
   { label: "Home", href: "/" },
   { label: "About Us", href: "/about" },
-  { label: "Case Studies", href: "/case-studies" },
   { label: "Services", href: "/services" },
   { label: "Contacts", href: "/contacts" },
 ];
