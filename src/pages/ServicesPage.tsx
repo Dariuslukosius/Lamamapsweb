@@ -1,6 +1,5 @@
 import Navbar from "@/components/Navbar";
 import ContactSection from "@/components/ContactSection";
-import TestimonialsSection from "@/components/TestimonialsSection";
 import BrandsSection from "@/components/BrandsSection";
 import ClientReviewsSection from "@/components/ClientReviewsSection";
 import { Button } from "@/components/ui/button";
@@ -440,7 +439,6 @@ const ServicesPage = () => {
       </div>
     </section>
 
-    <TestimonialsSection />
     <BrandsSection />
 
     <section className="relative overflow-hidden bg-secondary px-4 py-24 md:px-8">
