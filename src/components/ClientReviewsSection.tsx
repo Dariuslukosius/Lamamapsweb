@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import autoRepairThumb from "@/assets/Reviews/auto repair.png";
-import onlineMoversThumb from "@/assets/Reviews/Online Movers.png";
-import dentalClinicThumb from "@/assets/Reviews/Dental Clinic.png";
+import autoRepairThumb from "@/assets/Reviews/auto-repair.png";
+import onlineMoversThumb from "@/assets/Reviews/online-movers.png";
+import dentalClinicThumb from "@/assets/Reviews/dental-clinic.png";
 
 const clientVideos = [
   {
@@ -30,10 +30,9 @@ const VideoCard = ({ video, index }: { video: typeof clientVideos[0]; index: num
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay: index * 0.1 }}
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.1, duration: 0.4 }}
       className="w-full max-w-[320px] mx-auto overflow-hidden rounded-3xl border border-border bg-card p-2 shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-col items-center"
     >
       <div className="relative w-full aspect-[9/16] rounded-2xl overflow-hidden bg-black">
@@ -82,9 +81,9 @@ const ClientReviewsSection = () => (
   <section className="bg-background py-20 md:py-24">
     <div className="container mx-auto px-4 md:px-8">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
         className="mb-12 text-center"
       >
         <h3 className="text-3xl font-bold text-foreground md:text-4xl">Client reviews</h3>
