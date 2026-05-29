@@ -113,7 +113,7 @@ const AboutPage = () => (
                   <div className="mt-1.5 flex items-center gap-2.5">
                     <div className="px-1 text-xl text-amber-400">★★★★★</div>
                     <p className="text-xl font-semibold text-slate-900">
-                      4.7 <span className="font-medium text-slate-400">(45)</span>
+                      4.9 <span className="font-medium text-slate-400">(45)</span>
                     </p>
                   </div>
                 </div>
