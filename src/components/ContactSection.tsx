@@ -133,17 +133,6 @@ const ContactSection = () => {
                 className="min-h-[170px] rounded-[1.25rem] border-white/10 bg-[rgba(8,20,17,0.58)] px-8 py-6 text-lg text-white placeholder:text-white/45 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none"
               />
 
-              <div className="w-full max-w-[28rem] rounded-xl border border-white/15 bg-[rgba(255,255,255,0.09)] p-5 shadow-[0_16px_40px_rgba(0,0,0,0.18)] backdrop-blur-sm">
-                <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 rounded bg-white" />
-                  <div className="text-2xl font-medium text-white/90">I'm not a robot</div>
-                  <div className="ml-auto text-right text-xs text-white/45">
-                    <div className="text-sm font-semibold text-white/60">reCAPTCHA</div>
-                    <div>Privacy - Terms</div>
-                  </div>
-                </div>
-              </div>
-
               <Button
                 type="submit"
                 size="lg"

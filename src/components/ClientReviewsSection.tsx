@@ -21,7 +21,6 @@ const clientVideos = [
 
 const VideoCard = ({ video, index }: { video: typeof clientVideos[0]; index: number }) => {
   const [playing, setPlaying] = useState(false);
-  const thumbnail = `https://img.youtube.com/vi/${video.id}/hqdefault.jpg`;
 
   return (
     <motion.div
@@ -41,43 +40,34 @@ const VideoCard = ({ video, index }: { video: typeof clientVideos[0]; index: num
             className="absolute inset-0 w-full h-full border-0"
           />
         ) : (
-          <button
-            onClick={() => setPlaying(true)}
-            className="absolute inset-0 w-full h-full group"
-            aria-label={`Play ${video.title}`}
+          <a
+            href={video.shortsUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="absolute inset-0 w-full h-full flex flex-col items-center justify-center gap-6 bg-[#0f0f0f] group"
           >
-            <img
-              src={thumbnail}
-              alt={video.title}
-              className="w-full h-full object-cover"
-            />
-            {/* dark overlay */}
-            <span className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors" />
-            {/* play button */}
-            <span className="absolute inset-0 flex items-center justify-center">
-              <span className="flex h-16 w-16 items-center justify-center rounded-full bg-white/90 shadow-xl group-hover:scale-110 transition-transform duration-200">
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="h-7 w-7 text-red-600 ml-1"
-                >
-                  <path d="M8 5v14l11-7z" />
-                </svg>
-              </span>
-            </span>
-            {/* YouTube badge */}
-            <span className="absolute top-3 right-3 flex items-center gap-1.5 rounded-full bg-black/70 px-2.5 py-1 text-xs font-semibold text-white backdrop-blur-sm">
-              <svg viewBox="0 0 24 24" fill="currentColor" className="h-3.5 w-3.5 text-red-500">
-                <path d="M21.8 8s-.2-1.4-.8-2c-.8-.8-1.6-.8-2-.9C16.4 5 12 5 12 5s-4.4 0-7 .1c-.4.1-1.2.1-2 .9-.6.6-.8 2-.8 2S2 9.6 2 11.2v1.5c0 1.6.2 3.2.2 3.2s.2 1.4.8 2c.8.8 1.8.8 2.2.8C6.6 19 12 19 12 19s4.4 0 7-.1c.4-.1 1.2-.1 2-.9.6-.6.8-2 .8-2s.2-1.6.2-3.2v-1.5C22 9.6 21.8 8 21.8 8zM9.7 14.5V9l5.4 2.8-5.4 2.7z"/>
+            {/* YouTube icon */}
+            <svg viewBox="0 0 90 63" className="w-24 h-auto drop-shadow-lg group-hover:scale-110 transition-transform duration-200" fill="none">
+              <rect width="90" height="63" rx="14" fill="#FF0000"/>
+              <path d="M37 44V19l24 12.5L37 44z" fill="white"/>
+            </svg>
+
+            {/* Shorts badge */}
+            <span className="flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-4 py-2 text-sm font-semibold text-white/90 backdrop-blur-sm">
+              <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4 text-red-400">
+                <path d="M17.77 10.32l-1.2-.5L18 8.4c1.18-2.05.48-4.67-1.56-5.85-2.05-1.18-4.67-.48-5.85 1.56l-1.97 3.4-1.2-.5C6.1 6.7 4.64 7.8 4.64 9.2v8.57c0 1.4 1.46 2.5 2.83 1.97l10.5-4.37c1.37-.57 1.37-2.48 0-3.05h-.2z"/>
               </svg>
-              YouTube
+              YouTube Shorts
             </span>
-          </button>
+
+            <span className="text-white/50 text-xs">Tap to watch</span>
+          </a>
         )}
       </div>
     </motion.div>
   );
 };
+
 
 const ClientReviewsSection = () => (
   <section className="bg-background py-20 md:py-24">
