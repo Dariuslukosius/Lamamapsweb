@@ -31,7 +31,7 @@ const VideoCard = ({ video, index }: { video: typeof clientVideos[0]; index: num
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1, duration: 0.4 }}
-      className="w-full max-w-[320px] mx-auto overflow-hidden rounded-3xl border border-border bg-card p-2 shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-col items-center"
+      className="w-[280px] xs:w-[320px] sm:w-full max-w-[320px] mx-auto overflow-hidden rounded-3xl border border-border bg-card p-2 shadow-md hover:shadow-lg transition-shadow duration-300"
     >
       <div className="relative w-full aspect-[9/16] rounded-2xl overflow-hidden bg-black">
         <iframe
@@ -62,7 +62,7 @@ const ClientReviewsSection = () => (
         </p>
       </motion.div>
 
-      <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto justify-center">
+      <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto justify-items-center">
         {clientVideos.map((video, index) => (
           <VideoCard key={video.id} video={video} index={index} />
         ))}
