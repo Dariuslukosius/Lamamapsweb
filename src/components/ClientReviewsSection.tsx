@@ -1,30 +1,32 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import autoRepairThumb from "@/assets/Reviews/auto repair.png";
+import onlineMoversThumb from "@/assets/Reviews/Online Movers.png";
+import dentalClinicThumb from "@/assets/Reviews/Dental Clinic.png";
 
 const clientVideos = [
   {
     id: "-8SFE-Pbm9g",
-    title: "Client Review 1",
+    title: "Auto Repair Shop Testimonial",
     shortsUrl: "https://www.youtube.com/shorts/-8SFE-Pbm9g",
+    thumbnail: autoRepairThumb,
   },
   {
     id: "Mlt9xpYy00w",
-    title: "Client Review 2",
+    title: "Online Movers and Storage",
     shortsUrl: "https://www.youtube.com/shorts/Mlt9xpYy00w",
+    thumbnail: onlineMoversThumb,
   },
   {
     id: "pWQ4tIjI2ZA",
-    title: "Client Review 3",
+    title: "Dental Clinic Testimonial",
     shortsUrl: "https://www.youtube.com/shorts/pWQ4tIjI2ZA",
+    thumbnail: dentalClinicThumb,
   },
 ];
 
 const VideoCard = ({ video, index }: { video: typeof clientVideos[0]; index: number }) => {
   const [playing, setPlaying] = useState(false);
-  const [thumbError, setThumbError] = useState(false);
-
-  const thumbnailUrl = `https://i3.ytimg.com/vi/${video.id}/hqdefault.jpg`;
-  const fallbackThumbnailUrl = `https://img.youtube.com/vi/${video.id}/hqdefault.jpg`;
 
   return (
     <motion.div
@@ -49,12 +51,7 @@ const VideoCard = ({ video, index }: { video: typeof clientVideos[0]; index: num
             className="absolute inset-0 w-full h-full flex items-center justify-center group focus:outline-none"
           >
             <img
-              src={thumbError ? fallbackThumbnailUrl : thumbnailUrl}
-              onError={() => {
-                if (!thumbError) {
-                  setThumbError(true);
-                }
-              }}
+              src={video.thumbnail}
               alt={video.title}
               className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
             />
