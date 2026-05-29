@@ -38,7 +38,7 @@ const ClientReviewsSection = () => (
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: index * 0.1 }}
-            className="overflow-hidden rounded-3xl border border-border bg-card p-2 shadow-md hover:shadow-lg transition-shadow duration-350 flex flex-col items-center"
+            className="w-full max-w-[320px] mx-auto overflow-hidden rounded-3xl border border-border bg-card p-2 shadow-md hover:shadow-lg transition-shadow duration-350 flex flex-col items-center"
           >
             <div className="relative w-full aspect-[9/16] rounded-2xl overflow-hidden bg-black">
               <iframe
