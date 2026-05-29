@@ -21,6 +21,10 @@ const clientVideos = [
 
 const VideoCard = ({ video, index }: { video: typeof clientVideos[0]; index: number }) => {
   const [playing, setPlaying] = useState(false);
+  const [thumbError, setThumbError] = useState(false);
+
+  const thumbnailUrl = `https://i3.ytimg.com/vi/${video.id}/hqdefault.jpg`;
+  const fallbackThumbnailUrl = `https://img.youtube.com/vi/${video.id}/hqdefault.jpg`;
 
   return (
     <motion.div
@@ -40,28 +44,36 @@ const VideoCard = ({ video, index }: { video: typeof clientVideos[0]; index: num
             className="absolute inset-0 w-full h-full border-0"
           />
         ) : (
-          <a
-            href={video.shortsUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="absolute inset-0 w-full h-full flex flex-col items-center justify-center gap-6 bg-[#0f0f0f] group"
+          <button
+            onClick={() => setPlaying(true)}
+            className="absolute inset-0 w-full h-full flex items-center justify-center group focus:outline-none"
           >
-            {/* YouTube icon */}
-            <svg viewBox="0 0 90 63" className="w-24 h-auto drop-shadow-lg group-hover:scale-110 transition-transform duration-200" fill="none">
-              <rect width="90" height="63" rx="14" fill="#FF0000"/>
-              <path d="M37 44V19l24 12.5L37 44z" fill="white"/>
-            </svg>
+            <img
+              src={thumbError ? fallbackThumbnailUrl : thumbnailUrl}
+              onError={() => {
+                if (!thumbError) {
+                  setThumbError(true);
+                }
+              }}
+              alt={video.title}
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+            
+            {/* Overlay for better readability of play button */}
+            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-200" />
 
-            {/* Shorts badge */}
-            <span className="flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-4 py-2 text-sm font-semibold text-white/90 backdrop-blur-sm">
-              <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4 text-red-400">
-                <path d="M17.77 10.32l-1.2-.5L18 8.4c1.18-2.05.48-4.67-1.56-5.85-2.05-1.18-4.67-.48-5.85 1.56l-1.97 3.4-1.2-.5C6.1 6.7 4.64 7.8 4.64 9.2v8.57c0 1.4 1.46 2.5 2.83 1.97l10.5-4.37c1.37-.57 1.37-2.48 0-3.05h-.2z"/>
-              </svg>
-              YouTube Shorts
-            </span>
-
-            <span className="text-white/50 text-xs">Tap to watch</span>
-          </a>
+            {/* Play overlay button */}
+            <div className="absolute z-10 flex flex-col items-center gap-3">
+              <div className="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center shadow-lg group-hover:bg-red-700 group-hover:scale-110 transition-all duration-200">
+                <svg className="w-6 h-6 text-white fill-current translate-x-0.5" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </div>
+              <span className="rounded-full bg-black/60 border border-white/20 px-3 py-1.5 text-xs font-semibold text-white/90 backdrop-blur-sm">
+                Žiūrėti video
+              </span>
+            </div>
+          </button>
         )}
       </div>
     </motion.div>
