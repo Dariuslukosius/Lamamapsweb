@@ -18,9 +18,9 @@ const clientVideos = [
     thumbnail: onlineMoversThumb,
   },
   {
-    id: "pWQ4tIjI2ZA",
+    id: "z7HUliWQ_NU",
     title: "Dental Clinic Testimonial",
-    shortsUrl: "https://www.youtube.com/shorts/pWQ4tIjI2ZA",
+    shortsUrl: "https://www.youtube.com/shorts/z7HUliWQ_NU",
     thumbnail: dentalClinicThumb,
   },
 ];
