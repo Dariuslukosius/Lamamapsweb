@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import ContactSection from "@/components/ContactSection";
+import CalendlyWidget from "@/components/CalendlyWidget";
 import { motion } from "framer-motion";
 const ContactsPage = () => (
   <div className="min-h-screen">
@@ -20,6 +21,7 @@ const ContactsPage = () => (
         </div>
       </section>
 
+    <CalendlyWidget />
     <ContactSection />
   </div>
 );
