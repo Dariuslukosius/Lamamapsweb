@@ -37,7 +37,7 @@ const CalendlyWidget = () => {
         >
           <div
             className="calendly-inline-widget"
-            data-url="https://calendly.com/llamamaps/30min?background_color=081411&text_color=ffffff&primary_color=d76acf"
+            data-url="https://calendly.com/llamamaps/30min"
             style={{ minWidth: "320px", height: "700px" }}
           ></div>
         </motion.div>
