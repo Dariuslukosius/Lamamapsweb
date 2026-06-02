@@ -9,6 +9,7 @@ import AboutPage from "./pages/AboutPage.tsx";
 import ServicesPage from "./pages/ServicesPage.tsx";
 import ContactsPage from "./pages/ContactsPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import CalendlyBadge from "./components/CalendlyBadge.tsx";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +20,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <ScrollToTop />
+        <CalendlyBadge />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/about" element={<AboutPage />} />
