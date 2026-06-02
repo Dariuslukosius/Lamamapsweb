@@ -10,39 +10,44 @@ const CalendlyBadge = () => {
       document.head.appendChild(link);
     }
 
+    const initBadge = () => {
+      // @ts-ignore
+      if (window.Calendly && !document.querySelector(".calendly-badge-widget")) {
+        // @ts-ignore
+        window.Calendly.initBadgeWidget({
+          url: 'https://calendly.com/llamamaps/30min',
+          text: 'Schedule time with me',
+          color: '#0069ff',
+          textColor: '#ffffff',
+          branding: false
+        });
+      }
+    };
+
     // Add Script and initialize
-    if (!document.querySelector('script[src="https://assets.calendly.com/assets/external/widget.js"]')) {
+    const existingScript = document.querySelector('script[src="https://assets.calendly.com/assets/external/widget.js"]') as HTMLScriptElement;
+    if (!existingScript) {
       const script = document.createElement("script");
       script.src = "https://assets.calendly.com/assets/external/widget.js";
       script.async = true;
-      script.onload = () => {
-        // @ts-ignore - Calendly is added to window by the external script
-        if (window.Calendly) {
-          // @ts-ignore
-          window.Calendly.initBadgeWidget({
-            url: 'https://calendly.com/llamamaps/30min',
-            text: 'Schedule time with me',
-            color: '#0069ff',
-            textColor: '#ffffff',
-            branding: false
-          });
-        }
-      };
+      script.onload = initBadge;
       document.body.appendChild(script);
     } else {
-      // If script is already loaded but badge is not initialized (e.g. HMR or navigating back)
       // @ts-ignore
       if (window.Calendly) {
-          // @ts-ignore
-          window.Calendly.initBadgeWidget({
-            url: 'https://calendly.com/llamamaps/30min',
-            text: 'Schedule time with me',
-            color: '#0069ff',
-            textColor: '#ffffff',
-            branding: false
-          });
+        initBadge();
+      } else {
+        existingScript.addEventListener("load", initBadge);
       }
     }
+
+    return () => {
+      // Cleanup the badge when component unmounts to prevent duplicates
+      const badge = document.querySelector(".calendly-badge-widget");
+      if (badge) {
+        badge.remove();
+      }
+    };
   }, []);
 
   return null;

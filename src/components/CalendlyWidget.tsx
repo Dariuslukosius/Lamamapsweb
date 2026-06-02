@@ -1,13 +1,56 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 
 const CalendlyWidget = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    if (!document.querySelector('script[src="https://assets.calendly.com/assets/external/widget.js"]')) {
+    const container = containerRef.current;
+    if (!container) return;
+
+    // Clear any previous iframe to prevent duplicates during re-renders
+    container.innerHTML = "";
+
+    const initializeCalendly = () => {
+      // @ts-ignore
+      if (window.Calendly && typeof window.Calendly.initInlineWidget === "function") {
+        // @ts-ignore
+        window.Calendly.initInlineWidget({
+          url: "https://calendly.com/llamamaps/30min",
+          parentElement: container,
+          prefill: {},
+          utm: {},
+        });
+      }
+    };
+
+    // Check if script is already in the document
+    const existingScript = document.querySelector(
+      'script[src="https://assets.calendly.com/assets/external/widget.js"]'
+    ) as HTMLScriptElement;
+
+    if (existingScript) {
+      // If script exists, check if Calendly object is ready
+      // @ts-ignore
+      if (window.Calendly) {
+        initializeCalendly();
+      } else {
+        // Wait for existing script to load
+        existingScript.addEventListener("load", initializeCalendly);
+        return () => {
+          existingScript.removeEventListener("load", initializeCalendly);
+        };
+      }
+    } else {
+      // If script doesn't exist, create and append it
       const script = document.createElement("script");
       script.src = "https://assets.calendly.com/assets/external/widget.js";
       script.async = true;
+      script.addEventListener("load", initializeCalendly);
       document.body.appendChild(script);
+      return () => {
+        script.removeEventListener("load", initializeCalendly);
+      };
     }
   }, []);
 
@@ -36,8 +79,7 @@ const CalendlyWidget = () => {
           className="rounded-[1.5rem] overflow-hidden shadow-[0_0_40px_rgba(215,106,207,0.1)] bg-[rgba(8,20,17,0.58)] border border-white/10 max-w-5xl mx-auto"
         >
           <div
-            className="calendly-inline-widget"
-            data-url="https://calendly.com/llamamaps/30min"
+            ref={containerRef}
             style={{ minWidth: "320px", height: "700px" }}
           ></div>
         </motion.div>
