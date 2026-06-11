@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import autoRepairThumb from "@/assets/Reviews/auto-repair.png";
-import onlineMoversThumb from "@/assets/Reviews/online-movers.png";
-import dentalClinicThumb from "@/assets/Reviews/dental-clinic.png";
+import autoRepairThumb from "@/assets/Reviews/auto-repair.webp";
+import onlineMoversThumb from "@/assets/Reviews/online-movers.webp";
+import dentalClinicThumb from "@/assets/Reviews/dental-clinic.webp";
+import physiotherapyClinicThumb from "@/assets/Reviews/physiotherapy-clinic.webp";
 
 const clientVideos = [
   {
@@ -22,6 +23,12 @@ const clientVideos = [
     title: "Dental Clinic Testimonial",
     shortsUrl: "https://www.youtube.com/shorts/z7HUliWQ_NU",
     thumbnail: dentalClinicThumb,
+  },
+  {
+    id: "hp_UzmzN9cU",
+    title: "Physiotherapy Clinic Testimonial",
+    shortsUrl: "https://www.youtube.com/shorts/hp_UzmzN9cU",
+    thumbnail: physiotherapyClinicThumb,
   },
 ];
 
@@ -62,7 +69,7 @@ const ClientReviewsSection = () => (
         </p>
       </motion.div>
 
-      <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto justify-items-center">
+      <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4 max-w-7xl mx-auto justify-items-center">
         {clientVideos.map((video, index) => (
           <VideoCard key={video.id} video={video} index={index} />
         ))}

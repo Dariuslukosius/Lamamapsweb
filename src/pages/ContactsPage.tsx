@@ -2,8 +2,14 @@ import Navbar from "@/components/Navbar";
 import ContactSection from "@/components/ContactSection";
 import CalendlyWidget from "@/components/CalendlyWidget";
 import { motion } from "framer-motion";
+import SEO from "@/components/SEO";
+
 const ContactsPage = () => (
   <div className="min-h-screen">
+    <SEO
+      title="Contact Us | Get a Free Local SEO Consultation - Llamamaps"
+      description="Get in touch with Llamamaps to claim your free Google Maps SEO audit and schedule a consultation with our local search specialists."
+    />
     <Navbar />
 
       {/* Hero */}

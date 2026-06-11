@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 
-import accountingStatistic from "@/assets/results-home/accounting-gmb-statistic.png";
-import dantistStatistic from "@/assets/results-home/dantist-gmb-statistic.png";
+import accountingStatistic from "@/assets/results-home/accounting-gmb-statistic.webp";
+import dantistStatistic from "@/assets/results-home/dantist-gmb-statistic.webp";
 import ClientReviewsSection from "@/components/ClientReviewsSection";
 
 const cases: any[] = [];

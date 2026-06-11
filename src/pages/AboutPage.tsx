@@ -3,10 +3,11 @@ import ContactSection from "@/components/ContactSection";
 import BrandsSection from "@/components/BrandsSection";
 import { motion } from "framer-motion";
 import { Target, Users, Award, Clock } from "lucide-react";
-import benasSukys from "@/assets/members/Benas_Sukys.jpg";
-import jurgisGrigaliunas from "@/assets/members/Jurgis_Grigaliunas.jpg";
+import benasSukys from "@/assets/members/Benas_Sukys.webp";
+import jurgisGrigaliunas from "@/assets/members/Jurgis_Grigaliunas.webp";
 import dariusLukosius from "@/assets/members/darius_lukosius.webp";
-import jonasPernovas from "@/assets/members/jonas_pernovas.png";
+import jonasPernovas from "@/assets/members/jonas_pernovas.webp";
+import SEO from "@/components/SEO";
 
 const values = [
   {
@@ -60,6 +61,10 @@ const team = [
 
 const AboutPage = () => (
   <div className="min-h-screen">
+    <SEO
+      title="About Us | Llamamaps - Our Mission & Team of Local SEO Experts"
+      description="Learn about the Llamamaps mission, our values, and the expert team of local SEO strategists helping businesses rank in the TOP Google search results."
+    />
     <Navbar />
 
     {/* Hero */}

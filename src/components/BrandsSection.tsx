@@ -1,17 +1,17 @@
 import { motion } from "framer-motion";
 
-import artfiksa from "@/assets/brands/artfiksa.png";
-import autoVela from "@/assets/brands/auto-vela.png";
-import clinicDpc from "@/assets/brands/clinic-dpc.png";
-import ecoResort from "@/assets/brands/eco-resort.png";
-import eraEsthetic from "@/assets/brands/era-esthetic.png";
-import fastCar from "@/assets/brands/fast-car.png";
-import motoSvajone from "@/assets/brands/moto-svajone.png";
-import royalHorse from "@/assets/brands/royal-horse.png";
-import sokrato from "@/assets/brands/sokrato.png";
-import svajonuSpa from "@/assets/brands/svajoniu-spa.png";
-import televizoriu from "@/assets/brands/televizoriu.png";
-import wheelshop from "@/assets/brands/wheelshop.png";
+import artfiksa from "@/assets/brands/artfiksa.webp";
+import autoVela from "@/assets/brands/auto-vela.webp";
+import clinicDpc from "@/assets/brands/clinic-dpc.webp";
+import ecoResort from "@/assets/brands/eco-resort.webp";
+import eraEsthetic from "@/assets/brands/era-esthetic.webp";
+import fastCar from "@/assets/brands/fast-car.webp";
+import motoSvajone from "@/assets/brands/moto-svajone.webp";
+import royalHorse from "@/assets/brands/royal-horse.webp";
+import sokrato from "@/assets/brands/sokrato.webp";
+import svajonuSpa from "@/assets/brands/svajoniu-spa.webp";
+import televizoriu from "@/assets/brands/televizoriu.webp";
+import wheelshop from "@/assets/brands/wheelshop.webp";
 
 const brands = [
   { src: artfiksa, alt: "Artfiksa Plytelės" },

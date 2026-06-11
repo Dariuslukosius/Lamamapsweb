@@ -2,8 +2,8 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import logoImg from "@/assets/llama-logo.png";
-import googlePartnerLogo from "@/assets/partners/google-partner-logo-png_seeklogo-428155.png";
+import logoImg from "@/assets/llama-logo.webp";
+import googlePartnerLogo from "@/assets/partners/google-partner-logo-png_seeklogo-428155.webp";
 
 const navLinks = [
   { label: "Home", href: "/" },

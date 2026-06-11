@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
-import seoAiImg from "@/assets/seo-ai-seo.png";
-import localSeoImg from "@/assets/local-seo.png";
+import seoAiImg from "@/assets/seo-ai-seo.webp";
+import localSeoImg from "@/assets/local-seo.webp";
 
 const SolutionsSection = () => (
   <section className="py-16 md:py-24 hero-bg">

@@ -4,13 +4,13 @@ import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
 
-import avatarLina from "@/assets/avatar-lina.jpg";
-import avatarGiedre from "@/assets/avatar-giedre.jpg";
-import avatarOmar from "@/assets/avatar-omar.jpg";
-import avatarAhmed from "@/assets/avatar-ahmed.jpg";
-import avatarSara from "@/assets/avatar-sara.jpg";
-import avatarTomas from "@/assets/avatar-tomas.jpg";
-import avatarEmily from "@/assets/avatar-emily.jpg";
+import avatarLina from "@/assets/avatar-lina.webp";
+import avatarGiedre from "@/assets/avatar-giedre.webp";
+import avatarOmar from "@/assets/avatar-omar.webp";
+import avatarAhmed from "@/assets/avatar-ahmed.webp";
+import avatarSara from "@/assets/avatar-sara.webp";
+import avatarTomas from "@/assets/avatar-tomas.webp";
+import avatarEmily from "@/assets/avatar-emily.webp";
 
 const testimonials = [
   {

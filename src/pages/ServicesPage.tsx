@@ -11,24 +11,25 @@ import improveSearchPerformance from "@/assets/services/improve-search-performan
 import increaseLocalVisibility from "@/assets/services/increase-local-visibility.webp";
 import noDirectAccess from "@/assets/services/no-direct-access.webp";
 import bestResults from "@/assets/services/best-results.webp";
-import googlePositionGif from "@/assets/services/google-position.gif";
+import googlePositionGif from "@/assets/services/google-position.webp";
+import SEO from "@/components/SEO";
 import britanniaImage from "@/assets/results/britannia.webp";
 const bruchFulhamBefore = "";
 const bruchFulhamAfter = "";
 const dantuProtezavimasUtenaBefore = "";
 const dantuProtezavimasUtenaAfter = "";
-import artfiksa from "@/assets/brands/artfiksa.png";
-import autoVela from "@/assets/brands/auto-vela.png";
-import clinicDpc from "@/assets/brands/clinic-dpc.png";
-import ecoResort from "@/assets/brands/eco-resort.png";
-import eraEsthetic from "@/assets/brands/era-esthetic.png";
-import fastCar from "@/assets/brands/fast-car.png";
-import motoSvajone from "@/assets/brands/moto-svajone.png";
-import royalHorse from "@/assets/brands/royal-horse.png";
-import sokrato from "@/assets/brands/sokrato.png";
-import svajoniuSpa from "@/assets/brands/svajoniu-spa.png";
-import televizoriu from "@/assets/brands/televizoriu.png";
-import wheelshop from "@/assets/brands/wheelshop.png";
+import artfiksa from "@/assets/brands/artfiksa.webp";
+import autoVela from "@/assets/brands/auto-vela.webp";
+import clinicDpc from "@/assets/brands/clinic-dpc.webp";
+import ecoResort from "@/assets/brands/eco-resort.webp";
+import eraEsthetic from "@/assets/brands/era-esthetic.webp";
+import fastCar from "@/assets/brands/fast-car.webp";
+import motoSvajone from "@/assets/brands/moto-svajone.webp";
+import royalHorse from "@/assets/brands/royal-horse.webp";
+import sokrato from "@/assets/brands/sokrato.webp";
+import svajoniuSpa from "@/assets/brands/svajoniu-spa.webp";
+import televizoriu from "@/assets/brands/televizoriu.webp";
+import wheelshop from "@/assets/brands/wheelshop.webp";
 
 const comparisonFeatures = [
   "Link Building",
@@ -371,6 +372,10 @@ const ServicesPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Local SEO Pricing & Services | Llamamaps"
+        description="Explore Llamamaps' results-driven local SEO plans (Community and City plans). Gain TOP 3 rankings on Google Maps in 90 days or we work for free."
+      />
       <Navbar />
 
     <section className="relative overflow-hidden hero-bg px-4 pb-20 pt-24 md:px-8 md:pb-24 md:pt-32">
