@@ -105,7 +105,13 @@ const CaseStudiesSection = () => (
             transition={{ delay: i * 0.08 }}
             className="overflow-hidden rounded-[1.75rem] border border-border bg-card shadow-sm"
           >
-            <img src={example.image} alt={example.alt} className="h-auto w-full" />
+            <div className="aspect-video w-full overflow-hidden">
+              <img
+                src={example.image}
+                alt={example.alt}
+                className="h-full w-full object-cover"
+              />
+            </div>
           </motion.div>
         ))}
       </div>

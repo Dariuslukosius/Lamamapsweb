@@ -129,8 +129,6 @@ const AboutPage = () => (
       </div>
     </section>
 
-    <BrandsSection />
-
     {/* Values */}
     <section className="py-20 md:py-28 bg-secondary">
       <div className="container mx-auto px-4 md:px-8">
@@ -158,6 +156,8 @@ const AboutPage = () => (
         </div>
       </div>
     </section>
+
+    <BrandsSection />
 
     {/* Team expertise */}
     <section className="py-20 md:py-28 bg-background">
