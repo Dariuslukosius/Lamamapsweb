@@ -1,6 +1,5 @@
 import Navbar from "@/components/Navbar";
 import ContactSection from "@/components/ContactSection";
-import BrandsSection from "@/components/BrandsSection";
 import ClientReviewsSection from "@/components/ClientReviewsSection";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -14,10 +13,6 @@ import bestResults from "@/assets/services/best-results.webp";
 import googlePositionGif from "@/assets/services/google-position.webp";
 import SEO from "@/components/SEO";
 import britanniaImage from "@/assets/results/britannia.webp";
-const bruchFulhamBefore = "";
-const bruchFulhamAfter = "";
-const dantuProtezavimasUtenaBefore = "";
-const dantuProtezavimasUtenaAfter = "";
 import artfiksa from "@/assets/brands/artfiksa.webp";
 import autoVela from "@/assets/brands/auto-vela.webp";
 import clinicDpc from "@/assets/brands/clinic-dpc.webp";
@@ -74,46 +69,6 @@ const traditionalMissing = new Set([
 ]);
 
 const caseStudies = [
-  {
-    title: "Brunch Fulham",
-    badge: "Local ranking result",
-    description:
-      "A visual before-and-after ranking snapshot showing stronger local visibility and better position coverage after optimization.",
-    timeline: "Growth tracked over campaign period",
-    duration: "Ongoing optimization",
-    result: "Higher local visibility",
-    metricTitle: "Google Maps heatmap",
-    stats: ["Before vs After", "More green coverage"],
-    keyword: "bruch fulham",
-    location: "Brunch Fulham",
-    beforeLabel: "Before (Feb 3rd - Rank 13)",
-    afterLabel: "After (Feb 16th - Rank 3)",
-    beforeImage: bruchFulhamBefore,
-    afterImage: bruchFulhamAfter,
-    accent: "from-blue-500 to-indigo-500",
-    panel: "from-blue-50 to-indigo-50 border-blue-200",
-    text: "text-blue-700",
-  },
-  {
-    title: "Dantu protezavimas utena",
-    badge: "Local ranking result",
-    description:
-      "A second visual result example showing improved coverage and stronger ranking zones across the target service area.",
-    timeline: "Growth tracked over campaign period",
-    duration: "Ongoing optimization",
-    result: "Stronger map presence",
-    metricTitle: "Google Maps heatmap",
-    stats: ["Before vs After", "Higher ranking spread"],
-    keyword: "dantu protezavimas utena",
-    location: "Utena",
-    beforeLabel: "Before (Apr 21st - Rank 7)",
-    afterLabel: "After (Nov 3rd - Rank 1)",
-    beforeImage: dantuProtezavimasUtenaBefore,
-    afterImage: dantuProtezavimasUtenaAfter,
-    accent: "from-blue-500 to-indigo-500",
-    panel: "from-blue-50 to-indigo-50 border-blue-200",
-    text: "text-blue-700",
-  },
   {
     title: "Britannia Accountancy Services Ltd",
     badge: "London, UK",
@@ -444,8 +399,6 @@ const ServicesPage = () => {
       </div>
     </section>
 
-    <BrandsSection />
-
     <section className="relative overflow-hidden bg-secondary px-4 py-24 md:px-8">
       <div className="absolute inset-0">
         <div className="absolute -left-20 top-10 h-72 w-72 rounded-full bg-accent/10 blur-3xl" />
@@ -535,67 +488,13 @@ const ServicesPage = () => {
         </motion.div>
 
         <div className="space-y-8">
-          <div className="grid gap-5 lg:grid-cols-2 lg:items-start">
-            {caseStudies.slice(0, 2).map((study, index) => (
-              <motion.div
-                key={study.title}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.08 }}
-                className="relative overflow-hidden rounded-[1.5rem] border border-gray-200 bg-gradient-to-br from-white to-gray-50 p-3 shadow-lg md:p-4"
-              >
-                <div className="relative overflow-hidden rounded-[1.3rem] border border-[#dfe7f2] bg-white shadow-[0_14px_35px_rgba(15,23,42,0.06)]">
-                  <div className="px-4 pb-3 pt-5 text-center md:px-5 md:pt-6">
-                    <p className="text-[0.92rem] font-normal leading-none text-[#1c1c1c] md:text-[1.05rem]">
-                      Keyword: <span className="font-semibold">{study.keyword}</span>
-                    </p>
-                    <p className="mt-3 text-[0.92rem] font-normal leading-none text-[#1c1c1c] md:text-[1.05rem]">
-                      Location: <span className="font-semibold">{study.location}</span>
-                    </p>
-                  </div>
-
-                  <div className="grid gap-3 px-2 pb-4 pt-1 sm:px-4 md:grid-cols-2 md:px-5">
-                    <div className="rounded-[0.8rem] border border-[#e7edf5] bg-white p-1 shadow-sm">
-                      <img src={study.beforeImage} alt={`${study.keyword} before`} className="w-full rounded-[0.65rem]" />
-                    </div>
-
-                    <div className="rounded-[0.8rem] border border-[#e7edf5] bg-white p-1 shadow-sm">
-                      <img src={study.afterImage} alt={`${study.keyword} after`} className="w-full rounded-[0.65rem]" />
-                    </div>
-                  </div>
-
-                  <div className="px-4 pb-5 pt-1 md:px-5">
-                    <div className="grid justify-items-center gap-3 md:grid-cols-2 md:justify-items-start">
-                      <div className="w-fit rounded-[0.8rem] bg-[#eef5ff] px-3 py-2 text-center">
-                        <p className="text-[0.72rem] font-normal leading-tight text-[#2563eb] md:text-[0.8rem]">
-                          {study.beforeLabel}
-                        </p>
-                      </div>
-
-                      <div className="w-fit rounded-[0.8rem] bg-[#eef5ff] px-3 py-2 text-center">
-                        <p className="text-[0.72rem] font-normal leading-tight text-[#2563eb] md:text-[0.8rem]">
-                          {study.afterLabel}
-                        </p>
-                      </div>
-                    </div>
-
-                    <p className="mt-5 text-center text-[1rem] font-normal leading-none text-[#1c1c1c] md:text-[1.12rem]">
-                      More <span className="font-semibold text-[#269246]">Green</span> Means Higher Ranking!
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-
-          {caseStudies.slice(2).map((study, index) => (
+          {caseStudies.map((study, index) => (
             <motion.div
               key={study.title}
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: (index + 2) * 0.08 }}
+              transition={{ delay: index * 0.08 }}
               className="relative overflow-hidden rounded-[2rem] border border-gray-200 bg-gradient-to-br from-white to-gray-50 p-5 shadow-lg md:p-10"
             >
               <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-gray-100/70" />

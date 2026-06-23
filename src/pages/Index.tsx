@@ -16,7 +16,6 @@ const Index = () => (
     />
     <Navbar />
     <HeroSection />
-    <BrandsSection />
     <section className="pb-16 pt-2 bg-background text-center">
       <Link to="/contacts">
         <Button variant="hero" size="lg" className="bg-accent text-accent-foreground hover:bg-accent/85 shadow-lg">
@@ -25,6 +24,7 @@ const Index = () => (
       </Link>
     </section>
     <CaseStudiesSection />
+    <BrandsSection />
     <ContactSection />
   </div>
 );
