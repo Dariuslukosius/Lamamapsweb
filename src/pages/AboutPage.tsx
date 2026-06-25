@@ -8,6 +8,7 @@ import jurgisGrigaliunas from "@/assets/members/Jurgis_Grigaliunas.webp";
 import dariusLukosius from "@/assets/members/darius_lukosius.webp";
 import jonasPernovas from "@/assets/members/jonas_pernovas.webp";
 import SEO from "@/components/SEO";
+import { organizationSchema, breadcrumbSchema } from "@/lib/structuredData";
 
 const values = [
   {
@@ -64,6 +65,16 @@ const AboutPage = () => (
     <SEO
       title="About Us | Llamamaps - Our Mission & Team of Local SEO Experts"
       description="Learn about the Llamamaps mission, our values, and the expert team of local SEO strategists helping businesses rank in the TOP Google search results."
+      jsonLd={[
+        organizationSchema({
+          aggregateRating: true,
+          employees: team.map((t) => ({ name: t.name, jobTitle: t.role })),
+        }),
+        breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "About Us", path: "/about" },
+        ]),
+      ]}
     />
     <Navbar />
 

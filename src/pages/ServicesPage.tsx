@@ -12,6 +12,7 @@ import noDirectAccess from "@/assets/services/no-direct-access.webp";
 import bestResults from "@/assets/services/best-results.webp";
 import googlePositionGif from "@/assets/services/google-position.webp";
 import SEO from "@/components/SEO";
+import { organizationSchema, breadcrumbSchema, serviceSchema, faqSchema } from "@/lib/structuredData";
 import britanniaImage from "@/assets/results/britannia.webp";
 import artfiksa from "@/assets/brands/artfiksa.webp";
 import autoVela from "@/assets/brands/auto-vela.webp";
@@ -203,7 +204,7 @@ const faqs = [
   {
     question: "What's the free trial exactly?",
     answer:
-      "The free trial gives you 10 days to experience the system. We start the audit, activate your profile optimization, and begin generating ranking signals. You'll see if it works before paying anything. After 10 days, it's your choice to continue or cancel.",
+      "The free trial gives you 7 days to experience the system. We start the audit, activate your profile optimization, and begin generating ranking signals. You'll see if it works before paying anything. After 7 days, it's your choice to continue or cancel.",
   },
   {
     question: "Do I need to do anything? Will I have to make changes to my practice?",
@@ -330,6 +331,15 @@ const ServicesPage = () => {
       <SEO
         title="Local SEO Pricing & Services | Llamamaps"
         description="Explore Llamamaps' results-driven local SEO plans (Community and City plans). Gain TOP 3 rankings on Google Maps in 90 days or we work for free."
+        jsonLd={[
+          organizationSchema(),
+          serviceSchema(),
+          faqSchema(faqs),
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Services", path: "/services" },
+          ]),
+        ]}
       />
       <Navbar />
 

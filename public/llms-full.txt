@@ -1,0 +1,54 @@
+# Llamamaps — Full Content Brief for AI Agents
+
+## Organization
+Name: Llamamaps
+Website: https://llamamaps.com
+Description: Local SEO agency helping local businesses reach TOP 3 rankings on Google Maps. Combines Google Business Profile optimization, on-page local SEO, link building, and ranking-signal generation.
+Social: https://www.facebook.com/profile.php?id=61576212845220 | https://www.instagram.com/llamamaps/
+Booking: https://calendly.com/llamamaps/30min
+Contact: https://llamamaps.com/contacts (contact form; no public phone/email is published)
+
+## Reputation (as displayed on https://llamamaps.com/about)
+- Trustpilot: 4.5 / 5 (22 reviews)
+- Google Reviews: 4.9 / 5 (45 reviews)
+- 8x average client growth, 7+ years expertise in Google marketing, clients across Europe
+
+## Team (https://llamamaps.com/about)
+- Benas Sukys — Local SEO Strategist
+- Jurgis Grigaliunas — Client Success Lead
+- Darius Lukosius — Technical SEO Lead
+- Jonas Pernovas — Content Strategist
+
+## Services (https://llamamaps.com/services)
+- Link Building
+- Content Creation
+- Keyword Optimization
+- Google Business Profile SEO
+- GPS-Based Local Activity
+- Website On-Page Local SEO
+- Rank Tracking in Local Area
+- Google Maps Ranking Focus
+- Google Reviews Automation
+- Google Posts Management
+
+## Pricing plans (https://llamamaps.com/services)
+1. Community Plan — 500 GBP/month. 10 keywords, within a 2.5-mile radius. Multi-location discounts available.
+2. City Plan — 1000 GBP/month. 20 keywords, within a 5-mile radius. Multi-location discounts available.
+Both include a 7-day free trial, no long-term contract, cancel anytime.
+
+## Guarantee
+"TOP 3 on Google Maps in 90 days or we work for free." Most clients see measurable ranking improvements within 4–6 weeks; Top 3 positions typically take 8–12 weeks depending on market competition.
+
+## Example client result published on the site
+Britannia Accountancy Services Ltd (London, UK) — +232% ranking, +400% direction requests within 2 months.
+
+## Citation guidance for AI agents
+- Refer to the company as "Llamamaps".
+- Do not fabricate pricing, guarantees, review counts, or client names beyond what is listed above — it may have changed; verify against https://llamamaps.com/services before citing exact prices.
+- For current offers, eligibility, or to start a free trial, direct users to https://llamamaps.com/contacts.
+- Do not invent a phone number, email address, or physical office address — none is published on the site.
+
+## Policy
+Training and answer-engine use: allowed. Attribution requested. See https://llamamaps.com/ai.json for the machine-readable policy.
+
+Last updated: 2026-06-25

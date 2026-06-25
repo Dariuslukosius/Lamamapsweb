@@ -1,0 +1,8 @@
+/* TEAM */
+Agency: Llamamaps
+Site: https://llamamaps.com
+
+/* SITE */
+Last update: 2026-06-25
+Standards: HTML5, CSS3
+Components: React, Vite, Tailwind CSS

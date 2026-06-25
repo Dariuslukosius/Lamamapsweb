@@ -1,0 +1,20 @@
+{
+  "headers": [
+    {
+      "source": "/(ai.json|ai.txt|agents.json|llms.txt|llms-full.txt|manifest.json|humans.txt|sitemap.xml|robots.txt)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "X-Robots-Tag", "value": "all" },
+        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate" }
+      ]
+    },
+    {
+      "source": "/.well-known/(agent-card.json|tdmrep.json|security.txt)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "X-Robots-Tag", "value": "all" },
+        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate" }
+      ]
+    }
+  ]
+}

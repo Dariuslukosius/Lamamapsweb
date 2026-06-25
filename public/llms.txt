@@ -1,0 +1,10 @@
+# Llamamaps
+
+> Local SEO agency helping local businesses reach TOP 3 rankings on Google Maps through Google Business Profile optimization, on-page local SEO, link building, and ranking-signal generation. Plans start at 500 GBP/month with a 7-day free trial.
+
+- [Home](https://llamamaps.com/): Overview, free SEO audit offer, client growth highlights.
+- [About](https://llamamaps.com/about): Mission, values, team, Trustpilot and Google review ratings.
+- [Services](https://llamamaps.com/services): Pricing plans (Community, City), full feature comparison, FAQ.
+- [Contacts](https://llamamaps.com/contacts): Contact form and consultation booking (Calendly).
+
+Full content brief: https://llamamaps.com/llms-full.txt

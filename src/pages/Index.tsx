@@ -7,12 +7,14 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import SEO from "@/components/SEO";
+import { organizationSchema, websiteSchema } from "@/lib/structuredData";
 
 const Index = () => (
   <div className="min-h-screen">
     <SEO
       title="Llamamaps | Expert Local SEO Services - Top Google Maps Rankings"
       description="Get your business to the top of Google Maps in 90 days with Llamamaps. Guaranteed local SEO results, free audit, and expert marketing strategies."
+      jsonLd={[organizationSchema(), websiteSchema()]}
     />
     <Navbar />
     <HeroSection />
