@@ -7,6 +7,8 @@ import benasSukys from "@/assets/members/Benas_Sukys.webp";
 import jurgisGrigaliunas from "@/assets/members/Jurgis_Grigaliunas.webp";
 import dariusLukosius from "@/assets/members/darius_lukosius.webp";
 import jonasPernovas from "@/assets/members/jonas_pernovas.webp";
+import zilvinasDirkis from "@/assets/members/zilvinas_dirkis.webp";
+import mindaugasMacionis from "@/assets/members/mindaugas_macionis.webp";
 import SEO from "@/components/SEO";
 import { organizationSchema, breadcrumbSchema } from "@/lib/structuredData";
 
@@ -38,25 +40,37 @@ const team = [
     name: "Benas Sukys",
     role: "Local SEO Strategist",
     image: benasSukys,
-    desc: "Builds local SEO strategies focused on rankings, qualified leads, and steady long-term growth for clients.",
+    desc: "Builds local SEO strategies, manages Google Business Profile optimization, and tracks ranking signals to keep clients visible to ready-to-buy local customers.",
   },
   {
     name: "Jurgis Grigaliunas",
     role: "Client Success Lead",
     image: jurgisGrigaliunas,
-    desc: "Leads communication, project delivery, and strategy alignment to keep every campaign moving clearly and smoothly.",
+    desc: "Coordinates onboarding, manages client communication, and aligns reporting and expectations so every campaign runs smoothly from kickoff to results.",
   },
   {
     name: "Darius Lukosius",
     role: "Technical SEO Lead",
     image: dariusLukosius,
-    desc: "Handles technical SEO, on-page improvements, and performance foundations that help businesses rank with confidence.",
+    desc: "Leads on-page audits, fixes technical SEO issues, and strengthens site performance and structure so businesses rank with confidence and stay ranked.",
   },
   {
     name: "Jonas Pernovas",
-    role: "Content Strategist",
+    role: "SEO Consultant",
     image: jonasPernovas,
-    desc: "Creates service and location content that improves local relevance, trust, and conversion intent across the site.",
+    desc: "Develops SEO strategies, conducts technical and content audits, and translates performance data into prioritized, business-focused actions to drive growth.",
+  },
+  {
+    name: "Žilvinas Dirkis",
+    role: "Content & Link Building Specialist",
+    image: zilvinasDirkis,
+    desc: "Creates SEO-focused content and builds high-quality backlinks, strengthening site authority and relevance to support sustainable, long-term ranking growth.",
+  },
+  {
+    name: "Mindaugas Mačionis",
+    role: "Google Business Profile & Rank Tracking Specialist",
+    image: mindaugasMacionis,
+    desc: "Manages Google Business Profile optimization, review and post automation, and rank tracking to keep local visibility consistent and measurable for clients.",
   },
 ];
 
