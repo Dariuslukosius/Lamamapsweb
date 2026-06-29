@@ -1,0 +1,4 @@
+Contact: https://llamamaps.com/contacts
+Expires: 2027-06-25T00:00:00.000Z
+Canonical: https://llamamaps.com/.well-known/security.txt
+Preferred-Languages: en

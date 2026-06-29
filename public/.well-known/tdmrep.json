@@ -1,0 +1,12 @@
+{
+  "tdmrep": {
+    "version": "1.0",
+    "location": "/.well-known/tdmrep.json",
+    "policies": [
+      {
+        "tdm-reservation": "0",
+        "tdm-policy": "https://llamamaps.com/ai.json"
+      }
+    ]
+  }
+}

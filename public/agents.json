@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0.0",
+  "name": "Llamamaps",
+  "endpoints": {
+    "homepage": "https://llamamaps.com/",
+    "about": "https://llamamaps.com/about",
+    "services": "https://llamamaps.com/services",
+    "contacts": "https://llamamaps.com/contacts",
+    "sitemap": "https://llamamaps.com/sitemap.xml",
+    "llms": "https://llamamaps.com/llms.txt",
+    "llms_full": "https://llamamaps.com/llms-full.txt",
+    "agent_card": "https://llamamaps.com/.well-known/agent-card.json",
+    "ai_policy": "https://llamamaps.com/ai.json"
+  }
+}

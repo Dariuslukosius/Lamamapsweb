@@ -1,0 +1,21 @@
+{
+  "name": "Llamamaps - Local SEO Services",
+  "short_name": "Llamamaps",
+  "description": "Llamamaps - Expert Local SEO Services. Get your business to the top of Google Maps in 90 days.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#3467e8",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "type": "image/png",
+      "sizes": "861x840"
+    },
+    {
+      "src": "/llama-logo.png",
+      "type": "image/png",
+      "sizes": "861x840"
+    }
+  ]
+}
