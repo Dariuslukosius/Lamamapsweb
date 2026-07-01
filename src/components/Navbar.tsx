@@ -46,10 +46,10 @@ const Navbar = () => {
           </div>
 
           <Link
-            to="/contacts"
-            className="inline-flex h-12 items-center rounded-xl bg-[#3467e8] px-6 text-sm font-semibold uppercase tracking-wide text-white shadow-[0_12px_30px_rgba(52,103,232,0.22)] transition-colors hover:bg-[#2f5fd6]"
+            to="/free-trial"
+            className="inline-flex h-12 items-center rounded-xl bg-[#8b5cf6] px-6 text-sm font-semibold uppercase tracking-wide text-white shadow-[0_12px_30px_rgba(139,92,246,0.28)] transition-colors hover:bg-[#7c3aed]"
           >
-            Get Free Audit
+            Start 7-Day Free Trial
           </Link>
         </div>
 
@@ -85,11 +85,11 @@ const Navbar = () => {
             </Link>
           ))}
           <Link
-            to="/contacts"
+            to="/free-trial"
             onClick={() => setOpen(false)}
-            className="mt-2 block w-full rounded-xl bg-[#3467e8] py-3 text-center text-sm font-semibold uppercase tracking-wide text-white"
+            className="mt-2 block w-full rounded-xl bg-[#8b5cf6] py-3 text-center text-sm font-semibold uppercase tracking-wide text-white"
           >
-            Get Free Audit
+            Start 7-Day Free Trial
           </Link>
         </motion.div>
       )}

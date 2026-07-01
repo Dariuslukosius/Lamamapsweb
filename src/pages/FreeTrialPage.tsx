@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import MapRankAnimation from "@/components/MapRankAnimation";
+import Navbar from "@/components/Navbar";
 import llamaLogo from "@/assets/llama-logo.webp";
 import clinicBefore from "@/assets/results/clinic-dpc-before.webp";
 import clinicAfter from "@/assets/results/clinic-dpc-after.webp";
@@ -36,30 +37,6 @@ const CSS = `
   html { scroll-behavior: smooth; }
   body.lm-active { margin: 0; background: #fff; }
 
-  /* ─── Nav ─── */
-  .lm-nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 60;
-    background: rgba(255,255,255,0.96);
-    border-bottom: 1px solid rgba(180, 220, 195, 0.7);
-    box-shadow: 0 14px 30px rgba(10, 40, 20, 0.07);
-    backdrop-filter: blur(14px);
-  }
-  .lm-nav-inner {
-    display: flex; align-items: center; justify-content: space-between;
-    min-height: 78px; gap: 20px;
-  }
-  .lm-brand { display: inline-flex; align-items: center; gap: 10px; flex-shrink: 0; }
-  .lm-brand img { height: 40px; width: auto; }
-  .lm-brand span { font-weight: 800; font-size: 1.1rem; color: var(--lm-green-dark); letter-spacing: -0.02em; }
-
-  .lm-nav-links { display: none; align-items: center; gap: 10px; }
-  .lm-nav-links a {
-    color: #334155; font-size: 0.72rem; font-weight: 600;
-    letter-spacing: 0.01em; text-transform: uppercase; transition: color 0.2s;
-    white-space: nowrap;
-  }
-  .lm-nav-links a:hover { color: var(--lm-green); }
-
   .lm-btn, .lm-btn-inline {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
     min-height: 50px; border: 0; border-radius: 14px;
@@ -70,37 +47,13 @@ const CSS = `
     transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
     cursor: pointer; text-decoration: none;
   }
-  /* Nav CTA — purple bg, white text */
-  .lm-nav .lm-btn {
-    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-    color: #ffffff;
-    box-shadow: 0 4px 14px rgba(124,58,237,0.3);
-  }
-  .lm-nav .lm-btn:hover {
-    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
-    box-shadow: 0 8px 22px rgba(124,58,237,0.4);
-    transform: translateY(-2px);
-  }
-
   .lm-btn:hover, .lm-btn-inline:hover {
     background: var(--lm-cta-hover);
     box-shadow: var(--lm-cta-shadow-h);
     transform: translateY(-2px);
   }
 
-  .lm-hamburger {
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 42px; height: 42px; border: 0; border-radius: 10px;
-    background: transparent; color: var(--lm-navy); cursor: pointer;
-  }
-  .lm-hamburger svg { width: 22px; height: 22px; }
-
-  .lm-mobile-menu { display: none; border-top: 1px solid #e2e8f0; background: #fff; }
-  .lm-mobile-menu.open { display: block; }
-  .lm-mobile-menu a { display: block; padding: 13px 0; color: #334155; font-size: 0.95rem; font-weight: 600; }
-  .lm-mobile-menu .lm-btn { width: 100%; margin: 12px 0 16px; }
-
-  .lm-main { padding-top: 86px; }
+  .lm-main { padding-top: 80px; }
 
   /* ─── Container ─── */
   .container { max-width: 1260px; margin: 0 auto; padding: 0 24px; }
@@ -581,12 +534,7 @@ const CSS = `
   }
 
   @media (min-width: 960px) {
-    .lm-nav { top: 16px; left: 20px; right: 20px; max-width: 1640px; margin: 0 auto;
-      border: 1px solid rgba(200, 232, 212, 0.6); border-radius: 28px;
-      box-shadow: 0 22px 56px rgba(10, 40, 20, 0.12); }
-    .lm-main { padding-top: 110px; }
-    .lm-nav-links { display: flex; }
-    .lm-hamburger, .lm-mobile-menu { display: none !important; }
+    .lm-main { padding-top: 80px; }
     .lm-hero-inner { grid-template-columns: minmax(0,1.1fr) minmax(260px,0.9fr); }
     .lm-steps { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 18px; }
     .lm-cases { grid-template-columns: repeat(3, minmax(0,1fr)); }
@@ -594,11 +542,6 @@ const CSS = `
     .lm-contact-wrap { padding: 48px; }
     .lm-section { padding: 96px 0; }
     .lm-section--sm { padding: 68px 0; }
-  }
-
-  @media (min-width: 960px) and (max-width: 999px) {
-    .lm-nav-links { display: none !important; }
-    .lm-hamburger { display: inline-flex !important; }
   }
 
   @media (min-width: 1200px) {
@@ -627,7 +570,6 @@ const CSS = `
 const CALENDLY_URL = "/contacts/#llamamaps-contacts-calendar";
 
 export default function FreeTrialPage() {
-  const [menuOpen, setMenuOpen] = useState(false);
   const [feedback, setFeedback] = useState<{ msg: string; type: "ok" | "err" | "" }>({ msg: "", type: "" });
   const [sending, setSending] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
@@ -689,42 +631,7 @@ export default function FreeTrialPage() {
     <div className="lm-page">
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
 
-      {/* ── Nav ── */}
-      <header className="lm-nav">
-        <div className="container">
-          <div className="lm-nav-inner">
-            <a className="lm-brand" href="/">
-              <img src={llamaLogo} alt="LlamaMaps" />
-              <span>LlamaMaps</span>
-            </a>
-
-            <nav className="lm-nav-links" aria-label="Primary">
-              <a href="/">Home</a>
-              <a href="/about">About</a>
-              <a href="/services">Services</a>
-              <a href="/contacts">Contact</a>
-              <a className="lm-btn" href={CALENDLY_URL}>Start Your 7-Day Free Trial</a>
-            </nav>
-
-            <button className="lm-hamburger" type="button" aria-expanded={menuOpen}
-              onClick={() => setMenuOpen(o => !o)}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-                <path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/>
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        <div className={`lm-mobile-menu${menuOpen ? " open" : ""}`}>
-          <div className="container">
-            <a href="/" onClick={() => setMenuOpen(false)}>Home</a>
-            <a href="/about" onClick={() => setMenuOpen(false)}>About</a>
-            <a href="/services" onClick={() => setMenuOpen(false)}>Services</a>
-            <a href="/contacts" onClick={() => setMenuOpen(false)}>Contact</a>
-            <a className="lm-btn" href={CALENDLY_URL}>Start Your 7-Day Free Trial</a>
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
       <main className="lm-main">
         {/* ── Hero ── */}

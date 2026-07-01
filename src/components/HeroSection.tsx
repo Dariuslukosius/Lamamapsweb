@@ -47,9 +47,9 @@ const HeroSection = () => (
           </div>
 
           <div className="flex flex-wrap gap-4">
-            <Link to="/contacts">
-              <Button variant="hero" size="lg" className="bg-accent text-accent-foreground hover:bg-accent/85 shadow-lg">
-                Get Your Free SEO Audit <ArrowRight className="ml-1 w-4 h-4" />
+            <Link to="/free-trial">
+              <Button variant="hero" size="lg" className="bg-[#8b5cf6] text-white hover:bg-[#7c3aed] shadow-[0_12px_30px_rgba(139,92,246,0.30)]">
+                Start 7-Day Free Trial <ArrowRight className="ml-1 w-4 h-4" />
               </Button>
             </Link>
           </div>
