@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.1.0",
+  "name": "Llamamaps",
+  "url": "https://llamamaps.com",
+  "description": "Local SEO agency helping local businesses reach TOP 3 rankings on Google Maps through Google Business Profile optimization, on-page local SEO, and ranking-signal generation.",
+  "logo": "https://llamamaps.com/llama-logo.png",
+  "icon": "https://llamamaps.com/favicon.png",
+  "languages": ["en-US"],
+  "contact": {
+    "url": "https://llamamaps.com/contacts",
+    "booking": "https://calendly.com/llamamaps/30min"
+  },
+  "organisation": {
+    "brand_name": "Llamamaps"
+  },
+  "services": [
+    { "name": "Local SEO", "url": "https://llamamaps.com/services" },
+    { "name": "Google Business Profile SEO", "url": "https://llamamaps.com/services" },
+    { "name": "Google Maps Ranking Optimization", "url": "https://llamamaps.com/services" },
+    { "name": "On-Page Local SEO", "url": "https://llamamaps.com/services" },
+    { "name": "Link Building", "url": "https://llamamaps.com/services" },
+    { "name": "Google Reviews Automation", "url": "https://llamamaps.com/services" },
+    { "name": "Google Posts Management", "url": "https://llamamaps.com/services" },
+    { "name": "Local Rank Tracking", "url": "https://llamamaps.com/services" }
+  ],
+  "areas_served": [
+    { "@type": "Place", "name": "Europe" }
+  ],
+  "social_profiles": [
+    "https://www.facebook.com/profile.php?id=61576212845220",
+    "https://www.instagram.com/llamamaps/"
+  ],
+  "capabilities": ["browse"],
+  "policies": {
+    "training": {
+      "status": "allowed",
+      "notes": "Llamamaps allows its publicly published website content to be used for AI training and answer generation."
+    },
+    "answer_engines": {
+      "status": "allowed",
+      "notes": "AI assistants and answer engines (ChatGPT, Perplexity, Claude, Gemini, Bing Copilot, Google AI Overviews) may summarize and cite this content."
+    },
+    "attribution": {
+      "status": "requested",
+      "preferred_name": "Llamamaps",
+      "preferred_url": "https://llamamaps.com"
+    },
+    "fabrication": {
+      "status": "not_allowed",
+      "notes": "Do not invent pricing, guarantees, review counts, or client names beyond what is published on llamamaps.com. For current pricing and offers, direct users to https://llamamaps.com/services and https://llamamaps.com/contacts."
+    }
+  },
+  "last_updated": "2026-06-25"
+}

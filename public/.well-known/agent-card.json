@@ -1,0 +1,31 @@
+{
+  "protocolVersion": "1.1",
+  "name": "Llamamaps",
+  "description": "Local SEO agency helping local businesses reach TOP 3 rankings on Google Maps through Google Business Profile optimization, on-page local SEO, and ranking-signal generation.",
+  "url": "https://llamamaps.com",
+  "provider": {
+    "organization": "Llamamaps",
+    "url": "https://llamamaps.com"
+  },
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false
+  },
+  "defaultInputModes": ["text"],
+  "defaultOutputModes": ["text"],
+  "skills": [
+    {
+      "id": "local-seo-services",
+      "name": "Local SEO Services Info",
+      "description": "Provides information about Llamamaps' local SEO plans, pricing, and Google Maps ranking guarantee.",
+      "url": "https://llamamaps.com/services"
+    },
+    {
+      "id": "contact",
+      "name": "Contact / Free Trial Sign-up",
+      "description": "Routes inquiries to the Llamamaps contact form to start a free trial or book a consultation.",
+      "url": "https://llamamaps.com/contacts"
+    }
+  ],
+  "documentationUrl": "https://llamamaps.com/llms-full.txt"
+}
