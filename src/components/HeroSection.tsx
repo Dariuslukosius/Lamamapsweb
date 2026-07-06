@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 import MapRankAnimation from "@/components/MapRankAnimation";
+import { openCalendlyPopup } from "@/lib/calendlyPopup";
 
 const heroHighlights = [
   { value: "8x", label: "Average client growth" },
@@ -47,11 +47,14 @@ const HeroSection = () => (
           </div>
 
           <div className="flex flex-wrap gap-4">
-            <Link to="/free-trial">
-              <Button variant="hero" size="lg" className="bg-[#8b5cf6] text-white hover:bg-[#7c3aed] shadow-[0_12px_30px_rgba(139,92,246,0.30)]">
-                Start 7-Day Free Trial <ArrowRight className="ml-1 w-4 h-4" />
-              </Button>
-            </Link>
+            <Button
+              variant="hero"
+              size="lg"
+              onClick={openCalendlyPopup}
+              className="bg-[#8b5cf6] text-white hover:bg-[#7c3aed] shadow-[0_12px_30px_rgba(139,92,246,0.30)]"
+            >
+              Start 7-Day Free Trial <ArrowRight className="ml-1 w-4 h-4" />
+            </Button>
           </div>
         </motion.div>
 

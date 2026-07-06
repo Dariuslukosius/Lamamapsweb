@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, CalendarClock, Check, MapPinned, ShieldCheck, Sparkles, Star, X } from "lucide-react";
-import { Link } from "react-router-dom";
 import improveSearchPerformance from "@/assets/services/improve-search-performance.webp";
 import increaseLocalVisibility from "@/assets/services/increase-local-visibility.webp";
 import noDirectAccess from "@/assets/services/no-direct-access.webp";
@@ -379,15 +378,14 @@ const ServicesPage = () => {
           </div>
 
           <div className="mt-8 flex flex-wrap justify-center gap-4">
-            <Link to="/contacts">
-              <Button
-                size="lg"
-                className="h-14 rounded-xl bg-accent px-8 text-base font-bold text-accent-foreground hover:bg-accent/85"
-              >
-                Get Ranked Free
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
+            <Button
+              size="lg"
+              onClick={openCalendlyPopup}
+              className="h-14 rounded-xl bg-accent px-8 text-base font-bold text-accent-foreground hover:bg-accent/85"
+            >
+              Get Ranked Free
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
             <Button
               size="lg"
               variant="outline"
@@ -665,14 +663,13 @@ const ServicesPage = () => {
           </motion.div>
 
           <div className="mb-6 flex justify-center">
-            <Link to="/contacts">
-              <Button
-                size="lg"
-                className="h-9 rounded-xl bg-accent px-4 text-[12px] font-bold uppercase tracking-[0.03em] text-accent-foreground hover:bg-accent/85"
-              >
-                Get 7-Day Free Trial!
-              </Button>
-            </Link>
+            <Button
+              size="lg"
+              onClick={openCalendlyPopup}
+              className="h-9 rounded-xl bg-accent px-4 text-[12px] font-bold uppercase tracking-[0.03em] text-accent-foreground hover:bg-accent/85"
+            >
+              Get 7-Day Free Trial!
+            </Button>
           </div>
 
           <div className="mb-3 flex justify-start">
@@ -878,11 +875,12 @@ const ServicesPage = () => {
             Schedule a Call for Price
             <CalendarClock className="ml-2 h-4 w-4" />
           </Button>
-          <Link to="/contacts" className="inline-flex">
-            <Button className="h-12 rounded-full bg-[#3867e8] px-8 font-bold uppercase tracking-[0.06em] text-white shadow-lg transition-all hover:-translate-y-1 hover:bg-[#2f58ca] hover:shadow-xl">
-              Try It For Free
-            </Button>
-          </Link>
+          <Button
+            onClick={openCalendlyPopup}
+            className="h-12 rounded-full bg-[#3867e8] px-8 font-bold uppercase tracking-[0.06em] text-white shadow-lg transition-all hover:-translate-y-1 hover:bg-[#2f58ca] hover:shadow-xl"
+          >
+            Try It For Free
+          </Button>
         </div>
       </div>
     </section>
@@ -966,11 +964,12 @@ const ServicesPage = () => {
             by growing local brands.
           </p>
           <div className="mt-8 flex justify-center">
-            <Link to="/contacts">
-              <Button className="h-12 rounded-xl bg-gradient-to-r from-[#4b83ff] to-[#2f6df6] px-7 text-sm font-bold uppercase tracking-[0.03em] text-white shadow-[0_16px_35px_rgba(75,131,255,0.24)] hover:opacity-95">
-                Get Ranked Free!
-              </Button>
-            </Link>
+            <Button
+              onClick={openCalendlyPopup}
+              className="h-12 rounded-xl bg-gradient-to-r from-[#4b83ff] to-[#2f6df6] px-7 text-sm font-bold uppercase tracking-[0.03em] text-white shadow-[0_16px_35px_rgba(75,131,255,0.24)] hover:opacity-95"
+            >
+              Get Ranked Free!
+            </Button>
           </div>
         </motion.div>
 

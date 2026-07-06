@@ -4,6 +4,7 @@ import { Menu, X } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import logoImg from "@/assets/llama-logo.webp";
 import googlePartnerLogo from "@/assets/partners/google-partner-logo-png_seeklogo-428155.webp";
+import { openCalendlyPopup } from "@/lib/calendlyPopup";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -45,12 +46,13 @@ const Navbar = () => {
             <img src={googlePartnerLogo} alt="Google Partner" className="h-12 w-auto" />
           </div>
 
-          <Link
-            to="/free-trial"
+          <button
+            type="button"
+            onClick={openCalendlyPopup}
             className="inline-flex h-12 items-center rounded-xl bg-[#8b5cf6] px-6 text-sm font-semibold uppercase tracking-wide text-white shadow-[0_12px_30px_rgba(139,92,246,0.28)] transition-colors hover:bg-[#7c3aed]"
           >
             Start 7-Day Free Trial
-          </Link>
+          </button>
         </div>
 
         {/* Mobile toggle */}
@@ -84,13 +86,16 @@ const Navbar = () => {
               {l.label}
             </Link>
           ))}
-          <Link
-            to="/free-trial"
-            onClick={() => setOpen(false)}
+          <button
+            type="button"
+            onClick={() => {
+              setOpen(false);
+              openCalendlyPopup();
+            }}
             className="mt-2 block w-full rounded-xl bg-[#8b5cf6] py-3 text-center text-sm font-semibold uppercase tracking-wide text-white"
           >
             Start 7-Day Free Trial
-          </Link>
+          </button>
         </motion.div>
       )}
     </nav>

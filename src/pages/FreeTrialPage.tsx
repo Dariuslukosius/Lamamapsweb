@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { trackMetaEvent } from "@/lib/metaPixel";
+import { openCalendlyPopup } from "@/lib/calendlyPopup";
 import MapRankAnimation from "@/components/MapRankAnimation";
 import Navbar from "@/components/Navbar";
 import CalendlyWidget from "@/components/CalendlyWidget";
@@ -551,8 +552,6 @@ const CSS = `
   }
 `;
 
-const CALENDLY_URL = "/contacts/#llamamaps-contacts-calendar";
-
 export default function FreeTrialPage() {
   const [feedback, setFeedback] = useState<{ msg: string; type: "ok" | "err" | "" }>({ msg: "", type: "" });
   const [sending, setSending] = useState(false);
@@ -642,7 +641,7 @@ export default function FreeTrialPage() {
                   <span className="lm-pill">No commitment</span>
                 </div>
                 <div className="lm-hero-actions">
-                  <a className="lm-btn" href={CALENDLY_URL}>Start Your 7-Day Free Trial</a>
+                  <button type="button" className="lm-btn" onClick={openCalendlyPopup}>Start Your 7-Day Free Trial</button>
                   <a className="lm-hero-ghost" href="#lm-contact">Or fill in the form ↓</a>
                 </div>
               </div>
@@ -695,7 +694,7 @@ export default function FreeTrialPage() {
             </div>
 
             <div className="lm-cta-row">
-              <a className="lm-btn-inline" href={CALENDLY_URL}>Start Your 7-Day Free Trial</a>
+              <button type="button" className="lm-btn-inline" onClick={openCalendlyPopup}>Start Your 7-Day Free Trial</button>
             </div>
           </div>
         </section>
@@ -739,7 +738,7 @@ export default function FreeTrialPage() {
             </div>
 
             <div className="lm-cta-row">
-              <a className="lm-btn-inline" href={CALENDLY_URL}>Start Your 7-Day Free Trial</a>
+              <button type="button" className="lm-btn-inline" onClick={openCalendlyPopup}>Start Your 7-Day Free Trial</button>
             </div>
 
             {/* ── Plan Table ── */}
@@ -935,7 +934,7 @@ export default function FreeTrialPage() {
             </div>
 
             <div className="lm-cta-row">
-              <a className="lm-btn-inline" href={CALENDLY_URL}>Start Your 7-Day Free Trial</a>
+              <button type="button" className="lm-btn-inline" onClick={openCalendlyPopup}>Start Your 7-Day Free Trial</button>
             </div>
           </div>
         </section>
@@ -958,7 +957,7 @@ export default function FreeTrialPage() {
             </div>
 
             <div className="lm-cta-row" style={{ marginTop: "36px" }}>
-              <a className="lm-btn-inline" href={CALENDLY_URL}>Start Your 7-Day Free Trial</a>
+              <button type="button" className="lm-btn-inline" onClick={openCalendlyPopup}>Start Your 7-Day Free Trial</button>
             </div>
           </div>
         </section>
@@ -1015,7 +1014,7 @@ export default function FreeTrialPage() {
         </section>
       </main>
 
-      <a className="lm-sticky" href={CALENDLY_URL}>Start Your 7-Day Free Trial</a>
+      <button type="button" className="lm-sticky" onClick={openCalendlyPopup}>Start Your 7-Day Free Trial</button>
     </div>
   );
 }

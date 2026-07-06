@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
+import { openCalendlyPopup } from "@/lib/calendlyPopup";
 
 const stats = [
   { value: "8x", label: "Average client growth" },
@@ -63,12 +63,13 @@ const StatsSection = () => (
           </p>
           <p className="mt-4 text-2xl text-muted-foreground">{stats[3].value}</p>
 
-          <Link
-            to="/contacts"
+          <button
+            type="button"
+            onClick={openCalendlyPopup}
             className="mt-auto inline-flex w-fit items-center gap-2 rounded-xl bg-accent px-6 py-4 text-sm font-semibold uppercase tracking-wide text-accent-foreground transition-transform hover:scale-[1.02] hover:bg-accent/90"
           >
             Get an Offer! <ArrowRight className="h-4 w-4" />
-          </Link>
+          </button>
         </motion.div>
       </div>
     </div>
