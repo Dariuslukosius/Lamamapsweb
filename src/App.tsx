@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import ScrollToTop from "@/components/ScrollToTop";
+import MetaPixelPageView from "@/components/MetaPixelPageView";
 import Index from "./pages/Index.tsx";
 import AboutPage from "./pages/AboutPage.tsx";
 import ServicesPage from "./pages/ServicesPage.tsx";
@@ -21,6 +22,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <ScrollToTop />
+        <MetaPixelPageView />
         <CalendlyBadge />
         <Routes>
           <Route path="/" element={<Index />} />

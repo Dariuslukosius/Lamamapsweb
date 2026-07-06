@@ -1,6 +1,21 @@
 import { useEffect } from "react";
+import { trackMetaEvent } from "@/lib/metaPixel";
+
+function isCalendlyEvent(e: MessageEvent) {
+  return e.origin === "https://calendly.com" && typeof e.data === "object" && e.data?.event?.indexOf("calendly.") === 0;
+}
 
 const CalendlyBadge = () => {
+  useEffect(() => {
+    const handleMessage = (e: MessageEvent) => {
+      if (isCalendlyEvent(e) && e.data.event === "calendly.event_scheduled") {
+        trackMetaEvent("Schedule", { content_name: "Free Trial Call Booked" });
+      }
+    };
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
+
   useEffect(() => {
     // Add CSS
     if (!document.querySelector('link[href="https://assets.calendly.com/assets/external/widget.css"]')) {

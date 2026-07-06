@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
+import { trackMetaEvent } from "@/lib/metaPixel";
 import MapRankAnimation from "@/components/MapRankAnimation";
 import Navbar from "@/components/Navbar";
+import CalendlyWidget from "@/components/CalendlyWidget";
 import llamaLogo from "@/assets/llama-logo.webp";
 import clinicBefore from "@/assets/results/clinic-dpc-before.webp";
 import clinicAfter from "@/assets/results/clinic-dpc-after.webp";
@@ -243,25 +245,6 @@ const CSS = `
   .lm-ptable .lm-pt-minus { font-size: 1.1rem; font-weight: 900; color: #cbd5e1; }
   .lm-ptable .lm-pt-maxi-only { background: #f0fdf4; }
   .lm-ptable .lm-pt-maxi-only td:first-child { color: #15803d; }
-  .lm-ptable-pdf-row td { background: #f5f0ff !important; padding: 14px 16px; }
-  .lm-ptable-pdf-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 7px 16px;
-    border-radius: 100px;
-    border: 2px solid #7c3aed;
-    background: #fff;
-    color: #7c3aed;
-    font-size: 0.78rem;
-    font-weight: 700;
-    text-decoration: none;
-    letter-spacing: 0.03em;
-    transition: background 0.18s, color 0.18s;
-    white-space: nowrap;
-  }
-  .lm-ptable-pdf-btn:hover { background: #7c3aed; color: #fff; }
-
   /* ─── How it works ─── */
   .lm-steps { display: grid; gap: 2px; margin-top: 44px; }
   .lm-step {
@@ -619,6 +602,7 @@ export default function FreeTrialPage() {
       await sendEmail("template_nbb5j0d", params);
       await sendEmail("template_ango4v7", params);
       formRef.current.reset();
+      trackMetaEvent("Lead", { content_name: "Free Trial Form" });
       setFeedback({ msg: "Your message has been sent. We'll be in touch shortly.", type: "ok" });
     } catch {
       setFeedback({ msg: "Couldn't send your message. Please try again in a moment.", type: "err" });
@@ -787,7 +771,7 @@ export default function FreeTrialPage() {
                 </thead>
                 <tbody>
                   {([
-                    ["Daily Google Maps direction signals", "10–20 / day", "30–40 / day + calls", false],
+                    ["Daily Google Maps direction signals", "10–20 / day", "30–40 / day", false],
                     ["Rating grid", "2.5 mi radius", "5 mi radius", false],
                     ["Keywords", "10", "20", false],
                     ["Connecting more than 1 GBP profile", "Multi-location discounts", "Multi-location discounts", false],
@@ -802,7 +786,6 @@ export default function FreeTrialPage() {
                     ["Medium pages", "−", "+", true],
                     ["Google pages", "−", "+", true],
                     ["Google documents", "−", "+", true],
-                    ["PDF assets", "−", "+", true],
                   ] as [string, string, string, boolean][]).map(([label, mini, maxi, maxiOnly]) => (
                     <tr key={label} className={maxiOnly ? "lm-pt-maxi-only" : ""}>
                       <td>{label}</td>
@@ -810,20 +793,14 @@ export default function FreeTrialPage() {
                       <td className={maxi === "+" ? "lm-pt-plus" : ""}>{maxi}</td>
                     </tr>
                   ))}
-                  <tr className="lm-ptable-pdf-row">
-                    <td>Download plan details</td>
-                    <td>
-                      <a className="lm-ptable-pdf-btn" href="/llamamaps-system-overview.pdf" download>↓ Mini Plan PDF</a>
-                    </td>
-                    <td>
-                      <a className="lm-ptable-pdf-btn" href="/llamamaps-system-overview.pdf" download>↓ Maxi Plan PDF</a>
-                    </td>
-                  </tr>
                 </tbody>
               </table>
             </div>
           </div>
         </section>
+
+        {/* ── Book a call directly on this page ── */}
+        <CalendlyWidget />
 
         {/* ── Video Testimonials ── */}
         <section className="lm-section lm-section--sm" style={{ background: "linear-gradient(180deg, #f7fdf9 0%, #fff 100%)" }}>
@@ -1017,10 +994,6 @@ export default function FreeTrialPage() {
                   </p>
 
                   <div className="lm-contact-info">
-                    <article className="lm-info-card">
-                      <h3>Email</h3>
-                      <a href="mailto:info@llamamaps.com">info@llamamaps.com</a>
-                    </article>
                     <article className="lm-info-card">
                       <h3>Follow us</h3>
                       <div className="lm-socials">

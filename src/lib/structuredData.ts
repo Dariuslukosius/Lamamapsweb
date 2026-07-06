@@ -129,7 +129,7 @@ export const serviceSchema = () => ({
         },
         areaServed: "Within a 5-mile radius of the business",
         description:
-          "Top 3 rankings for 20 keywords within a 5-mile radius. Includes everything in Community plus Medium pages, Google pages, Google documents, and PDF assets.",
+          "Top 3 rankings for 20 keywords within a 5-mile radius. Includes everything in Community plus Medium pages, Google pages, and Google documents.",
       },
     ],
   },

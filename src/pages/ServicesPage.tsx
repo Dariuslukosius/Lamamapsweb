@@ -4,7 +4,7 @@ import ClientReviewsSection from "@/components/ClientReviewsSection";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Check, Download, MapPinned, ShieldCheck, Sparkles, Star, X } from "lucide-react";
+import { ArrowRight, CalendarClock, Check, MapPinned, ShieldCheck, Sparkles, Star, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import improveSearchPerformance from "@/assets/services/improve-search-performance.webp";
 import increaseLocalVisibility from "@/assets/services/increase-local-visibility.webp";
@@ -12,6 +12,7 @@ import noDirectAccess from "@/assets/services/no-direct-access.webp";
 import bestResults from "@/assets/services/best-results.webp";
 import googlePositionGif from "@/assets/services/google-position.webp";
 import SEO from "@/components/SEO";
+import { openCalendlyPopup } from "@/lib/calendlyPopup";
 import { organizationSchema, breadcrumbSchema, serviceSchema, faqSchema } from "@/lib/structuredData";
 import britanniaImage from "@/assets/results/britannia.webp";
 import artfiksa from "@/assets/brands/artfiksa.webp";
@@ -149,7 +150,6 @@ const pricingPlans = [
     mediumPages: "-",
     googlePages: "-",
     googleDocuments: "-",
-    pdfAssets: "-",
     top3Guarantee: "+",
     gpsActivity: "+",
     gbpSeo: "+",
@@ -169,14 +169,13 @@ const pricingPlans = [
     priceNote: "Multi-location discounts available",
     description:
       "Ideal for competitive businesses such as dental or beauty clinics that aim to dominate on Google Maps, attract higher-value clients, and rapidly scale.",
-    dailySignals: "30-40 / day + calls to profile",
+    dailySignals: "30-40 / day",
     keywords: "20",
     freeTrial: "+",
     cloudStack: "+",
     mediumPages: "+",
     googlePages: "+",
     googleDocuments: "+",
-    pdfAssets: "+",
     top3Guarantee: "+",
     gpsActivity: "+",
     gbpSeo: "+",
@@ -375,7 +374,7 @@ const ServicesPage = () => {
             <div className="rounded-xl bg-primary-foreground/10 px-3 py-2 text-sm font-semibold">4.9</div>
             <div>
               <div className="text-lg tracking-[0.2em] text-accent">★★★★★</div>
-              <p className="text-sm text-primary-foreground/65">from 28 testimonials</p>
+              <p className="text-sm text-primary-foreground/65">from 45 testimonials</p>
             </div>
           </div>
 
@@ -389,16 +388,15 @@ const ServicesPage = () => {
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
-            <a href="/llamamaps-system-overview.pdf" download>
-              <Button
-                size="lg"
-                variant="outline"
-                className="h-14 rounded-xl border-primary-foreground/30 bg-primary-foreground/5 px-8 text-base font-bold text-primary-foreground backdrop-blur-sm hover:bg-primary-foreground/10"
-              >
-                Download PDF Overview
-                <Download className="ml-2 h-4 w-4" />
-              </Button>
-            </a>
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={openCalendlyPopup}
+              className="h-14 rounded-xl border-primary-foreground/30 bg-primary-foreground/5 px-8 text-base font-bold text-primary-foreground backdrop-blur-sm hover:bg-primary-foreground/10"
+            >
+              Schedule a Call
+              <CalendarClock className="ml-2 h-4 w-4" />
+            </Button>
           </div>
 
           <div className="mx-auto mt-10 max-w-5xl overflow-hidden rounded-[2rem] border border-primary-foreground/10 bg-black/30 p-3 shadow-[0_30px_80px_rgba(34,197,94,0.16)] backdrop-blur-sm md:p-4">
@@ -819,7 +817,6 @@ const ServicesPage = () => {
                   ["Medium pages", pricingPlans[0].mediumPages, pricingPlans[1].mediumPages],
                   ["Google pages", pricingPlans[0].googlePages, pricingPlans[1].googlePages],
                   ["Google documents", pricingPlans[0].googleDocuments, pricingPlans[1].googleDocuments],
-                  ["PDF", pricingPlans[0].pdfAssets, pricingPlans[1].pdfAssets],
                   ["Purpose", pricingPlans[0].purpose, pricingPlans[1].purpose],
                   ["Who is it for?", pricingPlans[0].audience, pricingPlans[1].audience],
                 ].map(([label, communityValue, cityValue], index) => (
@@ -837,9 +834,13 @@ const ServicesPage = () => {
                             : "font-medium"
                     }`}>
                       {label === "Standard monthly subscription price" ? (
-                        <a href="/llamamaps-system-overview.pdf" download className="inline-flex items-center gap-1.5 rounded-full border-2 border-purple-500 bg-white px-4 py-1.5 text-[0.78rem] font-bold text-purple-600 transition-all hover:bg-purple-500 hover:text-white">
-                          <Download className="h-3 w-3" /> Download Mini PDF
-                        </a>
+                        <button
+                          type="button"
+                          onClick={openCalendlyPopup}
+                          className="inline-flex items-center gap-1.5 rounded-full border-2 border-purple-500 bg-white px-4 py-1.5 text-[0.78rem] font-bold text-purple-600 transition-all hover:bg-purple-500 hover:text-white"
+                        >
+                          <CalendarClock className="h-3 w-3" /> Schedule a Call for Price
+                        </button>
                       ) : communityValue}
                     </td>
                     <td className={`border border-[#a5acbc] px-3 py-2.5 align-top text-center text-[0.84rem] leading-[1.22] md:px-4 md:text-[0.92rem] ${
@@ -852,9 +853,13 @@ const ServicesPage = () => {
                             : "font-medium"
                     }`}>
                       {label === "Standard monthly subscription price" ? (
-                        <a href="/llamamaps-system-overview.pdf" download className="inline-flex items-center gap-1.5 rounded-full border-2 border-purple-500 bg-white px-4 py-1.5 text-[0.78rem] font-bold text-purple-600 transition-all hover:bg-purple-500 hover:text-white">
-                          <Download className="h-3 w-3" /> Download Maxi PDF
-                        </a>
+                        <button
+                          type="button"
+                          onClick={openCalendlyPopup}
+                          className="inline-flex items-center gap-1.5 rounded-full border-2 border-purple-500 bg-white px-4 py-1.5 text-[0.78rem] font-bold text-purple-600 transition-all hover:bg-purple-500 hover:text-white"
+                        >
+                          <CalendarClock className="h-3 w-3" /> Schedule a Call for Price
+                        </button>
                       ) : cityValue}
                     </td>
                   </tr>
@@ -865,24 +870,14 @@ const ServicesPage = () => {
         </motion.div>
 
         <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-          <a href="/llamamaps-system-overview.pdf" download className="inline-flex">
-            <Button
-              variant="outline"
-              className="h-12 rounded-full border-[#3867e8]/40 px-6 font-bold uppercase tracking-[0.06em] text-[#3867e8] transition-all hover:-translate-y-1 hover:bg-[#3867e8]/5"
-            >
-              Download {pricingPlans[0].columnLabel} Plan (PDF)
-              <Download className="ml-2 h-4 w-4" />
-            </Button>
-          </a>
-          <a href="/llamamaps-system-overview.pdf" download className="inline-flex">
-            <Button
-              variant="outline"
-              className="h-12 rounded-full border-[#3867e8]/40 px-6 font-bold uppercase tracking-[0.06em] text-[#3867e8] transition-all hover:-translate-y-1 hover:bg-[#3867e8]/5"
-            >
-              Download {pricingPlans[1].columnLabel} Plan (PDF)
-              <Download className="ml-2 h-4 w-4" />
-            </Button>
-          </a>
+          <Button
+            variant="outline"
+            onClick={openCalendlyPopup}
+            className="h-12 rounded-full border-[#3867e8]/40 px-6 font-bold uppercase tracking-[0.06em] text-[#3867e8] transition-all hover:-translate-y-1 hover:bg-[#3867e8]/5"
+          >
+            Schedule a Call for Price
+            <CalendarClock className="ml-2 h-4 w-4" />
+          </Button>
           <Link to="/contacts" className="inline-flex">
             <Button className="h-12 rounded-full bg-[#3867e8] px-8 font-bold uppercase tracking-[0.06em] text-white shadow-lg transition-all hover:-translate-y-1 hover:bg-[#2f58ca] hover:shadow-xl">
               Try It For Free
