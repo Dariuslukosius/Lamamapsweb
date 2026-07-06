@@ -528,7 +528,7 @@ const CSS = `
   }
 
   @media (min-width: 1200px) {
-    .lm-steps { grid-template-columns: repeat(4, minmax(0,1fr)); }
+    .lm-steps { grid-template-columns: repeat(3, minmax(0,1fr)); }
     .lm-features { grid-template-columns: repeat(2, minmax(0,1fr)); }
     .lm-hero-stats { grid-template-columns: repeat(3, minmax(0,1fr)); }
   }
@@ -627,11 +627,14 @@ export default function FreeTrialPage() {
               <div>
                 <div className="lm-hero-eyebrow">Free · 7 days · €0</div>
                 <h1 className="lm-hero-h1">
-                  See exactly where you rank
-                  <em>on Google Maps</em>
+                  We let the results speak for themselves.
                 </h1>
                 <p className="lm-hero-sub">
-                  In 7 days we scan 10 local keywords across a 2.5 mi radius around your business and show you your real Google Maps position — no logins, no credit card, no strings.
+                  Give us 7 days, and we'll push 10 of your keywords higher in Google.
+                  <br /><br />
+                  No logins. No credit card. No contracts. No risk.
+                  <br /><br />
+                  If you like what you see, we'll discuss how we can scale your rankings long-term.
                 </p>
                 <div className="lm-hero-pills">
                   <span className="lm-pill">No card required</span>
@@ -655,20 +658,6 @@ export default function FreeTrialPage() {
                 }}>
                   <MapRankAnimation />
                 </div>
-                <div className="lm-hero-stats">
-                  <div className="lm-hero-stat">
-                    <span className="lm-hero-stat-num">10</span>
-                    <span className="lm-hero-stat-label">Keywords scanned within your area</span>
-                  </div>
-                  <div className="lm-hero-stat">
-                    <span className="lm-hero-stat-num">2.5 mi</span>
-                    <span className="lm-hero-stat-label">Radius coverage around your location</span>
-                  </div>
-                  <div className="lm-hero-stat">
-                    <span className="lm-hero-stat-num">7</span>
-                    <span className="lm-hero-stat-label">Days to your first visibility report</span>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -679,7 +668,7 @@ export default function FreeTrialPage() {
           <div className="container">
             <div className="lm-section-label">Simple process</div>
             <h2 className="lm-h2">How it <em>works</em></h2>
-            <p className="lm-lead">Four steps. No technical knowledge needed on your side.</p>
+            <p className="lm-lead">Three steps. No technical knowledge needed on your side.</p>
 
             <div className="lm-steps">
               <article className="lm-step">
@@ -692,22 +681,15 @@ export default function FreeTrialPage() {
               <article className="lm-step">
                 <div className="lm-step-num">2</div>
                 <div>
-                  <h3>We activate the scanner</h3>
-                  <p>No access to your Google account is needed. Our system starts within 24 hours.</p>
+                  <h3>We activate our system</h3>
+                  <p>No access to your Google account is needed. Our system starts working with your profile within 24 hours.</p>
                 </div>
               </article>
               <article className="lm-step">
                 <div className="lm-step-num">3</div>
                 <div>
-                  <h3>Your rankings, mapped out</h3>
-                  <p>See where you appear for 10 keywords across a 2.5 mi grid around your business.</p>
-                </div>
-              </article>
-              <article className="lm-step">
-                <div className="lm-step-num">4</div>
-                <div>
-                  <h3>Review call with clear priorities</h3>
-                  <p>We walk you through the data and outline the highest-impact next steps. You decide.</p>
+                  <h3>Your Performance Overview</h3>
+                  <p>After one week, we'll schedule a meeting to walk you through your results and discuss the next steps.</p>
                 </div>
               </article>
             </div>
@@ -736,8 +718,8 @@ export default function FreeTrialPage() {
               <article className="lm-feature">
                 <div className="lm-feature-icon">10</div>
                 <div>
-                  <h3>10-keyword ranking scan</h3>
-                  <p>Real positions within a 2.5 mi radius — see exactly which searches find you and which don't.</p>
+                  <h3>Your website and GMB profile Audit</h3>
+                  <p>We carry out a comprehensive SEO audit and compare your website with your competitors to identify opportunities for growth.</p>
                 </div>
               </article>
               <article className="lm-feature">
