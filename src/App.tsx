@@ -11,6 +11,7 @@ import ServicesPage from "./pages/ServicesPage.tsx";
 import ContactsPage from "./pages/ContactsPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import FreeTrialPage from "./pages/FreeTrialPage.tsx";
+import PrivacyPage from "./pages/PrivacyPage.tsx";
 import CalendlyBadge from "./components/CalendlyBadge.tsx";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/contacts" element={<ContactsPage />} />
           <Route path="/free-trial" element={<FreeTrialPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

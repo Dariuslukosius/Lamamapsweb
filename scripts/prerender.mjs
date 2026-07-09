@@ -8,7 +8,7 @@ import { preview } from "vite";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-const ROUTES = ["/", "/about", "/services", "/contacts"];
+const ROUTES = ["/", "/about", "/services", "/contacts", "/privacy"];
 
 async function main() {
   const server = await preview({ preview: { port: 4173, strictPort: true } });
