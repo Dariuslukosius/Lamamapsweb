@@ -10,11 +10,28 @@ import path from "node:path";
 
 const ROUTES = ["/", "/about", "/services", "/contacts", "/privacy"];
 
+// Vercel's build container has no local Chromium install and is missing the
+// shared libraries a vanilla `playwright install chromium` binary needs to
+// launch. @sparticuz/chromium ships a build made for exactly this kind of
+// serverless/build environment, so we swap to it there and keep using the
+// locally-installed browser (via `playwright install`) everywhere else.
+async function launchBrowser() {
+  if (process.env.VERCEL) {
+    const sparticuzChromium = (await import("@sparticuz/chromium")).default;
+    return chromium.launch({
+      args: sparticuzChromium.args,
+      executablePath: await sparticuzChromium.executablePath(),
+      headless: true,
+    });
+  }
+  return chromium.launch();
+}
+
 async function main() {
   const server = await preview({ preview: { port: 4173, strictPort: true } });
   const base = `http://localhost:4173`;
 
-  const browser = await chromium.launch();
+  const browser = await launchBrowser();
   const page = await browser.newPage();
 
   for (const route of ROUTES) {
