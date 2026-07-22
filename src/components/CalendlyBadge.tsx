@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { trackMetaEvent } from "@/lib/metaPixel";
+import { openCalendlyPopup } from "@/lib/calendlyPopup";
 
 function isCalendlyEvent(e: MessageEvent) {
   return e.origin === "https://calendly.com" && typeof e.data === "object" && e.data?.event?.indexOf("calendly.") === 0;
@@ -16,56 +17,29 @@ const CalendlyBadge = () => {
     return () => window.removeEventListener("message", handleMessage);
   }, []);
 
-  useEffect(() => {
-    // Add CSS
-    if (!document.querySelector('link[href="https://assets.calendly.com/assets/external/widget.css"]')) {
-      const link = document.createElement("link");
-      link.href = "https://assets.calendly.com/assets/external/widget.css";
-      link.rel = "stylesheet";
-      document.head.appendChild(link);
-    }
-
-    const initBadge = () => {
-      // @ts-ignore
-      if (window.Calendly && !document.querySelector(".calendly-badge-widget")) {
-        // @ts-ignore
-        window.Calendly.initBadgeWidget({
-          url: 'https://calendly.com/llamamaps/30min',
-          text: 'Schedule time with me',
-          color: '#0069ff',
-          textColor: '#ffffff',
-          branding: false
-        });
-      }
-    };
-
-    // Add Script and initialize
-    const existingScript = document.querySelector('script[src="https://assets.calendly.com/assets/external/widget.js"]') as HTMLScriptElement;
-    if (!existingScript) {
-      const script = document.createElement("script");
-      script.src = "https://assets.calendly.com/assets/external/widget.js";
-      script.async = true;
-      script.onload = initBadge;
-      document.body.appendChild(script);
-    } else {
-      // @ts-ignore
-      if (window.Calendly) {
-        initBadge();
-      } else {
-        existingScript.addEventListener("load", initBadge);
-      }
-    }
-
-    return () => {
-      // Cleanup the badge when component unmounts to prevent duplicates
-      const badge = document.querySelector(".calendly-badge-widget");
-      if (badge) {
-        badge.remove();
-      }
-    };
-  }, []);
-
-  return null;
+  return (
+    <button
+      type="button"
+      onClick={openCalendlyPopup}
+      style={{
+        position: "fixed",
+        bottom: "20px",
+        right: "20px",
+        zIndex: 9999,
+        backgroundColor: "#0069ff",
+        color: "#ffffff",
+        border: "none",
+        borderRadius: "9999px",
+        padding: "12px 20px",
+        fontSize: "14px",
+        fontWeight: 600,
+        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+        cursor: "pointer",
+      }}
+    >
+      Schedule time with me
+    </button>
+  );
 };
 
 export default CalendlyBadge;
