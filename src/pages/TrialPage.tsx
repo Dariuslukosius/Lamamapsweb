@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, MotionConfig } from "framer-motion";
 import { ArrowRight, Check, X, Star } from "lucide-react";
 
 import SEO from "@/components/SEO";
@@ -10,6 +10,10 @@ import { TrialModalProvider, useTrialModal } from "@/components/trial/TrialModal
 import TrialFloatingCta from "@/components/trial/TrialFloatingCta";
 import BeforeAfterSlider from "@/components/trial/BeforeAfterSlider";
 import RankCounter from "@/components/trial/RankCounter";
+import HeroRankClimb from "@/components/trial/HeroRankClimb";
+import TrialInvisibilitySection from "@/components/trial/TrialInvisibilitySection";
+import CountUpStat from "@/components/trial/CountUpStat";
+import RankCrossfadeBadge from "@/components/trial/RankCrossfadeBadge";
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 
 import llamaLogo from "@/assets/llama-logo.webp";
@@ -92,6 +96,12 @@ const CSS = `
   .tp-btn--outline:hover { background: rgba(244,241,234,0.06); }
   .tp-btn--ghost { background: transparent; border: 1px solid rgba(201,162,74,0.5); color: var(--tp-gold); box-shadow: none; }
   .tp-btn--ghost:hover { background: rgba(201,162,74,0.08); }
+  /* Final CTA: the one button on the page with a deliberate, restrained hover
+     lift + icon nudge — reserved for the closing conversion moment. */
+  .tp-btn--final { transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease; }
+  .tp-btn--final:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(0,0,0,0.5); }
+  .tp-btn-icon { display: inline-flex; transition: transform 0.2s ease; }
+  .tp-btn--final:hover .tp-btn-icon { transform: translateX(3px); }
 
   /* ── Navbar ── */
   /* position: fixed (not sticky) — .tp-page sets overflow-x: hidden, which forces
@@ -144,15 +154,94 @@ const CSS = `
   .tp-hero-rating .tp-rating-count { color: var(--tp-text-muted); }
   .tp-hero-actions { margin-top: 30px; display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
   .tp-hero-actions .tp-btn { min-height: 54px; font-size: 0.88rem; }
-  .tp-hero-video-wrap { margin-top: 40px; width: 100%; max-width: 800px; border-radius: 20px; border: 1px solid var(--tp-border); background: var(--tp-bg-card); box-shadow: var(--tp-shadow); padding: 10px; }
-  .tp-hero-video-inner { position: relative; border-radius: 14px; overflow: hidden; background: #0d1520; aspect-ratio: 16 / 9; display: flex; align-items: center; justify-content: center; }
-  .tp-hero-sound-toggle {
-    position: absolute; right: 14px; bottom: 14px; z-index: 4;
-    display: inline-flex; align-items: center; gap: 6px;
-    background: rgba(0,0,0,0.6); color: var(--tp-text); border: 1px solid var(--tp-border-strong);
-    border-radius: 999px; padding: 8px 14px; font-size: 0.78rem; font-weight: 600;
-    backdrop-filter: blur(4px); cursor: default;
+  .tp-hero-video-wrap { margin-top: 40px; width: 100%; max-width: 640px; border-radius: 20px; border: 1px solid var(--tp-border); background: var(--tp-bg-card); box-shadow: var(--tp-shadow); padding: 10px; }
+  .tp-hero-video-inner { position: relative; border-radius: 14px; overflow: hidden; background: #0d1520; }
+
+  /* ── Hero rank-climb placeholder — "finding" concept: a business row climbs
+     from a low position to the top of the results, holds, then loops. Base
+     state already shows it arrived at the top; the climb is added motion. ── */
+  .tp-rankclimb { padding: 22px 20px 24px; }
+  .tp-rankclimb-searchbar {
+    display: flex; align-items: center; gap: 10px;
+    background: rgba(244,241,234,0.05); border: 1px solid var(--tp-border);
+    border-radius: 10px; padding: 10px 14px; margin-bottom: 16px;
+    color: var(--tp-text-muted); font-size: 0.84rem;
   }
+  .tp-rankclimb-list { position: relative; min-height: 252px; }
+  .tp-rankclimb-row, .tp-rankclimb-you {
+    display: flex; align-items: center; gap: 12px;
+    height: 44px; border-radius: 10px; padding: 0 14px; margin-bottom: 8px;
+    font-size: 0.82rem;
+  }
+  .tp-rankclimb-row { background: rgba(244,241,234,0.04); color: var(--tp-text-muted); }
+  .tp-rankclimb-row-rank {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px; border-radius: 999px; flex-shrink: 0;
+    background: rgba(138,147,166,0.16); color: var(--tp-text-muted);
+    font-size: 0.72rem; font-weight: 700;
+  }
+  .tp-rankclimb-row-rank--you { background: var(--tp-gold); color: var(--tp-bg); }
+  .tp-rankclimb-you {
+    position: absolute; left: 0; right: 0; top: 0;
+    background: rgba(201,162,74,0.14); border: 1px solid rgba(201,162,74,0.5);
+    color: var(--tp-gold); font-weight: 700; z-index: 2;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .tp-rankclimb-you { animation: tpRankClimb 7s ease-in-out infinite; }
+  }
+  @keyframes tpRankClimb {
+    0%   { top: 208px; opacity: 1; }
+    45%  { top: 0; opacity: 1; }
+    82%  { top: 0; opacity: 1; }
+    91%  { top: 0; opacity: 0; }
+    93%  { top: 208px; opacity: 0; }
+    100% { top: 208px; opacity: 1; }
+  }
+
+  /* ── Invisibility demo — "you exist but nobody scrolls far enough to find
+     you". Base state already shows the finished list (no motion); the
+     no-preference query adds the typing/reveal/scroll-past sequence, all
+     gated by .is-active so it only plays once, when scrolled into view. ── */
+  .tp-invisible-demo { max-width: 460px; margin: 44px auto 0; }
+  .tp-invisible-search { display: flex; align-items: center; gap: 10px; background: var(--tp-bg-card); border: 1px solid var(--tp-border); border-radius: 10px; padding: 12px 16px; }
+  .tp-invisible-search-text { color: var(--tp-text-muted); font-size: 0.88rem; }
+  .tp-invisible-list { position: relative; margin-top: 16px; }
+  .tp-invisible-row {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--tp-bg-card); border: 1px solid var(--tp-border);
+    border-radius: 10px; padding: 12px 16px; margin-bottom: 8px;
+    color: var(--tp-text); font-size: 0.86rem;
+  }
+  .tp-invisible-row-rank {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px; border-radius: 999px; flex-shrink: 0;
+    background: rgba(138,147,166,0.16); color: var(--tp-text-muted);
+    font-size: 0.72rem; font-weight: 700;
+  }
+  .tp-invisible-ellipsis { text-align: center; color: var(--tp-text-muted); padding: 4px 0; letter-spacing: 0.2em; }
+  .tp-invisible-row--you { opacity: 0.6; border-style: dashed; }
+  .tp-invisible-scrolltrack { position: absolute; right: -18px; top: 0; bottom: 0; width: 3px; background: rgba(138,147,166,0.14); border-radius: 999px; }
+  .tp-invisible-scrollthumb { position: absolute; left: 0; right: 0; top: 0; height: 15%; background: var(--tp-border-strong); border-radius: 999px; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .tp-invisible-search-text {
+      display: inline-block; overflow: hidden; white-space: nowrap; width: 0;
+      border-right: 2px solid transparent;
+    }
+    .tp-invisible-demo.is-active .tp-invisible-search-text {
+      animation: tpTypeText 1.1s steps(16, end) 0.2s forwards, tpCaretBlink 0.8s step-end 0.2s 3;
+    }
+    .tp-invisible-row { opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .tp-invisible-demo.is-active .tp-invisible-row { opacity: 1; transform: translateY(0); }
+    .tp-invisible-demo.is-active .tp-invisible-row--you { opacity: 0.6; }
+    .tp-invisible-scrollthumb { top: -15%; }
+    .tp-invisible-demo.is-active .tp-invisible-scrollthumb {
+      animation: tpScrollPast 2.2s linear 1.6s forwards;
+    }
+  }
+  @keyframes tpTypeText { from { width: 0; } to { width: 16.5ch; } }
+  @keyframes tpCaretBlink { 50% { border-color: var(--tp-text-muted); } }
+  @keyframes tpScrollPast { from { top: -15%; } to { top: 100%; } }
 
   /* ── Signature rank counter (the one place a gradient + glow are allowed) ── */
   .tp-rank-counter { display: inline-flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 30px; }
@@ -208,6 +297,10 @@ const CSS = `
   .tp-mission-stat { border-radius: 16px; background: var(--tp-bg-card); border: 1px solid var(--tp-border); padding: 28px 22px; }
   .tp-mission-stat-num { font-family: var(--tp-serif); font-size: 2.6rem; font-weight: 600; color: var(--tp-gold); line-height: 1; }
   .tp-mission-stat-label { margin-top: 12px; color: var(--tp-text-muted); font-size: 0.92rem; line-height: 1.5; }
+  /* Asymmetric emphasis on the lead stat — bigger, and (via CountUpStat's own
+     longer duration prop) a slower, more noticeable count than the rest. */
+  .tp-mission-stat--featured { grid-column: span 2; }
+  .tp-mission-stat--featured .tp-mission-stat-num { font-size: 3.6rem; }
 
   /* ── Case studies ── */
   .tp-cases { display: grid; gap: 24px; margin-top: 48px; }
@@ -261,10 +354,18 @@ const CSS = `
   .tp-video-card { border-radius: 16px; border: 1px solid var(--tp-border); background: var(--tp-bg-card); box-shadow: var(--tp-shadow); padding: 8px; }
   .tp-video-frame { position: relative; width: 100%; padding-bottom: 177.78%; border-radius: 10px; overflow: hidden; background: #000; }
   .tp-video-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
-  .tp-video-ranks { display: flex; gap: 8px; margin-top: 10px; padding: 0 4px 4px; }
-  .tp-video-rank-pill { flex: 1; border-radius: 8px; padding: 8px 10px; text-align: center; font-size: 0.7rem; font-weight: 700; }
-  .tp-video-rank-pill--before { background: rgba(138,147,166,0.14); color: var(--tp-text-muted); }
-  .tp-video-rank-pill--after { background: rgba(201,162,74,0.14); color: var(--tp-gold); }
+  .tp-video-ranks { margin-top: 10px; padding: 0 4px 4px; }
+  /* Crossfades between Before/After on hover (desktop) or tap (mobile) rather
+     than showing both at once — a small "transformation" moment tied to the
+     viewer's own interaction. */
+  .tp-rank-crossfade { position: relative; display: block; width: 100%; height: 38px; border: 0; border-radius: 8px; background: rgba(244,241,234,0.04); cursor: pointer; overflow: hidden; padding: 0; }
+  .tp-rank-crossfade-face {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 0.72rem; font-weight: 700; color: var(--tp-text-muted); opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+  .tp-rank-crossfade-face.is-visible { opacity: 1; }
+  .tp-rank-crossfade-face--after { color: var(--tp-gold); }
 
   /* ── Plans ── */
   .tp-plans { display: grid; gap: 22px; margin-top: 48px; }
@@ -647,12 +748,9 @@ const TrialHero = () => {
         </div>
 
         <div className="tp-hero-video-wrap">
-          {/* TODO: replace with product demo video when ready — structure/player must match manvimedia's autoplay + sound-toggle behavior */}
+          {/* TODO: replace with real product demo video loop when ready — structure/player must match manvimedia's autoplay + sound-toggle behavior */}
           <div className="tp-hero-video-inner">
-            <img src={llamaLogo} alt="LlamaMaps product preview" style={{ width: "32%", opacity: 0.4 }} />
-            <div className="tp-hero-sound-toggle">
-              <span>🔊 Sound on</span>
-            </div>
+            <HeroRankClimb />
           </div>
         </div>
       </div>
@@ -683,9 +781,15 @@ const TrialRatingAndReviews = () => (
       <div style={{ marginTop: 44 }}>
         <Carousel opts={{ align: "start" }}>
           <CarouselContent>
-            {testimonials.map((t) => (
+            {testimonials.map((t, i) => (
               <CarouselItem key={t.name} className="md:basis-1/2 lg:basis-1/3">
-                <div className="tp-testimonial-card">
+                <motion.div
+                  className="tp-testimonial-card"
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.4 }}
+                  transition={{ duration: 0.45, delay: i * 0.1 }}
+                >
                   <div className="tp-testimonial-head">
                     <img className="tp-testimonial-avatar" src={t.avatar} alt={t.name} />
                     <div>
@@ -694,7 +798,7 @@ const TrialRatingAndReviews = () => (
                     </div>
                   </div>
                   <p className="tp-testimonial-text">&ldquo;{t.text}&rdquo;</p>
-                </div>
+                </motion.div>
               </CarouselItem>
             ))}
           </CarouselContent>
@@ -711,8 +815,17 @@ const TrialLogosStrip = () => (
     <div className="tp-container">
       {/* TODO: replace with international/UK+Dubai client logos when available */}
       <div className="tp-logos-row">
-        {brandLogos.map((b) => (
-          <img key={b.alt} src={b.src} alt={b.alt} loading="lazy" />
+        {brandLogos.map((b, i) => (
+          <motion.img
+            key={b.alt}
+            src={b.src}
+            alt={b.alt}
+            loading="lazy"
+            initial={{ opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.4 }}
+            transition={{ duration: 0.4, delay: i * 0.09 }}
+          />
         ))}
       </div>
     </div>
@@ -734,9 +847,11 @@ const TrialMission = () => {
           without waiting years for organic SEO to catch up.
         </p>
         <div className="tp-mission-stats">
-          {missionStats.map((s) => (
-            <div key={s.label} className="tp-mission-stat">
-              <div className="tp-mission-stat-num">{s.value}</div>
+          {missionStats.map((s, i) => (
+            <div key={s.label} className={`tp-mission-stat${i === 0 ? " tp-mission-stat--featured" : ""}`}>
+              <div className="tp-mission-stat-num">
+                <CountUpStat value={s.value} duration={i === 0 ? 1800 : 1200} />
+              </div>
               <div className="tp-mission-stat-label">{s.label}</div>
             </div>
           ))}
@@ -945,8 +1060,7 @@ const TrialVideoTestimonials = () => (
               />
             </div>
             <div className="tp-video-ranks">
-              <div className="tp-video-rank-pill tp-video-rank-pill--before">Before: {v.before}</div>
-              <div className="tp-video-rank-pill tp-video-rank-pill--after">After: {v.after}</div>
+              <RankCrossfadeBadge before={v.before} after={v.after} />
             </div>
           </div>
         ))}
@@ -1143,8 +1257,8 @@ const TrialFinalCta = () => {
           single euro.
         </p>
         <div className="tp-cta-row">
-          <button type="button" className="tp-btn" onClick={openTrialModal}>
-            Get Free Trial <ArrowRight className="ml-1 h-4 w-4" />
+          <button type="button" className="tp-btn tp-btn--final" onClick={openTrialModal}>
+            Get Free Trial <span className="tp-btn-icon"><ArrowRight className="ml-1 h-4 w-4" /></span>
           </button>
           <button type="button" className="tp-btn tp-btn--outline" onClick={openTrialModal}>
             Schedule Time for Meeting
@@ -1156,28 +1270,31 @@ const TrialFinalCta = () => {
 };
 
 const TrialPageContent = () => (
-  <div className="tp-page">
-    <style dangerouslySetInnerHTML={{ __html: CSS }} />
-    <TrialNavbar />
-    <main className="tp-main">
-      <TrialPartnerStrip />
-      <TrialHero />
-      <TrialRatingAndReviews />
-      <TrialLogosStrip />
-      <TrialMission />
-      <TrialCaseStudies />
-      <TrialMoreLeads />
-      <TrialComparison />
-      <TrialVideoTestimonials />
-      <TrialSteps />
-      <TrialPlans />
-      <TrialFaq />
-      <TrialFinalCta />
-      <TrialLogosStrip />
-    </main>
-    <TrialFooter />
-    <TrialFloatingCta />
-  </div>
+  <MotionConfig reducedMotion="user">
+    <div className="tp-page">
+      <style dangerouslySetInnerHTML={{ __html: CSS }} />
+      <TrialNavbar />
+      <main className="tp-main">
+        <TrialPartnerStrip />
+        <TrialHero />
+        <TrialInvisibilitySection />
+        <TrialRatingAndReviews />
+        <TrialLogosStrip />
+        <TrialMission />
+        <TrialCaseStudies />
+        <TrialMoreLeads />
+        <TrialComparison />
+        <TrialVideoTestimonials />
+        <TrialSteps />
+        <TrialPlans />
+        <TrialFaq />
+        <TrialFinalCta />
+        <TrialLogosStrip />
+      </main>
+      <TrialFooter />
+      <TrialFloatingCta />
+    </div>
+  </MotionConfig>
 );
 
 const TrialPage = () => {
