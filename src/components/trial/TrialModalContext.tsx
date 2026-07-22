@@ -1,4 +1,4 @@
-import { createContext, useContext, useCallback, useMemo } from "react";
+import { createContext, useContext, useCallback, useEffect, useMemo } from "react";
 import { trackMetaEvent } from "@/lib/metaPixel";
 import { openCalendlyPopup } from "@/lib/calendlyPopup";
 
@@ -14,6 +14,10 @@ export function useTrialModal() {
   return ctx;
 }
 
+function isCalendlyEvent(e: MessageEvent) {
+  return e.origin === "https://calendly.com" && typeof e.data === "object" && e.data?.event?.indexOf("calendly.") === 0;
+}
+
 export function TrialModalProvider({ children }: { children: React.ReactNode }) {
   // Uses Calendly's own native popup widget (same one the rest of the site relies
   // on) rather than an inline embed inside our own dialog — Calendly's inline embed
@@ -25,6 +29,16 @@ export function TrialModalProvider({ children }: { children: React.ReactNode }) 
     openCalendlyPopup();
   }, []);
   const value = useMemo(() => ({ openTrialModal }), [openTrialModal]);
+
+  useEffect(() => {
+    const handleMessage = (e: MessageEvent) => {
+      if (isCalendlyEvent(e) && e.data.event === "calendly.event_scheduled") {
+        trackMetaEvent("Schedule", { content_name: "Free Trial Call Booked" });
+      }
+    };
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
 
   return <TrialModalContext.Provider value={value}>{children}</TrialModalContext.Provider>;
 }

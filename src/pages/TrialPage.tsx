@@ -7,7 +7,6 @@ import { organizationSchema, faqSchema } from "@/lib/structuredData";
 import TrialNavbar from "@/components/trial/TrialNavbar";
 import TrialFooter from "@/components/trial/TrialFooter";
 import { TrialModalProvider, useTrialModal } from "@/components/trial/TrialModalContext";
-import TrialLeadWidget from "@/components/trial/TrialLeadWidget";
 import TrialFloatingCta from "@/components/trial/TrialFloatingCta";
 import BeforeAfterSlider from "@/components/trial/BeforeAfterSlider";
 import RankCounter from "@/components/trial/RankCounter";
@@ -100,7 +99,7 @@ const CSS = `
      would then stick relative to that box instead of the viewport. */
   .tp-navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(11,20,32,0.94); backdrop-filter: blur(10px); border-bottom: 1px solid var(--tp-border); }
   .tp-navbar-inner { max-width: 1240px; margin: 0 auto; padding: 0 20px; height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
-  .tp-navbar-logo img { height: 34px; width: auto; display: block; filter: brightness(0) invert(1); opacity: 0.92; }
+  .tp-navbar-logo img { height: 34px; width: auto; display: block; }
   .tp-navbar-links { display: none; align-items: center; gap: 24px; margin-left: auto; }
   .tp-navbar-link { color: var(--tp-text); font-size: 0.88rem; font-weight: 500; text-decoration: none; white-space: nowrap; }
   .tp-navbar-link:hover { color: var(--tp-gold); }
@@ -119,8 +118,16 @@ const CSS = `
 
   /* ── Hero ── */
   .tp-hero { position: relative; padding: 64px 0 72px; overflow: hidden; isolation: isolate; background: var(--tp-bg); }
-  .tp-hero-partner-badge { position: absolute; top: 20px; right: 20px; z-index: 3; background: var(--tp-bg-card); border: 1px solid var(--tp-border); border-radius: 12px; padding: 6px 10px; }
-  .tp-hero-partner-badge img { height: 32px; width: auto; display: block; }
+  /* A small white tab hanging just below the navbar — white background because
+     the Google Partner badge asset renders its "Google Partner" wordmark in dark
+     grey, which needs a light backdrop to stay legible. */
+  .tp-partner-wrap { display: flex; justify-content: center; }
+  .tp-partner-strip {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: #fff; border-radius: 0 0 14px 14px;
+    padding: 6px 18px 8px; box-shadow: 0 8px 20px rgba(0,0,0,0.28);
+  }
+  .tp-partner-strip img { height: 42px; width: auto; display: block; }
   .tp-hero-inner { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; text-align: center; }
   .tp-hero-badge {
     display: inline-flex; align-items: center; gap: 8px;
@@ -178,13 +185,6 @@ const CSS = `
     .tp-section { padding: 120px 0; }
   }
 
-  /* ── Inline widget section ── */
-  .tp-widget-section { padding: 48px 0 64px; }
-  /* wide enough for Calendly's two-column layout (details left, date picker right) —
-     it collapses to a narrow stacked view below ~900px */
-  .tp-widget { max-width: 1000px; margin: 0 auto; border: 1px solid var(--tp-border); border-radius: 20px; background: var(--tp-bg-card); box-shadow: var(--tp-shadow); padding: 16px; }
-  .tp-widget-calendar { min-height: 200px; }
-
   /* ── Rating ── */
   .tp-rating { display: flex; align-items: center; justify-content: center; gap: 14px; }
   .tp-rating-stars { display: flex; gap: 3px; color: var(--tp-gold); }
@@ -226,10 +226,13 @@ const CSS = `
   .tp-baf-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; padding: 5px 10px; border-radius: 999px; }
   .tp-baf-label--before { background: rgba(138,147,166,0.14); color: var(--tp-text-muted); }
   .tp-baf-label--after { background: rgba(201,162,74,0.14); color: var(--tp-gold); }
-  .tp-baf-frame { position: relative; overflow: hidden; border-radius: 14px; border: 1px solid var(--tp-border); background: #0d1520; max-width: 460px; margin: 0 auto; touch-action: none; cursor: ew-resize; }
-  .tp-baf-img { display: block; width: 100%; height: auto; }
+  /* Fixed aspect-ratio box, with BOTH before/after images object-fit: cover'd into
+     it the same way — using one image's natural size to define the box (and only
+     force-fitting the other) made mismatched-resolution before/after screenshot
+     pairs visibly jump in scale right at the seam. */
+  .tp-baf-frame { position: relative; overflow: hidden; border-radius: 14px; border: 1px solid var(--tp-border); background: #0d1520; max-width: 460px; margin: 0 auto; aspect-ratio: 1 / 1; touch-action: none; cursor: ew-resize; }
+  .tp-baf-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
   .tp-baf-clip { position: absolute; inset: 0; overflow: hidden; }
-  .tp-baf-img--absolute { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
   .tp-baf-line { position: absolute; top: 0; bottom: 0; width: 2px; background: rgba(244,241,234,0.85); transform: translateX(-50%); pointer-events: none; z-index: 2; }
   .tp-baf-handle { position: absolute; top: 50%; transform: translate(-50%, -50%); z-index: 3; display: flex; align-items: center; gap: 4px; background: var(--tp-text); color: var(--tp-bg); border-radius: 999px; padding: 8px 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.35); pointer-events: none; }
   .tp-baf-handle-arrow { font-size: 0.85rem; font-weight: 700; line-height: 1; }
@@ -304,7 +307,7 @@ const CSS = `
   /* ── Footer ── */
   .tp-footer { border-top: 1px solid var(--tp-border); padding: 56px 0 32px; }
   .tp-footer-inner { max-width: 1240px; margin: 0 auto; padding: 0 20px; display: flex; flex-direction: column; align-items: center; gap: 24px; text-align: center; }
-  .tp-footer-logo img { height: 30px; width: auto; filter: brightness(0) invert(1); opacity: 0.85; }
+  .tp-footer-logo img { height: 30px; width: auto; }
   .tp-footer-tagline { color: var(--tp-text); font-size: 1.2rem; font-weight: 600; letter-spacing: -0.01em; max-width: 520px; line-height: 1.4; }
   .tp-footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
   .tp-footer-links a { color: var(--tp-text-muted); font-size: 0.88rem; font-weight: 500; text-decoration: none; }
@@ -598,13 +601,18 @@ const faqs = [
   },
 ];
 
+const TrialPartnerStrip = () => (
+  <div className="tp-partner-wrap">
+    <div className="tp-partner-strip">
+      <img src={googlePartnerLogo} alt="Google Partner" />
+    </div>
+  </div>
+);
+
 const TrialHero = () => {
   const { openTrialModal } = useTrialModal();
   return (
     <section id="tp-home" className="tp-hero tp-topo">
-      <div className="tp-hero-partner-badge">
-        <img src={googlePartnerLogo} alt="Google Partner" />
-      </div>
       <div className="tp-container tp-hero-inner">
         <span className="tp-hero-badge">🏆 Top 3 Google Maps in 90 days</span>
         <span className="tp-hero-eyebrow">Clinic &amp; Local Business Owners:</span>
@@ -651,14 +659,6 @@ const TrialHero = () => {
     </section>
   );
 };
-
-const TrialInlineWidgetSection = () => (
-  <section className="tp-widget-section">
-    <div className="tp-container">
-      <TrialLeadWidget />
-    </div>
-  </section>
-);
 
 const TrialRatingAndReviews = () => (
   <section id="reviews" className="tp-section tp-section--sm">
@@ -806,7 +806,7 @@ const TrialCaseStudies = () => {
                 </div>
               </div>
               <div className="tp-case-metrics">
-                <div className="tp-case-metric"><span className="tp-case-metric-label">Position achieved</span><span className="tp-case-metric-val">Top 3</span></div>
+                <div className="tp-case-metric"><span className="tp-case-metric-label">Position achieved</span><span className="tp-case-metric-val">Top 2</span></div>
                 <div className="tp-case-metric"><span className="tp-case-metric-label">Enquiries increased</span><span className="tp-case-metric-val">3.1x</span></div>
                 <div className="tp-case-metric"><span className="tp-case-metric-label">Organic Maps traffic</span><span className="tp-case-metric-val">+312%</span></div>
                 <div className="tp-case-metric"><span className="tp-case-metric-label">Rankings improved (local radius)</span><span className="tp-case-metric-val">8 weeks</span></div>
@@ -816,7 +816,7 @@ const TrialCaseStudies = () => {
               before={wheelshopBefore}
               after={wheelshopAfter}
               beforeLabel="Before · Not found"
-              afterLabel="After · Top 3"
+              afterLabel="After · Top 2"
             />
           </article>
 
@@ -1160,8 +1160,8 @@ const TrialPageContent = () => (
     <style dangerouslySetInnerHTML={{ __html: CSS }} />
     <TrialNavbar />
     <main className="tp-main">
+      <TrialPartnerStrip />
       <TrialHero />
-      <TrialInlineWidgetSection />
       <TrialRatingAndReviews />
       <TrialLogosStrip />
       <TrialMission />

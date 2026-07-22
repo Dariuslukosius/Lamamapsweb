@@ -55,7 +55,7 @@ const BeforeAfterSlider = ({ before, after, beforeLabel, afterLabel }: BeforeAft
           className="tp-baf-clip"
           style={{ clipPath: `inset(0 ${100 - pos}% 0 0)`, transition: transitionStyle }}
         >
-          <img src={before} alt="Before" className="tp-baf-img tp-baf-img--absolute" draggable={false} />
+          <img src={before} alt="Before" className="tp-baf-img" draggable={false} />
         </div>
         <div className="tp-baf-line" style={{ left: `${pos}%`, transition: transitionStyle }} />
         <div className="tp-baf-handle" style={{ left: `${pos}%`, transition: transitionStyle }}>
