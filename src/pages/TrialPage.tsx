@@ -127,7 +127,7 @@ const CSS = `
   }
 
   /* ── Hero ── */
-  .tp-hero { position: relative; padding: 64px 0 72px; overflow: hidden; isolation: isolate; background: var(--tp-bg); }
+  .tp-hero { position: relative; padding: 64px 0 56px; overflow: hidden; isolation: isolate; background: var(--tp-bg); }
   /* A small white tab hanging just below the navbar — white background because
      the Google Partner badge asset renders its "Google Partner" wordmark in dark
      grey, which needs a light backdrop to stay legible. */
@@ -267,8 +267,11 @@ const CSS = `
   }
 
   /* ── Sections ── */
-  .tp-section { padding: 96px 0; }
-  .tp-section--sm { padding: 56px 0; }
+  /* 56px/side = ~112px combined between two adjacent full sections — generous
+     enough to read as deliberate breathing room without the ~240px combined
+     gap the previous 96/120px-per-side values produced once actually rendered. */
+  .tp-section { padding: 56px 0; }
+  .tp-section--sm { padding: 40px 0; }
   .tp-eyebrow { display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--tp-gold); margin-bottom: 16px; }
   .tp-h2 { color: var(--tp-text); font-family: var(--tp-serif); font-size: clamp(1.9rem, 4.6vw, 2.8rem); font-weight: 400; letter-spacing: -0.01em; line-height: 1.16; }
   .tp-h2 em { font-style: normal; font-weight: 600; color: var(--tp-gold); }
@@ -277,7 +280,13 @@ const CSS = `
   .tp-cta-row { display: flex; justify-content: center; margin-top: 32px; gap: 14px; flex-wrap: wrap; }
 
   @media (min-width: 900px) {
-    .tp-section { padding: 120px 0; }
+    .tp-section { padding: 72px 0; }
+    /* Pinned separately here too — without this, this same-specificity rule
+       above (later in source, same 900px breakpoint) silently wins over the
+       standalone .tp-section--sm rule and re-inflates "small" sections back
+       to full size on desktop, stacking with the adjacent section's own
+       padding into a much bigger gap than intended. */
+    .tp-section--sm { padding: 40px 0; }
   }
 
   /* ── Rating ── */

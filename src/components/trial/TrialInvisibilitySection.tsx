@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import { useInView } from "framer-motion";
+import { useTrialModal } from "./TrialModalContext";
 
 const competitors = ["Competitor Dental Studio", "Bright Smile Clinic", "City Dental Group"];
 
@@ -10,6 +11,7 @@ const competitors = ["Competitor Dental Studio", "Bright Smile Clinic", "City De
 const TrialInvisibilitySection = () => {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.5 });
+  const { openTrialModal } = useTrialModal();
 
   return (
     <section className="tp-section tp-section--sm">
@@ -48,6 +50,18 @@ const TrialInvisibilitySection = () => {
           <div className="tp-invisible-scrolltrack">
             <div className="tp-invisible-scrollthumb" />
           </div>
+        </div>
+
+        <p className="tp-lead tp-center" style={{ marginTop: 44 }}>
+          Stop losing customers to competitors. See where you rank — free.
+        </p>
+        <div className="tp-cta-row">
+          <button type="button" className="tp-btn" onClick={openTrialModal}>
+            Get Your Free Trial
+          </button>
+          <button type="button" className="tp-btn tp-btn--outline" onClick={openTrialModal}>
+            Schedule Time With Us
+          </button>
         </div>
       </div>
     </section>
