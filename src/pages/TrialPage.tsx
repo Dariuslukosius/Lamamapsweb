@@ -161,11 +161,14 @@ const CSS = `
      from a low position to the top of the results, holds, then loops. Base
      state already shows it arrived at the top; the climb is added motion. ── */
   .tp-rankclimb { padding: 22px 20px 24px; }
-  .tp-rankclimb-searchbar {
-    display: flex; align-items: center; gap: 10px;
-    background: rgba(244,241,234,0.05); border: 1px solid var(--tp-border);
-    border-radius: 10px; padding: 10px 14px; margin-bottom: 16px;
-    color: var(--tp-text-muted); font-size: 0.84rem;
+  /* A map-panel label instead of a search bar — Hero reads as "your live map
+     position", the Invisibility section below owns the literal search-bar
+     visual, so the two placeholders don't look like duplicates of each other. */
+  .tp-rankclimb-label {
+    display: flex; align-items: center; gap: 8px;
+    color: var(--tp-gold); font-size: 0.76rem; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 16px;
   }
   .tp-rankclimb-list { position: relative; min-height: 252px; }
   .tp-rankclimb-row, .tp-rankclimb-you {
@@ -173,7 +176,7 @@ const CSS = `
     height: 44px; border-radius: 10px; padding: 0 14px; margin-bottom: 8px;
     font-size: 0.82rem;
   }
-  .tp-rankclimb-row { background: rgba(244,241,234,0.04); color: var(--tp-text-muted); }
+  .tp-rankclimb-row { background: var(--tp-bg-card); color: var(--tp-text-muted); }
   .tp-rankclimb-row-rank {
     display: inline-flex; align-items: center; justify-content: center;
     width: 22px; height: 22px; border-radius: 999px; flex-shrink: 0;
@@ -181,9 +184,12 @@ const CSS = `
     font-size: 0.72rem; font-weight: 700;
   }
   .tp-rankclimb-row-rank--you { background: var(--tp-gold); color: var(--tp-bg); }
+  /* Solid, fully opaque background — this row is absolutely positioned directly
+     on top of the static rows below while it "climbs", and a semi-transparent
+     fill let their text show through and garble together mid-transition. */
   .tp-rankclimb-you {
     position: absolute; left: 0; right: 0; top: 0;
-    background: rgba(201,162,74,0.14); border: 1px solid rgba(201,162,74,0.5);
+    background: #1c1710; border: 1px solid rgba(201,162,74,0.5);
     color: var(--tp-gold); font-weight: 700; z-index: 2;
   }
   @media (prefers-reduced-motion: no-preference) {
@@ -284,23 +290,31 @@ const CSS = `
   .tp-testimonial-card { border: 1px solid var(--tp-border); border-radius: 16px; background: var(--tp-bg-card); box-shadow: var(--tp-shadow); padding: 28px 24px; height: 100%; }
   .tp-testimonial-head { display: flex; align-items: center; gap: 12px; }
   .tp-testimonial-avatar { width: 52px; height: 52px; border-radius: 999px; object-fit: cover; flex-shrink: 0; }
-  .tp-testimonial-name { font-weight: 700; color: var(--tp-text); font-size: 0.98rem; }
-  .tp-testimonial-company { color: var(--tp-gold); font-size: 0.82rem; font-weight: 600; }
-  .tp-testimonial-text { margin-top: 16px; color: var(--tp-text-muted); font-size: 0.95rem; line-height: 1.75; }
+  .tp-testimonial-name { font-weight: 600; color: var(--tp-text-muted); font-size: 0.88rem; }
+  .tp-testimonial-company { color: var(--tp-gold); font-size: 0.78rem; font-weight: 600; }
+  /* The quote is the point of a testimonial — give it more visual weight than
+     the attribution underneath it, not the other way around. */
+  .tp-testimonial-text { margin-top: 16px; color: var(--tp-text); font-size: 1.05rem; font-weight: 500; line-height: 1.7; }
 
   /* ── Logos strip ── */
   .tp-logos-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 32px 48px; }
   .tp-logos-row img { height: 42px; width: auto; object-fit: contain; filter: grayscale(1) brightness(0) invert(1); opacity: 0.8; }
 
   /* ── Mission ── */
-  .tp-mission-stats { display: grid; gap: 16px; grid-template-columns: repeat(2, minmax(0,1fr)); margin-top: 40px; }
-  .tp-mission-stat { border-radius: 16px; background: var(--tp-bg-card); border: 1px solid var(--tp-border); padding: 28px 22px; }
-  .tp-mission-stat-num { font-family: var(--tp-serif); font-size: 2.6rem; font-weight: 600; color: var(--tp-gold); line-height: 1; }
-  .tp-mission-stat-label { margin-top: 12px; color: var(--tp-text-muted); font-size: 0.92rem; line-height: 1.5; }
-  /* Asymmetric emphasis on the lead stat — bigger, and (via CountUpStat's own
-     longer duration prop) a slower, more noticeable count than the rest. */
-  .tp-mission-stat--featured { grid-column: span 2; }
+  /* Asymmetric on purpose: the lead stat gets full card treatment (border,
+     background, double width) and a bigger, slower count; the other three
+     sit as plain, unboxed numbers so they read as supporting context rather
+     than four identical tiles. */
+  .tp-mission-stats { display: grid; gap: 16px 24px; grid-template-columns: repeat(2, minmax(0,1fr)); margin-top: 40px; }
+  .tp-mission-stat { padding: 6px 4px; }
+  .tp-mission-stat-num { font-family: var(--tp-serif); font-size: 2rem; font-weight: 600; color: var(--tp-gold); line-height: 1; }
+  .tp-mission-stat-label { margin-top: 10px; color: var(--tp-text-muted); font-size: 0.88rem; line-height: 1.5; }
+  .tp-mission-stat--featured {
+    grid-column: span 2; border-radius: 16px; background: var(--tp-bg-card);
+    border: 1px solid var(--tp-border); padding: 28px 22px;
+  }
   .tp-mission-stat--featured .tp-mission-stat-num { font-size: 3.6rem; }
+  .tp-mission-stat--featured .tp-mission-stat-label { font-size: 0.92rem; }
 
   /* ── Case studies ── */
   .tp-cases { display: grid; gap: 24px; margin-top: 48px; }
@@ -338,6 +352,11 @@ const CSS = `
   .tp-leadcard-sub { color: var(--tp-gold); font-size: 0.82rem; font-weight: 600; margin-top: 4px; }
   .tp-leadcard p.tp-leadcard-desc { margin-top: 12px; color: var(--tp-text-muted); font-size: 0.94rem; line-height: 1.7; }
   .tp-leadcard .tp-btn { margin-top: 18px; }
+  /* Lead card in the set gets more visual weight — bigger padding, border, and
+     type — so the four cards don't read as four identical repeats. */
+  .tp-leadcard--featured { padding: 32px; border-color: rgba(201,162,74,0.4); }
+  .tp-leadcard--featured h3 { font-size: 1.4rem; }
+  .tp-leadcard--featured p.tp-leadcard-desc { font-size: 1rem; }
 
   /* ── Comparison ── */
   .tp-compare-grid { display: grid; gap: 20px; margin-top: 44px; }
@@ -403,6 +422,7 @@ const CSS = `
     .tp-leadcard { grid-template-columns: 220px minmax(0,1fr); }
     .tp-leadcard:nth-child(even) { direction: rtl; }
     .tp-leadcard:nth-child(even) > * { direction: ltr; }
+    .tp-leadcard--featured { grid-template-columns: 280px minmax(0,1fr); }
   }
 
   /* ── Footer ── */
@@ -980,8 +1000,8 @@ const TrialMoreLeads = () => {
           <h2 className="tp-h2">More leads. Higher click-through. Lower ad costs.</h2>
         </div>
         <div className="tp-leadcards">
-          {leadCards.map((card) => (
-            <article key={card.title} className="tp-leadcard">
+          {leadCards.map((card, i) => (
+            <article key={card.title} className={`tp-leadcard${i === 0 ? " tp-leadcard--featured" : ""}`}>
               <img src={card.image} alt={card.title} />
               <div>
                 <h3>{card.title}</h3>

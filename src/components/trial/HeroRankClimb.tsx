@@ -4,9 +4,9 @@ const competitors = ["Competitor Dental Studio", "Bright Smile Clinic", "City De
 
 const HeroRankClimb = () => (
   <div className="tp-rankclimb">
-    <div className="tp-rankclimb-searchbar">
-      <span>🔍</span>
-      <span>dentist near me</span>
+    <div className="tp-rankclimb-label">
+      <span>📍</span>
+      <span>Your Google Maps position</span>
     </div>
     <div className="tp-rankclimb-list">
       {competitors.map((name, i) => (
