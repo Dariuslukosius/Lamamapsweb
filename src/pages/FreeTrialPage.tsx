@@ -548,7 +548,8 @@ const CSS = `
       color: #fff; font-size: 0.9rem; font-weight: 800;
       letter-spacing: 0.03em; text-transform: uppercase; text-align: center; padding: 0 16px;
     }
-    body.lm-active .calendly-badge-widget { bottom: 84px !important; }
+    body.lm-active .calendly-badge-widget,
+    body.lm-active .lm-floating-schedule-btn { bottom: 84px !important; }
   }
 `;
 

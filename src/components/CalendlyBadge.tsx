@@ -20,6 +20,7 @@ const CalendlyBadge = () => {
   return (
     <button
       type="button"
+      className="lm-floating-schedule-btn"
       onClick={openCalendlyPopup}
       style={{
         position: "fixed",
