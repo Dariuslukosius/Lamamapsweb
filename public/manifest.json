@@ -1,21 +1,53 @@
 {
+  "id": "/",
   "name": "Llamamaps - Local SEO Services",
   "short_name": "Llamamaps",
   "description": "Llamamaps - Expert Local SEO Services. Get your business to the top of Google Maps in 90 days.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait-primary",
+  "lang": "en-US",
+  "dir": "ltr",
+  "categories": ["business", "marketing", "productivity"],
   "background_color": "#ffffff",
   "theme_color": "#3467e8",
   "icons": [
     {
-      "src": "/favicon.png",
+      "src": "/icon-192.png",
       "type": "image/png",
-      "sizes": "861x840"
+      "sizes": "192x192",
+      "purpose": "any"
     },
     {
-      "src": "/llama-logo.png",
+      "src": "/icon-512.png",
       "type": "image/png",
-      "sizes": "861x840"
+      "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "type": "image/png",
+      "sizes": "180x180",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Services & Pricing",
+      "url": "/services",
+      "description": "Local SEO plans, pricing and feature comparison."
+    },
+    {
+      "name": "Contact",
+      "url": "/contacts",
+      "description": "Book a consultation or request a free SEO audit."
     }
   ]
 }

@@ -11,11 +11,33 @@ interface OrganizationOptions {
 }
 
 export const organizationSchema = ({ aggregateRating, employees }: OrganizationOptions = {}) => ({
-  "@type": "Organization",
+  // ProfessionalService is a subtype of Organization + LocalBusiness. It lets
+  // Google and answer engines classify Llamamaps as a service provider rather
+  // than a generic company, which is what local/agency queries match against.
+  "@type": ["Organization", "ProfessionalService"],
   "@id": `${SITE_URL}/#organization`,
   name: "Llamamaps",
+  alternateName: "LlamaMaps",
   url: `${SITE_URL}/`,
-  logo: `${SITE_URL}/llama-logo.png`,
+  logo: {
+    "@type": "ImageObject",
+    "@id": `${SITE_URL}/#logo`,
+    url: `${SITE_URL}/llama-logo.png`,
+    contentUrl: `${SITE_URL}/llama-logo.png`,
+    caption: "Llamamaps",
+  },
+  image: `${SITE_URL}/og-image.png`,
+  slogan: "TOP 3 on Google Maps in 90 days, or we work for free.",
+  knowsAbout: [
+    "Local SEO",
+    "Google Business Profile optimization",
+    "Google Maps ranking",
+    "On-page local SEO",
+    "Local link building",
+    "Local rank tracking",
+  ],
+  areaServed: { "@type": "Place", name: "Europe" },
+  priceRange: "££",
   description:
     "Llamamaps is a local SEO agency that helps businesses reach TOP 3 rankings on Google Maps through Google Business Profile optimization, local SEO, and ranking-signal generation.",
   sameAs: SOCIAL_PROFILES,
@@ -23,6 +45,7 @@ export const organizationSchema = ({ aggregateRating, employees }: OrganizationO
     "@type": "ContactPoint",
     contactType: "customer service",
     url: `${SITE_URL}/contacts`,
+    availableLanguage: ["English"],
   },
   ...(aggregateRating
     ? {
@@ -61,11 +84,73 @@ export const websiteSchema = () => ({
   "@id": `${SITE_URL}/#website`,
   url: `${SITE_URL}/`,
   name: "Llamamaps",
+  description:
+    "Local SEO agency helping local businesses reach TOP 3 rankings on Google Maps.",
   publisher: { "@id": `${SITE_URL}/#organization` },
   inLanguage: "en-US",
 });
 
-export const breadcrumbSchema = (items: { name: string; path: string }[]) => ({
+/**
+ * WebPage node describing the current URL. Emitted automatically by <SEO> so
+ * every page has a self-referencing entity tying its title, description and
+ * canonical URL back to the site and organization graph — this is what lets
+ * answer engines attribute a specific claim to a specific page.
+ */
+export const webPageSchema = ({
+  url,
+  name,
+  description,
+  image,
+}: {
+  url: string;
+  name: string;
+  description: string;
+  image: string;
+}) => ({
+  "@type": "WebPage",
+  "@id": `${url}#webpage`,
+  url,
+  name,
+  description,
+  primaryImageOfPage: { "@type": "ImageObject", url: image },
+  isPartOf: { "@id": `${SITE_URL}/#website` },
+  about: { "@id": `${SITE_URL}/#organization` },
+  publisher: { "@id": `${SITE_URL}/#organization` },
+  inLanguage: "en-US",
+});
+
+/**
+ * ContactPage node for /contacts. The page's visible copy is short because it
+ * is mostly an embedded booking widget and a form, so this carries the
+ * machine-readable substance answer engines need: how to reach Llamamaps.
+ */
+export const contactPageSchema = () => ({
+  "@type": "ContactPage",
+  "@id": `${SITE_URL}/contacts#contactpage`,
+  url: `${SITE_URL}/contacts`,
+  name: "Contact Llamamaps",
+  description:
+    "Contact Llamamaps to request a free Google Maps SEO audit or book a 30-minute consultation with a local search specialist.",
+  isPartOf: { "@id": `${SITE_URL}/#website` },
+  about: { "@id": `${SITE_URL}/#organization` },
+  mainEntity: {
+    "@id": `${SITE_URL}/#organization`,
+  },
+  potentialAction: {
+    "@type": "ReserveAction",
+    name: "Book a 30-minute consultation",
+    target: {
+      "@type": "EntryPoint",
+      urlTemplate: "https://calendly.com/llamamaps/30min",
+      actionPlatform: [
+        "http://schema.org/DesktopWebPlatform",
+        "http://schema.org/MobileWebPlatform",
+      ],
+    },
+  },
+});
+
+export const breadcrumbSchema =(items: { name: string; path: string }[]) => ({
   "@type": "BreadcrumbList",
   itemListElement: items.map((item, index) => ({
     "@type": "ListItem",
@@ -106,11 +191,16 @@ export const serviceSchema = () => ({
         name: "Community Plan",
         priceCurrency: "GBP",
         price: "500",
+        url: `${SITE_URL}/services`,
+        availability: "https://schema.org/InStock",
+        seller: { "@id": `${SITE_URL}/#organization` },
         priceSpecification: {
           "@type": "UnitPriceSpecification",
           price: "500",
           priceCurrency: "GBP",
           unitText: "MONTH",
+          billingDuration: 1,
+          billingIncrement: 1,
         },
         areaServed: "Within a 2.5-mile radius of the business",
         description:
@@ -121,11 +211,16 @@ export const serviceSchema = () => ({
         name: "City Plan",
         priceCurrency: "GBP",
         price: "1000",
+        url: `${SITE_URL}/services`,
+        availability: "https://schema.org/InStock",
+        seller: { "@id": `${SITE_URL}/#organization` },
         priceSpecification: {
           "@type": "UnitPriceSpecification",
           price: "1000",
           priceCurrency: "GBP",
           unitText: "MONTH",
+          billingDuration: 1,
+          billingIncrement: 1,
         },
         areaServed: "Within a 5-mile radius of the business",
         description:

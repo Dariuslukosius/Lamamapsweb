@@ -1,15 +1,28 @@
 {
   "schema_version": "1.0.0",
   "name": "Llamamaps",
+  "description": "Local SEO agency helping local businesses reach TOP 3 rankings on Google Maps through Google Business Profile optimization, on-page local SEO, link building, and ranking-signal generation.",
+  "url": "https://llamamaps.com",
   "endpoints": {
     "homepage": "https://llamamaps.com/",
     "about": "https://llamamaps.com/about",
     "services": "https://llamamaps.com/services",
     "contacts": "https://llamamaps.com/contacts",
+    "privacy": "https://llamamaps.com/privacy",
+    "booking": "https://calendly.com/llamamaps/30min",
     "sitemap": "https://llamamaps.com/sitemap.xml",
+    "robots": "https://llamamaps.com/robots.txt",
     "llms": "https://llamamaps.com/llms.txt",
     "llms_full": "https://llamamaps.com/llms-full.txt",
     "agent_card": "https://llamamaps.com/.well-known/agent-card.json",
-    "ai_policy": "https://llamamaps.com/ai.json"
-  }
+    "ai_policy": "https://llamamaps.com/ai.json",
+    "ai_policy_text": "https://llamamaps.com/ai.txt",
+    "tdm_policy": "https://llamamaps.com/.well-known/tdmrep.json",
+    "security": "https://llamamaps.com/.well-known/security.txt"
+  },
+  "contact": {
+    "form": "https://llamamaps.com/contacts",
+    "booking": "https://calendly.com/llamamaps/30min"
+  },
+  "last_updated": "2026-07-31"
 }

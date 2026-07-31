@@ -138,7 +138,7 @@ const TestimonialsSection = () => {
               className="min-w-[260px] max-w-[280px] md:min-w-[300px] md:max-w-[320px] flex-shrink-0 snap-start rounded-xl bg-card p-5 border border-border shadow-sm hover:shadow-md transition-shadow"
             >
               <div className="flex items-center gap-3 mb-3">
-                <img
+                <img loading="lazy" decoding="async"
                   src={t.avatar}
                   alt={t.name}
                   loading="lazy"

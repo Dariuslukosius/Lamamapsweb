@@ -8,7 +8,10 @@ import { preview } from "vite";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-const ROUTES = ["/", "/about", "/services", "/contacts", "/privacy"];
+// /trial and /free-trial are noindex ad landing pages, but they are still
+// prerendered: link-preview scrapers and ad quality reviewers do not run JS,
+// and the snapshot also removes the blank-screen flash on first paint.
+const ROUTES = ["/", "/about", "/services", "/contacts", "/privacy", "/trial", "/free-trial"];
 
 // Vercel's build container has no local Chromium install and is missing the
 // shared libraries a vanilla `playwright install chromium` binary needs to

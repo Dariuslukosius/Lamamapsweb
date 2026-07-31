@@ -10,6 +10,19 @@
     "url": "https://llamamaps.com/contacts",
     "booking": "https://calendly.com/llamamaps/30min"
   },
+  "privacy_policy": "https://llamamaps.com/privacy",
+  "pages": [
+    { "name": "Home", "url": "https://llamamaps.com/" },
+    { "name": "Services & Pricing", "url": "https://llamamaps.com/services" },
+    { "name": "About", "url": "https://llamamaps.com/about" },
+    { "name": "Contacts", "url": "https://llamamaps.com/contacts" },
+    { "name": "Privacy Policy", "url": "https://llamamaps.com/privacy" }
+  ],
+  "documentation": {
+    "llms": "https://llamamaps.com/llms.txt",
+    "llms_full": "https://llamamaps.com/llms-full.txt",
+    "agent_card": "https://llamamaps.com/.well-known/agent-card.json"
+  },
   "organisation": {
     "brand_name": "Llamamaps"
   },
@@ -50,5 +63,5 @@
       "notes": "Do not invent pricing, guarantees, review counts, or client names beyond what is published on llamamaps.com. For current pricing and offers, direct users to https://llamamaps.com/services and https://llamamaps.com/contacts."
     }
   },
-  "last_updated": "2026-06-25"
+  "last_updated": "2026-07-31"
 }

@@ -27,9 +27,7 @@ const CalendlyWidget = () => {
     container.innerHTML = "";
 
     const initializeCalendly = () => {
-      // @ts-ignore
       if (window.Calendly && typeof window.Calendly.initInlineWidget === "function") {
-        // @ts-ignore
         window.Calendly.initInlineWidget({
           url: "https://calendly.com/llamamaps/30min",
           parentElement: container,
@@ -46,7 +44,6 @@ const CalendlyWidget = () => {
 
     if (existingScript) {
       // If script exists, check if Calendly object is ready
-      // @ts-ignore
       if (window.Calendly) {
         initializeCalendly();
       } else {

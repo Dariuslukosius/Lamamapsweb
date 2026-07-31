@@ -219,7 +219,7 @@ const AboutPage = () => (
               className="overflow-hidden rounded-2xl bg-card border border-border p-6 hover:shadow-md transition-shadow group"
             >
               <div className="mb-5 aspect-[4/4.5] overflow-hidden rounded-xl">
-                <img src={t.image} alt={t.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                <img loading="lazy" decoding="async" src={t.image} alt={t.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
               </div>
               <h3 className="text-xl font-semibold text-foreground">{t.name}</h3>
               <p className="mt-1 text-sm font-medium text-accent">{t.role}</p>

@@ -40,7 +40,7 @@ const BrandsSection = () => (
             viewport={{ once: true }}
             transition={{ delay: i * 0.06 }}
           >
-            <img
+            <img loading="lazy" decoding="async"
               src={b.src}
               alt={b.alt}
               loading="lazy"

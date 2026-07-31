@@ -14,7 +14,7 @@ const WhiteHatSection = () => (
           className="relative"
         >
           <div className="rounded-2xl overflow-hidden shadow-xl aspect-[4/3] bg-secondary flex items-center justify-center">
-            <img
+            <img loading="lazy" decoding="async"
               src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80"
               alt="SEO analytics dashboard showing organic growth"
               className="w-full h-full object-cover"

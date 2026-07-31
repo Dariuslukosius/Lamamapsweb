@@ -820,7 +820,7 @@ const TrialRatingAndReviews = () => (
                   transition={{ duration: 0.45, delay: i * 0.1 }}
                 >
                   <div className="tp-testimonial-head">
-                    <img className="tp-testimonial-avatar" src={t.avatar} alt={t.name} />
+                    <img loading="lazy" decoding="async" className="tp-testimonial-avatar" src={t.avatar} alt={t.name} />
                     <div>
                       <div className="tp-testimonial-name">{t.name}</div>
                       <div className="tp-testimonial-company">{t.company}</div>
@@ -943,7 +943,7 @@ const TrialCaseStudies = () => {
           <article className="tp-case">
             <div>
               <div className="tp-case-head">
-                <img className="tp-case-logo" src={wheelshopLogo} alt="WheelShop" />
+                <img loading="lazy" decoding="async" className="tp-case-logo" src={wheelshopLogo} alt="WheelShop" />
                 <div>
                   <h3>WheelShop Auto Service</h3>
                   <p>Kaunas</p>
@@ -967,7 +967,7 @@ const TrialCaseStudies = () => {
           <article className="tp-case">
             <div>
               <div className="tp-case-head">
-                <img className="tp-case-logo" src={svajoniuLogo} alt="Svajonių SPA" />
+                <img loading="lazy" decoding="async" className="tp-case-logo" src={svajoniuLogo} alt="Svajonių SPA" />
                 <div>
                   <h3>Svajonių SPA</h3>
                   <p>Local SEO success story</p>
@@ -1011,7 +1011,7 @@ const TrialMoreLeads = () => {
         <div className="tp-leadcards">
           {leadCards.map((card, i) => (
             <article key={card.title} className={`tp-leadcard${i === 0 ? " tp-leadcard--featured" : ""}`}>
-              <img src={card.image} alt={card.title} />
+              <img loading="lazy" decoding="async" src={card.image} alt={card.title} />
               <div>
                 <h3>{card.title}</h3>
                 <div className="tp-leadcard-sub">{card.subtitle}</div>
@@ -1220,7 +1220,7 @@ const TrialPlans = () => {
               {plan.popular && <span className="tp-plan-popular-tag">Most Popular</span>}
               <span className="tp-plan-badge">{plan.badge}</span>
               <div className="tp-plan-visual">
-                <img src={plan.image} alt={`${plan.name} plan coverage`} />
+                <img loading="lazy" decoding="async" src={plan.image} alt={`${plan.name} plan coverage`} />
               </div>
               <h3>{plan.name}</h3>
               <p className="tp-plan-desc">{plan.description}</p>

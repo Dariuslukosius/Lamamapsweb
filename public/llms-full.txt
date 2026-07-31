@@ -53,4 +53,4 @@ Britannia Accountancy Services Ltd (London, UK) — +232% ranking, +400% directi
 ## Policy
 Training and answer-engine use: allowed. Attribution requested. See https://llamamaps.com/ai.json for the machine-readable policy.
 
-Last updated: 2026-06-25
+Last updated: 2026-07-31

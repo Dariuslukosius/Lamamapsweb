@@ -553,7 +553,7 @@ const ServicesPage = () => {
 
                   {"singleImage" in study && study.singleImage && (
                     <div className="overflow-hidden rounded-xl border border-purple-200 bg-purple-50 p-2">
-                      <img src={study.singleImage} alt={study.title} className="w-full rounded-lg object-contain" />
+                      <img loading="lazy" decoding="async" src={study.singleImage} alt={study.title} className="w-full rounded-lg object-contain" />
                     </div>
                   )}
                 </div>
@@ -584,7 +584,7 @@ const ServicesPage = () => {
               </p>
             </div>
             <div className="flex justify-center md:justify-end">
-              <img src={googlePositionGif} alt="English market example" className="w-full max-w-[220px] rounded-2xl shadow-md md:max-w-[240px]" />
+              <img loading="lazy" decoding="async" src={googlePositionGif} alt="English market example" className="w-full max-w-[220px] rounded-2xl shadow-md md:max-w-[240px]" />
             </div>
           </div>
         </div>
@@ -608,7 +608,7 @@ const ServicesPage = () => {
                   <p className="leading-8 text-gray-700">{card.description}</p>
                 </div>
                 <div>
-                  <img src={card.image} alt={card.title} className="w-full rounded-2xl" />
+                  <img loading="lazy" decoding="async" src={card.image} alt={card.title} className="w-full rounded-2xl" />
                 </div>
               </div>
             </motion.div>
@@ -982,7 +982,7 @@ const ServicesPage = () => {
               viewport={{ once: true }}
               transition={{ delay: index * 0.06 }}
             >
-              <img
+              <img loading="lazy" decoding="async"
                 src={logo.src}
                 alt={logo.alt}
                 loading="lazy"

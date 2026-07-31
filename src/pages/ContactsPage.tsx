@@ -3,7 +3,7 @@ import ContactSection from "@/components/ContactSection";
 import CalendlyWidget from "@/components/CalendlyWidget";
 import { motion } from "framer-motion";
 import SEO from "@/components/SEO";
-import { organizationSchema, breadcrumbSchema } from "@/lib/structuredData";
+import { organizationSchema, breadcrumbSchema, contactPageSchema } from "@/lib/structuredData";
 
 const ContactsPage = () => (
   <div className="min-h-screen">
@@ -12,6 +12,7 @@ const ContactsPage = () => (
       description="Get in touch with Llamamaps to claim your free Google Maps SEO audit and schedule a consultation with our local search specialists."
       jsonLd={[
         organizationSchema(),
+        contactPageSchema(),
         breadcrumbSchema([
           { name: "Home", path: "/" },
           { name: "Contacts", path: "/contacts" },

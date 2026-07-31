@@ -1,31 +1,61 @@
 {
   "protocolVersion": "1.1",
   "name": "Llamamaps",
+  "version": "1.1.0",
   "description": "Local SEO agency helping local businesses reach TOP 3 rankings on Google Maps through Google Business Profile optimization, on-page local SEO, and ranking-signal generation.",
   "url": "https://llamamaps.com",
+  "preferredTransport": "HTTP+JSON",
+  "iconUrl": "https://llamamaps.com/icon-512.png",
   "provider": {
     "organization": "Llamamaps",
     "url": "https://llamamaps.com"
   },
   "capabilities": {
     "streaming": false,
-    "pushNotifications": false
+    "pushNotifications": false,
+    "stateTransitionHistory": false
   },
-  "defaultInputModes": ["text"],
-  "defaultOutputModes": ["text"],
+  "defaultInputModes": ["text", "text/plain"],
+  "defaultOutputModes": ["text", "text/plain"],
   "skills": [
     {
       "id": "local-seo-services",
       "name": "Local SEO Services Info",
-      "description": "Provides information about Llamamaps' local SEO plans, pricing, and Google Maps ranking guarantee.",
+      "description": "Provides information about Llamamaps' local SEO plans, pricing, and the TOP 3 on Google Maps in 90 days guarantee.",
+      "tags": ["local-seo", "pricing", "google-maps", "google-business-profile"],
+      "examples": [
+        "How much does Llamamaps cost per month?",
+        "What is included in the Community plan?",
+        "What is the Google Maps ranking guarantee?"
+      ],
+      "url": "https://llamamaps.com/services"
+    },
+    {
+      "id": "free-trial",
+      "name": "7-Day Free Trial",
+      "description": "Explains the 7-day free trial: no credit card, no account access required, cancel anytime.",
+      "tags": ["free-trial", "onboarding"],
+      "examples": ["Does Llamamaps offer a free trial?", "How do I start the trial?"],
       "url": "https://llamamaps.com/services"
     },
     {
       "id": "contact",
-      "name": "Contact / Free Trial Sign-up",
-      "description": "Routes inquiries to the Llamamaps contact form to start a free trial or book a consultation.",
+      "name": "Contact / Consultation Booking",
+      "description": "Routes inquiries to the Llamamaps contact form or the Calendly consultation booking link.",
+      "tags": ["contact", "booking", "consultation"],
+      "examples": ["How do I contact Llamamaps?", "Can I book a call?"],
       "url": "https://llamamaps.com/contacts"
+    },
+    {
+      "id": "company-info",
+      "name": "Company & Team Info",
+      "description": "Provides Llamamaps' mission, team, published review ratings, and service area.",
+      "tags": ["about", "team", "reviews"],
+      "examples": ["Who is behind Llamamaps?", "What are Llamamaps' review ratings?"],
+      "url": "https://llamamaps.com/about"
     }
   ],
-  "documentationUrl": "https://llamamaps.com/llms-full.txt"
+  "documentationUrl": "https://llamamaps.com/llms-full.txt",
+  "privacyPolicyUrl": "https://llamamaps.com/privacy",
+  "securityContactUrl": "https://llamamaps.com/.well-known/security.txt"
 }

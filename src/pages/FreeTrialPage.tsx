@@ -4,6 +4,8 @@ import { openCalendlyPopup } from "@/lib/calendlyPopup";
 import MapRankAnimation from "@/components/MapRankAnimation";
 import Navbar from "@/components/Navbar";
 import CalendlyWidget from "@/components/CalendlyWidget";
+import SEO from "@/components/SEO";
+import { organizationSchema } from "@/lib/structuredData";
 import llamaLogo from "@/assets/llama-logo.webp";
 import clinicBefore from "@/assets/results/clinic-dpc-before.webp";
 import clinicAfter from "@/assets/results/clinic-dpc-after.webp";
@@ -614,6 +616,16 @@ export default function FreeTrialPage() {
 
   return (
     <div className="lm-page">
+      {/* Paid-traffic landing page: noindex keeps it from competing with
+          /services in organic search, but it still needs a correct title,
+          description, canonical and social card — without <SEO> the SPA left
+          the previously visited route's canonical and OG tags in place. */}
+      <SEO
+        title="Start Your 7-Day Free Local SEO Trial | Llamamaps"
+        description="Try Llamamaps free for 7 days. See how our Google Business Profile and local SEO system moves your business into the TOP 3 on Google Maps — no credit card required."
+        noindex
+        jsonLd={[organizationSchema()]}
+      />
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
 
       <Navbar />
@@ -858,12 +870,12 @@ export default function FreeTrialPage() {
                   <div className="lm-proof-pair">
                     <div className="lm-proof-box lm-proof-before">
                       <div className="lm-proof-head"><strong>Before</strong><span className="lm-proof-rank">Rank 9</span></div>
-                      <img src={clinicBefore} alt="Clinic DPC before" />
+                      <img loading="lazy" decoding="async" src={clinicBefore} alt="Clinic DPC before" />
                       <div className="lm-proof-foot"><span>Clinic DPC Utena</span><span>Apr 21</span></div>
                     </div>
                     <div className="lm-proof-box lm-proof-after">
                       <div className="lm-proof-head"><strong>After</strong><span className="lm-proof-rank">Rank 1</span></div>
-                      <img src={clinicAfter} alt="Clinic DPC after" />
+                      <img loading="lazy" decoding="async" src={clinicAfter} alt="Clinic DPC after" />
                       <div className="lm-proof-foot"><span>Clinic DPC Utena</span><span>Jul 14</span></div>
                     </div>
                   </div>
@@ -872,7 +884,7 @@ export default function FreeTrialPage() {
 
               <article className="lm-case">
                 <div className="lm-case-head">
-                  <img className="lm-case-logo" src={wheelshopLogo} alt="WheelShop" />
+                  <img loading="lazy" decoding="async" className="lm-case-logo" src={wheelshopLogo} alt="WheelShop" />
                   <div>
                     <h3>WheelShop Auto Service</h3>
                     <p>Kaunas</p>
@@ -892,12 +904,12 @@ export default function FreeTrialPage() {
                   <div className="lm-proof-pair">
                     <div className="lm-proof-box lm-proof-before">
                       <div className="lm-proof-head"><strong>Before</strong><span className="lm-proof-rank">Not found</span></div>
-                      <img src={wheelshopBefore} alt="WheelShop before" />
+                      <img loading="lazy" decoding="async" src={wheelshopBefore} alt="WheelShop before" />
                       <div className="lm-proof-foot"><span>WheelShop</span><span>Jun 19</span></div>
                     </div>
                     <div className="lm-proof-box lm-proof-after">
                       <div className="lm-proof-head"><strong>After</strong><span className="lm-proof-rank">Top 3</span></div>
-                      <img src={wheelshopAfter} alt="WheelShop after" />
+                      <img loading="lazy" decoding="async" src={wheelshopAfter} alt="WheelShop after" />
                       <div className="lm-proof-foot"><span>WheelShop</span><span>Aug 11</span></div>
                     </div>
                   </div>
@@ -906,7 +918,7 @@ export default function FreeTrialPage() {
 
               <article className="lm-case">
                 <div className="lm-case-head">
-                  <img className="lm-case-logo" src={basLogo} alt="Britannia Accountancy" />
+                  <img loading="lazy" decoding="async" className="lm-case-logo" src={basLogo} alt="Britannia Accountancy" />
                   <div>
                     <h3>Britannia Accountancy Services</h3>
                     <p>London, UK</p>
@@ -924,7 +936,7 @@ export default function FreeTrialPage() {
                 </div>
                 <div className="lm-proof">
                   <div className="lm-proof-single">
-                    <img src={accountingStatistic} alt="Britannia Accountancy results" />
+                    <img loading="lazy" decoding="async" src={accountingStatistic} alt="Britannia Accountancy results" />
                     <div className="lm-proof-single-meta">
                       <strong>Business impact</strong>
                       <span>Growth in local visibility and map interactions after the system was activated.</span>

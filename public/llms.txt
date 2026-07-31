@@ -2,9 +2,25 @@
 
 > Local SEO agency helping local businesses reach TOP 3 rankings on Google Maps through Google Business Profile optimization, on-page local SEO, link building, and ranking-signal generation. Plans start at 500 GBP/month with a 7-day free trial.
 
-- [Home](https://llamamaps.com/): Overview, free SEO audit offer, client growth highlights.
-- [About](https://llamamaps.com/about): Mission, values, team, Trustpilot and Google review ratings.
-- [Services](https://llamamaps.com/services): Pricing plans (Community, City), full feature comparison, FAQ.
-- [Contacts](https://llamamaps.com/contacts): Contact form and consultation booking (Calendly).
+## Pages
 
-Full content brief: https://llamamaps.com/llms-full.txt
+- [Home](https://llamamaps.com/): Overview, free SEO audit offer, client growth highlights.
+- [Services](https://llamamaps.com/services): Pricing plans (Community 500 GBP/mo, City 1000 GBP/mo), full feature comparison, FAQ.
+- [About](https://llamamaps.com/about): Mission, values, team, Trustpilot and Google review ratings.
+- [Contacts](https://llamamaps.com/contacts): Contact form and consultation booking (Calendly).
+- [Privacy Policy](https://llamamaps.com/privacy): How visitor data is collected, used and protected.
+
+## Key facts
+
+- Guarantee: TOP 3 on Google Maps within 90 days, or Llamamaps works for free.
+- Free trial: 7 days, no credit card and no account access required.
+- Contract: month to month, cancel anytime.
+- Service area: local businesses across Europe.
+- Booking: https://calendly.com/llamamaps/30min
+
+## Optional
+
+- [Full content brief](https://llamamaps.com/llms-full.txt): Expanded facts, team, services and citation guidance.
+- [AI usage policy](https://llamamaps.com/ai.json): Machine-readable training, attribution and fabrication policy.
+
+Last updated: 2026-07-31

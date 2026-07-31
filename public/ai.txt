@@ -14,4 +14,4 @@ Contact: https://llamamaps.com/contacts
 Booking: https://calendly.com/llamamaps/30min
 
 Policy-JSON: https://llamamaps.com/ai.json
-Last-updated: 2026-06-25
+Last-updated: 2026-07-31

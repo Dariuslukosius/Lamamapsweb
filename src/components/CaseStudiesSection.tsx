@@ -9,7 +9,20 @@ import wheelshopBefore from "@/assets/results/wheelshop-before.webp";
 import wheelshopAfter from "@/assets/results/wheelshop-after.webp";
 import ClientReviewsSection from "@/components/ClientReviewsSection";
 
-const cases: any[] = [];
+interface CaseStudy {
+  keyword: string;
+  location: string;
+  beforeImage: string;
+  afterImage: string;
+  beforeLabel: string;
+  afterLabel: string;
+  beforeMetric?: string;
+  afterMetric?: string;
+}
+
+// Currently empty — the before/after card grid below renders nothing until
+// entries are added here. Kept typed so new entries are checked at compile time.
+const cases: CaseStudy[] = [];
 
 const resultsExamples = [
   {
@@ -59,11 +72,11 @@ const CaseStudiesSection = () => (
 
             <div className="grid gap-5 px-2 pb-5 pt-2 sm:px-5 md:grid-cols-2 md:px-7">
               <div className="rounded-[0.9rem] border border-[#e7edf5] bg-white p-1 shadow-sm">
-                <img src={cs.beforeImage} alt={`${cs.keyword} before`} className="w-full rounded-[0.7rem]" />
+                <img loading="lazy" decoding="async" src={cs.beforeImage} alt={`${cs.keyword} before`} className="w-full rounded-[0.7rem]" />
               </div>
 
               <div className="rounded-[0.9rem] border border-[#e7edf5] bg-white p-1 shadow-sm">
-                <img src={cs.afterImage} alt={`${cs.keyword} after`} className="w-full rounded-[0.7rem]" />
+                <img loading="lazy" decoding="async" src={cs.afterImage} alt={`${cs.keyword} after`} className="w-full rounded-[0.7rem]" />
               </div>
             </div>
 
@@ -136,7 +149,7 @@ const CaseStudiesSection = () => (
                 <span>Before</span>
                 <span className="rounded-full bg-gradient-to-br from-[#f97316] to-[#ea580c] px-2 py-1 text-white">Rank 9</span>
               </div>
-              <img src={clinicBefore} alt="Clinic DPC before" className="w-full" />
+              <img loading="lazy" decoding="async" src={clinicBefore} alt="Clinic DPC before" className="w-full" />
               <div className="flex items-center justify-between px-3 py-2 text-xs text-[#54657d]"><span>Clinic DPC Utena</span><span>Apr 21</span></div>
             </div>
             <div className="overflow-hidden rounded-2xl border border-[#dfe7f2]">
@@ -144,7 +157,7 @@ const CaseStudiesSection = () => (
                 <span>After</span>
                 <span className="rounded-full bg-gradient-to-br from-[#22c55e] to-[#16a34a] px-2 py-1 text-white">Rank 1</span>
               </div>
-              <img src={clinicAfter} alt="Clinic DPC after" className="w-full" />
+              <img loading="lazy" decoding="async" src={clinicAfter} alt="Clinic DPC after" className="w-full" />
               <div className="flex items-center justify-between px-3 py-2 text-xs text-[#54657d]"><span>Clinic DPC Utena</span><span>Jul 14</span></div>
             </div>
           </div>
@@ -162,7 +175,7 @@ const CaseStudiesSection = () => (
             className="overflow-hidden rounded-[1.75rem] border border-border bg-card shadow-sm"
           >
             <div className="aspect-video w-full overflow-hidden">
-              <img
+              <img loading="lazy" decoding="async"
                 src={example.image}
                 alt={example.alt}
                 className="h-full w-full object-cover"
@@ -181,7 +194,7 @@ const CaseStudiesSection = () => (
         <div className="grid gap-6 p-6 md:grid-cols-2 md:items-center md:p-8">
           <div>
             <div className="flex items-center gap-3">
-              <img src={wheelshopLogo} alt="WheelShop" className="h-12 w-12 flex-shrink-0 rounded-2xl border border-[#e2e8f0] bg-white object-contain p-1.5" />
+              <img loading="lazy" decoding="async" src={wheelshopLogo} alt="WheelShop" className="h-12 w-12 flex-shrink-0 rounded-2xl border border-[#e2e8f0] bg-white object-contain p-1.5" />
               <div>
                 <h3 className="text-lg font-bold text-[#0b1f13]">WheelShop Auto Service</h3>
                 <p className="text-sm font-semibold text-[#1a7a42]">Kaunas</p>
@@ -208,7 +221,7 @@ const CaseStudiesSection = () => (
                 <span>Before</span>
                 <span className="rounded-full bg-gradient-to-br from-[#f97316] to-[#ea580c] px-2 py-1 text-white">Not found</span>
               </div>
-              <img src={wheelshopBefore} alt="WheelShop before" className="w-full" />
+              <img loading="lazy" decoding="async" src={wheelshopBefore} alt="WheelShop before" className="w-full" />
               <div className="flex items-center justify-between px-3 py-2 text-xs text-[#54657d]"><span>WheelShop</span><span>Jun 19</span></div>
             </div>
             <div className="overflow-hidden rounded-2xl border border-[#dfe7f2]">
@@ -216,7 +229,7 @@ const CaseStudiesSection = () => (
                 <span>After</span>
                 <span className="rounded-full bg-gradient-to-br from-[#22c55e] to-[#16a34a] px-2 py-1 text-white">Top 3</span>
               </div>
-              <img src={wheelshopAfter} alt="WheelShop after" className="w-full" />
+              <img loading="lazy" decoding="async" src={wheelshopAfter} alt="WheelShop after" className="w-full" />
               <div className="flex items-center justify-between px-3 py-2 text-xs text-[#54657d]"><span>WheelShop</span><span>Aug 11</span></div>
             </div>
           </div>
