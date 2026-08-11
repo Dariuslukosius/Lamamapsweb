@@ -12,6 +12,7 @@ import ContactsPage from "./pages/ContactsPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import FreeTrialPage from "./pages/FreeTrialPage.tsx";
 import TrialPage from "./pages/TrialPage.tsx";
+import TrialHormoziPage from "./pages/TrialHormoziPage.tsx";
 import PrivacyPage from "./pages/PrivacyPage.tsx";
 import CalendlyBadge from "./components/CalendlyBadge.tsx";
 
@@ -19,10 +20,14 @@ const queryClient = new QueryClient();
 
 // The /trial landing page is a fully isolated destination for ad traffic — it
 // must only ever open its own dedicated booking modal, never the site-wide
-// Calendly badge's popup.
+// Calendly badge's popup. /trial-hormozi is its A/B variant and has to be
+// suppressed on the same terms, or the variant would carry an extra CTA the
+// control does not and the test would measure that instead of the copy.
+const ISOLATED_LANDING_PATHS = new Set(["/trial", "/trial-hormozi"]);
+
 const GlobalCalendlyBadge = () => {
   const { pathname } = useLocation();
-  if (pathname === "/trial") return null;
+  if (ISOLATED_LANDING_PATHS.has(pathname)) return null;
   return <CalendlyBadge />;
 };
 
@@ -42,6 +47,7 @@ const App = () => (
           <Route path="/contacts" element={<ContactsPage />} />
           <Route path="/free-trial" element={<FreeTrialPage />} />
           <Route path="/trial" element={<TrialPage />} />
+          <Route path="/trial-hormozi" element={<TrialHormoziPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

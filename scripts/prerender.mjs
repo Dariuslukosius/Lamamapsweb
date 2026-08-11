@@ -11,7 +11,10 @@ import path from "node:path";
 // /trial and /free-trial are noindex ad landing pages, but they are still
 // prerendered: link-preview scrapers and ad quality reviewers do not run JS,
 // and the snapshot also removes the blank-screen flash on first paint.
-const ROUTES = ["/", "/about", "/services", "/contacts", "/privacy", "/trial", "/free-trial"];
+// /trial-hormozi is the A/B variant of /trial. It is prerendered on the same
+// terms so first-paint timing stays comparable between the two — an LCP gap
+// caused by one side lacking a snapshot would contaminate the test.
+const ROUTES = ["/", "/about", "/services", "/contacts", "/privacy", "/trial", "/free-trial", "/trial-hormozi"];
 
 // Vercel's build container has no local Chromium install and is missing the
 // shared libraries a vanilla `playwright install chromium` binary needs to
