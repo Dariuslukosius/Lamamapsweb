@@ -46,7 +46,7 @@ export const COPY = {
     v1_money:
       "The Calls You're Missing Are Going to the Shop Down the Road", // ACTIVE
     v2_result_time:
-      "Get Into the Top 3 on Google Maps in 90 Days — Guaranteed",
+      "Get Into the Top 3 on Google Maps in 90 Days",
     v3_effortless:
       "Top 3 on Google Maps — Without Giving Us Access to Anything",
     v4_proof:
@@ -62,23 +62,23 @@ export const COPY = {
   },
 
   /**
-   * The one guarantee wording used everywhere on the page. Previously the page
-   * said "Guaranteed Top 3" in one place and "typically within 90 days" in
-   * another; two different promises for the same thing reads as hedging.
+   * The one expectation wording used everywhere on the page. It is stated as a
+   * target, not as a promise with a financial consequence — nobody controls
+   * Google's algorithm, so a result promise we can't honour is not one we make.
    */
-  guaranteeShort: "Top 3 in 90 days — or you don't pay",
+  guaranteeShort: "Top 3 on Google Maps in 90 Days",
 
-  // ---------- GUARANTEE BLOCK ----------
+  // ---------- EXPECTATION BLOCK ----------
   guarantee: {
-    eyebrow: "OUR GUARANTEE",
-    h2: "Top 3 on Google Maps in 90 Days — or You Don't Pay",
+    eyebrow: "WHAT TO EXPECT",
+    h2: "Top 3 on Google Maps in 90 Days",
     body:
-      "If your business isn't in the Top 3 for your agreed keywords within 90 days, you don't pay for that period. You keep every ranking gain we made. We take the risk, not you.",
-    // Deliberately blunt, and deliberately placed inside the guarantee rather
-    // than buried in the FAQ: an over-claimed guarantee that the FAQ then walks
-    // back is worse than no guarantee at all.
+      "Most of our clients reach the Top 3 for their agreed keywords within 90 days. You'll see ranking movement during the free trial — before you pay anything.",
+    // Deliberately blunt, and deliberately placed here rather than buried in the
+    // FAQ: an over-claimed promise that the FAQ then walks back is worse than
+    // stating the limit up front.
     honest:
-      "To be straight with you: nobody controls Google's algorithm, so we can't promise a specific position on a specific day. What we can promise is the Top 3 inside 90 days — and if we miss it, that period is free.",
+      "To be straight with you: nobody controls Google's algorithm, so we can't promise a specific position on a specific day. What we can promise is that the work gets done, you keep full control, and you can walk away at any time.",
     bullets: [
       "No long-term contract — cancel any time",
       "You never hand over access to your Google account",
@@ -94,7 +94,7 @@ export const COPY = {
       {
         question: "“I've been burned by SEO before.”",
         answer:
-          "Fair. That's why you see ranking movement during a free trial, before you pay anything — and why we guarantee Top 3 in 90 days or you don't pay.",
+          "Fair. That's why you see ranking movement during a free trial, before you pay anything — and why there's no long-term contract to hold you in afterwards.",
       },
       {
         question: "“I don't have time for this.”",

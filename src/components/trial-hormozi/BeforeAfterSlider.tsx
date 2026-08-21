@@ -50,12 +50,26 @@ const BeforeAfterSlider = ({ before, after, beforeLabel, afterLabel }: BeforeAft
         onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerUp}
       >
-        <img src={after} alt="After" className="tp-baf-img" draggable={false} />
+        <img
+          src={after}
+          alt="After"
+          className="tp-baf-img"
+          draggable={false}
+          loading="lazy"
+          decoding="async"
+        />
         <div
           className="tp-baf-clip"
           style={{ clipPath: `inset(0 ${100 - pos}% 0 0)`, transition: transitionStyle }}
         >
-          <img src={before} alt="Before" className="tp-baf-img" draggable={false} />
+          <img
+            src={before}
+            alt="Before"
+            className="tp-baf-img"
+            draggable={false}
+            loading="lazy"
+            decoding="async"
+          />
         </div>
         <div className="tp-baf-line" style={{ left: `${pos}%`, transition: transitionStyle }} />
         <div className="tp-baf-handle" style={{ left: `${pos}%`, transition: transitionStyle }}>

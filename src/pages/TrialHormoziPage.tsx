@@ -16,15 +16,14 @@ import CountUpStat from "@/components/trial-hormozi/CountUpStat";
 import RankCrossfadeBadge from "@/components/trial-hormozi/RankCrossfadeBadge";
 import TrustBadges from "@/components/trial-hormozi/TrustBadges";
 import { COPY } from "@/components/trial-hormozi/copy";
+import { caseStudies, type CaseStudy } from "@/lib/caseStudies";
+import { testimonials, initialsOf } from "@/lib/testimonials";
 import { trackHormoziView, installScrollDepthTracking } from "@/components/trial-hormozi/tracking";
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 
 import llamaLogo from "@/assets/llama-logo.webp";
 import googlePartnerLogo from "@/assets/partners/google-partner-logo-png_seeklogo-428155.webp";
 
-import avatarLina from "@/assets/avatar-lina.webp";
-import avatarOmar from "@/assets/avatar-omar.webp";
-import avatarEmily from "@/assets/avatar-emily.webp";
 
 import artfiksa from "@/assets/brands/artfiksa.webp";
 import autoVela from "@/assets/brands/auto-vela.webp";
@@ -38,15 +37,6 @@ import sokrato from "@/assets/brands/sokrato.webp";
 import svajoniuSpaLogo from "@/assets/brands/svajoniu-spa.webp";
 import televizoriu from "@/assets/brands/televizoriu.webp";
 import wheelshopBrand from "@/assets/brands/wheelshop.webp";
-
-import clinicBefore from "@/assets/results/clinic-dpc-before.webp";
-import clinicAfter from "@/assets/results/clinic-dpc-after.webp";
-import wheelshopLogo from "@/assets/results/wheelshop-logo.webp";
-import wheelshopBefore from "@/assets/results/wheelshop-before.webp";
-import wheelshopAfter from "@/assets/results/wheelshop-after.webp";
-import svajoniuLogo from "@/assets/results/svajoniu-logo.webp";
-import svajoniuBefore from "@/assets/results/svajoniu-before.webp";
-import svajoniuAfter from "@/assets/results/svajoniu-after.webp";
 
 import increaseLocalVisibility from "@/assets/services/increase-local-visibility.webp";
 import improveSearchPerformance from "@/assets/services/improve-search-performance.webp";
@@ -211,7 +201,13 @@ const CSS = `
      you". Base state already shows the finished list (no motion); the
      no-preference query adds the typing/reveal/scroll-past sequence, all
      gated by .is-active so it only plays once, when scrolled into view. ── */
-  .tp-invisible-demo { max-width: 460px; margin: 44px auto 0; }
+  /* position:relative is load-bearing: the decorative scrolltrack below is
+     absolutely positioned at right:-18px and this is the box it anchors to.
+     Without it the track resolves against the viewport instead, landing at
+     exactly viewport+18px and widening the document at every breakpoint —
+     .tp-page's overflow-x:hidden cannot clip it, because its containing
+     block is outside .tp-page. That made the whole page scroll sideways. */
+  .tp-invisible-demo { max-width: 460px; margin: 44px auto 0; position: relative; }
   .tp-invisible-search { display: flex; align-items: center; gap: 10px; background: var(--tp-bg-card); border: 1px solid var(--tp-border); border-radius: 10px; padding: 12px 16px; }
   .tp-invisible-search-text { color: var(--tp-text-muted); font-size: 0.88rem; }
   .tp-invisible-list { position: relative; margin-top: 16px; }
@@ -270,11 +266,17 @@ const CSS = `
   }
 
   /* ── Sections ── */
-  /* 56px/side = ~112px combined between two adjacent full sections — generous
-     enough to read as deliberate breathing room without the ~240px combined
-     gap the previous 96/120px-per-side values produced once actually rendered. */
-  .tp-section { padding: 56px 0; }
-  .tp-section--sm { padding: 40px 0; }
+  /* The gap between two sections is purely these two paddings added together —
+     nothing on the page contributes a vertical margin at a section boundary,
+     so whatever is set here is doubled at every seam. 56px/side therefore read
+     as 112px, which looked like dead space rather than rhythm: almost every
+     section ends on the small trust-badge line and the next opens on a small
+     eyebrow, so the gap is measured by eye between two thin lines of text and
+     looks far larger than the same distance between two dense blocks.
+     32px/side = 64px combined, which lands the seams in proportion to that
+     lightweight content. */
+  .tp-section { padding: 32px 0; }
+  .tp-section--sm { padding: 24px 0; }
   .tp-eyebrow { display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--tp-gold); margin-bottom: 16px; }
   .tp-h2 { color: var(--tp-text); font-family: var(--tp-serif); font-size: clamp(1.9rem, 4.6vw, 2.8rem); font-weight: 400; letter-spacing: -0.01em; line-height: 1.16; }
   .tp-h2 em { font-style: normal; font-weight: 600; color: var(--tp-gold); }
@@ -282,15 +284,9 @@ const CSS = `
   .tp-center { text-align: center; margin-left: auto; margin-right: auto; }
   .tp-cta-row { display: flex; justify-content: center; margin-top: 32px; gap: 14px; flex-wrap: wrap; }
 
-  @media (min-width: 900px) {
-    .tp-section { padding: 72px 0; }
-    /* Pinned separately here too — without this, this same-specificity rule
-       above (later in source, same 900px breakpoint) silently wins over the
-       standalone .tp-section--sm rule and re-inflates "small" sections back
-       to full size on desktop, stacking with the adjacent section's own
-       padding into a much bigger gap than intended. */
-    .tp-section--sm { padding: 40px 0; }
-  }
+  /* No desktop override for .tp-section: it used to bump the padding to 72px
+     above 900px, which is what produced the 144px seams. Section rhythm is now
+     one value at every width, so there is nothing here to drift out of sync. */
 
   /* ── Rating ── */
   .tp-rating { display: flex; align-items: center; justify-content: center; gap: 14px; }
@@ -300,8 +296,22 @@ const CSS = `
 
   /* ── Testimonial carousel ── */
   .tp-testimonial-card { border: 1px solid var(--tp-border); border-radius: 16px; background: var(--tp-bg-card); box-shadow: var(--tp-shadow); padding: 28px 24px; height: 100%; }
+  @media (max-width: 640px) {
+    /* One card is visible at a time here, so equal heights buy nothing and
+       cost a lot: every card stretched to match the longest review, leaving
+       ~400px of empty card under the short ones. Size to content instead. */
+    .tp-testimonial-card { height: auto; }
+  }
   .tp-testimonial-head { display: flex; align-items: center; gap: 12px; }
   .tp-testimonial-avatar { width: 52px; height: 52px; border-radius: 999px; object-fit: cover; flex-shrink: 0; }
+  /* For clients who left a written review but no photo or logo. Initials rather
+     than a stock portrait: a stand-in face beside a real person's name would
+     misrepresent them. */
+  .tp-testimonial-avatar--initials {
+    display: flex; align-items: center; justify-content: center;
+    background: var(--tp-bg); border: 1px solid var(--tp-border);
+    color: var(--tp-gold); font-size: 0.95rem; font-weight: 700; letter-spacing: 0.02em;
+  }
   .tp-testimonial-name { font-weight: 600; color: var(--tp-text-muted); font-size: 0.88rem; }
   .tp-testimonial-company { color: var(--tp-gold); font-size: 0.78rem; font-weight: 600; }
   /* The quote is the point of a testimonial — give it more visual weight than
@@ -333,12 +343,24 @@ const CSS = `
   .tp-case { display: grid; gap: 24px; border: 1px solid var(--tp-border); border-radius: 20px; background: var(--tp-bg-card); box-shadow: var(--tp-shadow); padding: 28px; }
   .tp-case-head { display: flex; align-items: center; gap: 12px; }
   .tp-case-logo { width: 50px; height: 50px; border-radius: 12px; border: 1px solid var(--tp-border); background: #fff; object-fit: contain; padding: 7px; flex-shrink: 0; }
+  /* Stands in for a client logo — we hold no logo assets for these businesses,
+     and a glyph is honest about being decoration in a way a stock mark is not. */
+  .tp-case-icon {
+    width: 50px; height: 50px; border-radius: 12px; flex-shrink: 0;
+    background: var(--tp-bg); border: 1px solid var(--tp-border);
+    display: flex; align-items: center; justify-content: center; font-size: 1.4rem;
+  }
   .tp-case-head h3 { color: var(--tp-text); font-size: 1.1rem; font-weight: 700; }
   .tp-case-head p { color: var(--tp-gold); font-size: 0.82rem; font-weight: 600; margin-top: 2px; }
   .tp-case-metrics { display: grid; gap: 8px; margin-top: 20px; }
   .tp-case-metric { display: flex; align-items: center; justify-content: space-between; gap: 10px; border-radius: 10px; background: rgba(244,241,234,0.03); border: 1px solid var(--tp-border); padding: 10px 14px; }
+  /* Phrase-length values (the tracked search term) stack under their label —
+     opposite it they collide in this narrow column and wrap mid-phrase. */
+  .tp-case-metric--stack { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .tp-case-metric--stack .tp-case-metric-val { font-size: 0.92rem; line-height: 1.4; }
   .tp-case-metric-val { color: var(--tp-gold); font-size: 1rem; font-weight: 700; }
   .tp-case-metric-label { color: var(--tp-text-muted); font-size: 0.78rem; }
+
 
   /* ── Before/after slider ── */
   .tp-baf-labels { display: flex; justify-content: space-between; margin-bottom: 8px; gap: 8px; }
@@ -348,8 +370,12 @@ const CSS = `
   /* Fixed aspect-ratio box, with BOTH before/after images object-fit: cover'd into
      it the same way — using one image's natural size to define the box (and only
      force-fitting the other) made mismatched-resolution before/after screenshot
-     pairs visibly jump in scale right at the seam. */
-  .tp-baf-frame { position: relative; overflow: hidden; border-radius: 14px; border: 1px solid var(--tp-border); background: #0d1520; max-width: 460px; margin: 0 auto; aspect-ratio: 1 / 1; touch-action: none; cursor: ew-resize; }
+     pairs visibly jump in scale right at the seam.
+     800/743 is the exact pixel ratio of the rank-scan frames after their date
+     header is cropped off. Matching it means object-fit: cover has nothing to crop,
+     so the grid's outermost ranking bubbles stay inside the frame — at 1/1 the
+     box ate ~7% of the width and clipped the edge columns. */
+  .tp-baf-frame { position: relative; overflow: hidden; border-radius: 14px; border: 1px solid var(--tp-border); background: #0d1520; max-width: 460px; margin: 0 auto; aspect-ratio: 800 / 743; touch-action: none; cursor: ew-resize; }
   .tp-baf-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
   .tp-baf-clip { position: absolute; inset: 0; overflow: hidden; }
   .tp-baf-line { position: absolute; top: 0; bottom: 0; width: 2px; background: rgba(244,241,234,0.85); transform: translateX(-50%); pointer-events: none; z-index: 2; }
@@ -459,8 +485,12 @@ const CSS = `
     background: var(--tp-gold); color: var(--tp-bg);
     font-size: 0.8rem; font-weight: 700; letter-spacing: 0.02em;
     padding: 0 22px; cursor: pointer; box-shadow: var(--tp-shadow);
-    transition: background 0.2s ease;
+    opacity: 0; transform: translateY(8px); pointer-events: none;
+    transition: background 0.2s ease, opacity 0.25s ease, transform 0.25s ease;
   }
+  /* Applied once the hero (and the primary CTA it contains) leaves the
+     viewport, so the pill can never sit on top of that button. */
+  .tp-floating-cta--in { opacity: 1; transform: none; pointer-events: auto; }
   .tp-floating-cta:hover { background: var(--tp-gold-soft); }
   @media (max-width: 640px) {
     .tp-floating-cta { right: 14px; bottom: 14px; font-size: 0.74rem; padding: 0 16px; min-height: 46px; }
@@ -495,7 +525,13 @@ const CSS = `
   /* Fully rounded here: the bottom-only radius existed so the strip could hang
      off the navbar edge. Inside the guarantee card it is a free-standing chip. */
   .tph-partner-wrap .tp-partner-strip { border-radius: 14px; }
-  .tph-hero { padding-top: 40px; }
+  /* RankCounter is the last hero element (no video block after it, unlike
+     /trial), so the hero's bottom padding adds to the next section's 32px top
+     padding with nothing in between. 16px keeps that seam at 48px — slightly
+     tighter than the 64px between later sections, which is deliberate: the
+     rank widget is a visual claim and the case studies immediately below are
+     its evidence, so they should read as one thought. */
+  .tph-hero { padding-top: 40px; padding-bottom: 16px; }
   .tph-hero-h1 { margin-top: 0; }
   .tph-hero-sub { margin-top: 16px; }
   .tph-hero-actions { margin-top: 24px; }
@@ -510,7 +546,7 @@ const CSS = `
      vertical rhythm and heading size are tightened — button sizes and the
      badge row are untouched, since they are the point of the rebuild. */
   @media (max-width: 480px) {
-    .tph-hero { padding-top: 22px; padding-bottom: 36px; }
+    .tph-hero { padding-top: 22px; padding-bottom: 20px; }
     .tph-hero-h1 { font-size: 1.78rem; line-height: 1.14; }
     .tph-hero-sub { margin-top: 12px; font-size: 0.92rem; line-height: 1.55; }
     .tph-hero-actions { margin-top: 18px; gap: 10px; width: 100%; }
@@ -560,27 +596,6 @@ const CSS = `
     .tph-objections { grid-template-columns: repeat(2, minmax(0,1fr)); }
   }
 `;
-
-const testimonials = [
-  {
-    name: "Lina Petrova",
-    company: "Placeholder Dental Studio",
-    avatar: avatarLina,
-    text: "We are very satisfied with the work delivered. Communication was smooth, with clear monthly reports. We reached our promised rankings sooner than expected.",
-  },
-  {
-    name: "Omar Farouq",
-    company: "Placeholder Auto Care Dubai",
-    avatar: avatarOmar,
-    text: "The LlamaMaps team exceeded our expectations. In a short time, they pushed our rankings into the TOP 5 and kept them there consistently.",
-  },
-  {
-    name: "Emily Carter",
-    company: "Placeholder Clinic Group UK",
-    avatar: avatarEmily,
-    text: "The results speak for themselves — within a few months, our Google Maps traffic increased multiple times, and the team kept us informed every step of the way.",
-  },
-];
 
 const brandLogos = [
   { src: artfiksa, alt: "Artfiksa Plytelės" },
@@ -704,7 +719,7 @@ const onboardingStepDetails = [
   {
     title: "Track Your Local SEO Progress",
     description:
-      "Watch your business climb into the Top 3 on Google Maps within 90 days — or you don’t pay for that period. Expect a surge in calls, bookings, direction requests, website visits, and new customers as your local visibility skyrockets.",
+      "Watch your business climb into the Top 3 on Google Maps — typically within 90 days. Expect a surge in calls, bookings, direction requests, website visits, and new customers as your local visibility skyrockets.",
     bullets: [
       "Bi-Weekly Reports - Detailed updates on keyword positions and Google Business Profile performance.",
       "Track Key Metrics in Your Google Business Profile - Monitor increases in calls, bookings, directions requests, website visits, and all other profile interactions.",
@@ -713,7 +728,7 @@ const onboardingStepDetails = [
 ];
 
 const planFeatureList = [
-  "Top 3 in 90 Days — or You Don’t Pay",
+  "Top 3 Google Maps Positions Targeted",
   "AI-Powered Local Signal Boost",
   "GPS-Based Local Activity",
   "Google Business Profile SEO",
@@ -769,7 +784,7 @@ const faqs = [
   {
     question: "How fast will I see results?",
     answer:
-      "Most clients see measurable ranking movement within 4 to 6 weeks. Top 3 comes within 90 days — or you don’t pay for that period. You’ll get reports every two weeks tracking progress the entire way.",
+      "Most clients see measurable ranking movement within 4 to 6 weeks, and most reach the Top 3 within 90 days. You’ll get reports every two weeks tracking progress the entire way.",
   },
   {
     question: "Do I have to sign a contract?",
@@ -809,7 +824,7 @@ const faqs = [
   {
     question: "Can you guarantee #1 rankings?",
     answer:
-      "We guarantee the Top 3 within 90 days — if we miss it, you don’t pay for that period. What nobody can promise is a specific position on a specific day, because Google changes its algorithm. Some clients reach #1. Our commitment is the Top 3, and the calls that come with it.",
+      "No one can guarantee a specific position on a specific day, because Google changes its algorithm. What we commit to is the work, full transparency, and a proven methodology — and most of our clients reach the Top 3 within 90 days. Some reach #1. Our focus is the calls that come with it.",
   },
   {
     question: "How many profiles can I have optimized?",
@@ -883,7 +898,7 @@ const TrialHero = () => {
 
 /**
  * Risk reversal, pulled out of the small print inside the pricing cards and
- * given its own block. A guarantee nobody reads is not a guarantee.
+ * given its own block. An expectation nobody reads sets no expectation.
  */
 const TrialGuarantee = () => {
   const { openTrialModal } = useTrialModal();
@@ -976,7 +991,6 @@ const TrialRatingAndReviews = () => (
         <h2 className="tp-h2">What local businesses say</h2>
       </div>
 
-      {/* TODO: replace with real client testimonials */}
       <div style={{ marginTop: 44 }}>
         <Carousel opts={{ align: "start" }}>
           <CarouselContent>
@@ -990,7 +1004,20 @@ const TrialRatingAndReviews = () => (
                   transition={{ duration: 0.45, delay: i * 0.1 }}
                 >
                   <div className="tp-testimonial-head">
-                    <img loading="lazy" decoding="async" className="tp-testimonial-avatar" src={t.avatar} alt={t.name} />
+                    {t.avatar ? (
+                      <img
+                        loading="lazy"
+                        decoding="async"
+                        className="tp-testimonial-avatar"
+                        style={t.avatarFit === "contain" ? { objectFit: "contain", padding: 8, background: "#fff" } : undefined}
+                        src={t.avatar}
+                        alt={t.name}
+                      />
+                    ) : (
+                      <div className="tp-testimonial-avatar tp-testimonial-avatar--initials" aria-hidden="true">
+                        {initialsOf(t.name)}
+                      </div>
+                    )}
                     <div>
                       <div className="tp-testimonial-name">{t.name}</div>
                       <div className="tp-testimonial-company">{t.company}</div>
@@ -1001,8 +1028,10 @@ const TrialRatingAndReviews = () => (
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="-left-4" />
-          <CarouselNext className="-right-4" />
+          {/* Hidden on phones: at 390px these sit on top of the review text.
+              The carousel is swipeable, which is the expected gesture there. */}
+          <CarouselPrevious className="-left-4 hidden sm:inline-flex" />
+          <CarouselNext className="-right-4 hidden sm:inline-flex" />
         </Carousel>
       </div>
     </div>
@@ -1069,6 +1098,34 @@ const TrialMission = () => {
   );
 };
 
+const TrialCaseCard = ({ study }: { study: CaseStudy }) => (
+  <article className="tp-case">
+    <div>
+      <div className="tp-case-head">
+        <div className="tp-case-icon" aria-hidden="true">{study.icon}</div>
+        <div>
+          <h3>{study.business}</h3>
+          <p>{study.location}</p>
+        </div>
+      </div>
+      <div className="tp-case-metrics">
+        {study.metrics.map((m) => (
+          <div key={m.label} className={`tp-case-metric${m.stack ? " tp-case-metric--stack" : ""}`}>
+            <span className="tp-case-metric-label">{m.label}</span>
+            <span className="tp-case-metric-val">{m.value}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+    <BeforeAfterSlider
+      before={study.before}
+      after={study.after}
+      beforeLabel={study.beforeLabel}
+      afterLabel={study.afterLabel}
+    />
+  </article>
+);
+
 const TrialCaseStudies = () => {
   const { openTrialModal } = useTrialModal();
   return (
@@ -1080,84 +1137,15 @@ const TrialCaseStudies = () => {
             How local businesses <em>grew</em> on Google Maps
           </h2>
           <p className="tp-lead tp-center">
-            From a dental clinic in Utena to an auto repair shop in Kaunas and a spa retreat — these are live, verified
-            projects.
+            Eleven real clients across five countries, seventeen before/after maps — metalwork in West Sussex, hail repair in Texas, removals on the
+            Sunshine Coast. Drag the handle to see the same map before and after.
           </p>
         </div>
 
-        {/* TODO: replace with verified before/after screenshots per case */}
         <div className="tp-cases">
-          <article className="tp-case">
-            <div>
-              <div className="tp-case-head">
-                <div style={{ width: 50, height: 50, borderRadius: 12, background: "var(--tp-bg)", border: "1px solid var(--tp-border)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.4rem", flexShrink: 0 }}>🦷</div>
-                <div>
-                  <h3>Clinic DPC Utena</h3>
-                  <p>Local SEO success story</p>
-                </div>
-              </div>
-              <div className="tp-case-metrics">
-                <div className="tp-case-metric"><span className="tp-case-metric-label">Position achieved</span><span className="tp-case-metric-val">Rank 1</span></div>
-                <div className="tp-case-metric"><span className="tp-case-metric-label">Calls increased</span><span className="tp-case-metric-val">2.7x</span></div>
-                <div className="tp-case-metric"><span className="tp-case-metric-label">Organic Maps traffic</span><span className="tp-case-metric-val">+187%</span></div>
-                <div className="tp-case-metric"><span className="tp-case-metric-label">Rankings improved (local radius)</span><span className="tp-case-metric-val">6 weeks</span></div>
-              </div>
-            </div>
-            <BeforeAfterSlider
-              before={clinicBefore}
-              after={clinicAfter}
-              beforeLabel="Before · Rank 9"
-              afterLabel="After · Rank 1"
-            />
-          </article>
-
-          <article className="tp-case">
-            <div>
-              <div className="tp-case-head">
-                <img loading="lazy" decoding="async" className="tp-case-logo" src={wheelshopLogo} alt="WheelShop" />
-                <div>
-                  <h3>WheelShop Auto Service</h3>
-                  <p>Kaunas</p>
-                </div>
-              </div>
-              <div className="tp-case-metrics">
-                <div className="tp-case-metric"><span className="tp-case-metric-label">Position achieved</span><span className="tp-case-metric-val">Top 2</span></div>
-                <div className="tp-case-metric"><span className="tp-case-metric-label">Enquiries increased</span><span className="tp-case-metric-val">3.1x</span></div>
-                <div className="tp-case-metric"><span className="tp-case-metric-label">Organic Maps traffic</span><span className="tp-case-metric-val">+312%</span></div>
-                <div className="tp-case-metric"><span className="tp-case-metric-label">Rankings improved (local radius)</span><span className="tp-case-metric-val">8 weeks</span></div>
-              </div>
-            </div>
-            <BeforeAfterSlider
-              before={wheelshopBefore}
-              after={wheelshopAfter}
-              beforeLabel="Before · Not found"
-              afterLabel="After · Top 2"
-            />
-          </article>
-
-          <article className="tp-case">
-            <div>
-              <div className="tp-case-head">
-                <img loading="lazy" decoding="async" className="tp-case-logo" src={svajoniuLogo} alt="Svajonių SPA" />
-                <div>
-                  <h3>Svajonių SPA</h3>
-                  <p>Local SEO success story</p>
-                </div>
-              </div>
-              <div className="tp-case-metrics">
-                <div className="tp-case-metric"><span className="tp-case-metric-label">Position achieved</span><span className="tp-case-metric-val">Rank 1</span></div>
-                <div className="tp-case-metric"><span className="tp-case-metric-label">Bookings increased</span><span className="tp-case-metric-val">2.2x</span></div>
-                <div className="tp-case-metric"><span className="tp-case-metric-label">Organic Maps traffic</span><span className="tp-case-metric-val">+164%</span></div>
-                <div className="tp-case-metric"><span className="tp-case-metric-label">Rankings improved (local radius)</span><span className="tp-case-metric-val">7 weeks</span></div>
-              </div>
-            </div>
-            <BeforeAfterSlider
-              before={svajoniuBefore}
-              after={svajoniuAfter}
-              beforeLabel="Before · Rank 11"
-              afterLabel="After · Rank 1"
-            />
-          </article>
+          {caseStudies.map((c) => (
+            <TrialCaseCard key={c.slug} study={c} />
+          ))}
         </div>
 
         <div className="tp-cta-row">
@@ -1487,7 +1475,7 @@ const TrialHormoziPageContent = () => (
           (verified before/after maps, then client video) sits immediately under
           the hero and stays statically visible, because roughly 60% of visitors
           never scroll and nobody sees what is parked behind a carousel. The
-          weakest proof — the placeholder text testimonials — drops to position
+          weakest proof — the written testimonials — drops to position
           12, and the guarantee and objection blocks are new. */}
       <main className="tp-main">
         {/* 1 */} <TrialHero />
@@ -1527,7 +1515,7 @@ const TrialHormoziPage = () => {
     <>
       <SeoHormozi
         title="Free 7-Day Google Maps Trial | LlamaMaps"
-        description="Top 3 on Google Maps in 90 days — or you don't pay. Start your free 7-day trial with LlamaMaps: no card, no account access, no contract."
+        description="Top 3 on Google Maps in 90 days. Start your free 7-day trial with LlamaMaps: no card, no account access, no contract."
         noindex
         // This page is an A/B duplicate of /trial. The canonical points at the
         // original so /trial keeps all the authority and the two never compete

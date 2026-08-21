@@ -9,6 +9,8 @@ import TrialFooter from "@/components/trial/TrialFooter";
 import { TrialModalProvider, useTrialModal } from "@/components/trial/TrialModalContext";
 import TrialFloatingCta from "@/components/trial/TrialFloatingCta";
 import BeforeAfterSlider from "@/components/trial/BeforeAfterSlider";
+import { caseStudies, type CaseStudy } from "@/lib/caseStudies";
+import { testimonials, initialsOf } from "@/lib/testimonials";
 import RankCounter from "@/components/trial/RankCounter";
 import HeroRankClimb from "@/components/trial/HeroRankClimb";
 import TrialInvisibilitySection from "@/components/trial/TrialInvisibilitySection";
@@ -19,9 +21,6 @@ import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext
 import llamaLogo from "@/assets/llama-logo.webp";
 import googlePartnerLogo from "@/assets/partners/google-partner-logo-png_seeklogo-428155.webp";
 
-import avatarLina from "@/assets/avatar-lina.webp";
-import avatarOmar from "@/assets/avatar-omar.webp";
-import avatarEmily from "@/assets/avatar-emily.webp";
 
 import artfiksa from "@/assets/brands/artfiksa.webp";
 import autoVela from "@/assets/brands/auto-vela.webp";
@@ -35,15 +34,6 @@ import sokrato from "@/assets/brands/sokrato.webp";
 import svajoniuSpaLogo from "@/assets/brands/svajoniu-spa.webp";
 import televizoriu from "@/assets/brands/televizoriu.webp";
 import wheelshopBrand from "@/assets/brands/wheelshop.webp";
-
-import clinicBefore from "@/assets/results/clinic-dpc-before.webp";
-import clinicAfter from "@/assets/results/clinic-dpc-after.webp";
-import wheelshopLogo from "@/assets/results/wheelshop-logo.webp";
-import wheelshopBefore from "@/assets/results/wheelshop-before.webp";
-import wheelshopAfter from "@/assets/results/wheelshop-after.webp";
-import svajoniuLogo from "@/assets/results/svajoniu-logo.webp";
-import svajoniuBefore from "@/assets/results/svajoniu-before.webp";
-import svajoniuAfter from "@/assets/results/svajoniu-after.webp";
 
 import increaseLocalVisibility from "@/assets/services/increase-local-visibility.webp";
 import improveSearchPerformance from "@/assets/services/improve-search-performance.webp";
@@ -208,7 +198,13 @@ const CSS = `
      you". Base state already shows the finished list (no motion); the
      no-preference query adds the typing/reveal/scroll-past sequence, all
      gated by .is-active so it only plays once, when scrolled into view. ── */
-  .tp-invisible-demo { max-width: 460px; margin: 44px auto 0; }
+  /* position:relative is load-bearing: the decorative scrolltrack below is
+     absolutely positioned at right:-18px and this is the box it anchors to.
+     Without it the track resolves against the viewport instead, landing at
+     exactly viewport+18px and widening the document at every breakpoint —
+     .tp-page's overflow-x:hidden cannot clip it, because its containing
+     block is outside .tp-page. That made the whole page scroll sideways. */
+  .tp-invisible-demo { max-width: 460px; margin: 44px auto 0; position: relative; }
   .tp-invisible-search { display: flex; align-items: center; gap: 10px; background: var(--tp-bg-card); border: 1px solid var(--tp-border); border-radius: 10px; padding: 12px 16px; }
   .tp-invisible-search-text { color: var(--tp-text-muted); font-size: 0.88rem; }
   .tp-invisible-list { position: relative; margin-top: 16px; }
@@ -297,8 +293,22 @@ const CSS = `
 
   /* ── Testimonial carousel ── */
   .tp-testimonial-card { border: 1px solid var(--tp-border); border-radius: 16px; background: var(--tp-bg-card); box-shadow: var(--tp-shadow); padding: 28px 24px; height: 100%; }
+  @media (max-width: 640px) {
+    /* One card is visible at a time here, so equal heights buy nothing and
+       cost a lot: every card stretched to match the longest review, leaving
+       ~400px of empty card under the short ones. Size to content instead. */
+    .tp-testimonial-card { height: auto; }
+  }
   .tp-testimonial-head { display: flex; align-items: center; gap: 12px; }
   .tp-testimonial-avatar { width: 52px; height: 52px; border-radius: 999px; object-fit: cover; flex-shrink: 0; }
+  /* For clients who left a written review but no photo or logo. Initials rather
+     than a stock portrait: a stand-in face beside a real person's name would
+     misrepresent them. */
+  .tp-testimonial-avatar--initials {
+    display: flex; align-items: center; justify-content: center;
+    background: var(--tp-bg); border: 1px solid var(--tp-border);
+    color: var(--tp-gold); font-size: 0.95rem; font-weight: 700; letter-spacing: 0.02em;
+  }
   .tp-testimonial-name { font-weight: 600; color: var(--tp-text-muted); font-size: 0.88rem; }
   .tp-testimonial-company { color: var(--tp-gold); font-size: 0.78rem; font-weight: 600; }
   /* The quote is the point of a testimonial — give it more visual weight than
@@ -330,12 +340,24 @@ const CSS = `
   .tp-case { display: grid; gap: 24px; border: 1px solid var(--tp-border); border-radius: 20px; background: var(--tp-bg-card); box-shadow: var(--tp-shadow); padding: 28px; }
   .tp-case-head { display: flex; align-items: center; gap: 12px; }
   .tp-case-logo { width: 50px; height: 50px; border-radius: 12px; border: 1px solid var(--tp-border); background: #fff; object-fit: contain; padding: 7px; flex-shrink: 0; }
+  /* Stands in for a client logo — we hold no logo assets for these businesses,
+     and a glyph is honest about being decoration in a way a stock mark is not. */
+  .tp-case-icon {
+    width: 50px; height: 50px; border-radius: 12px; flex-shrink: 0;
+    background: var(--tp-bg); border: 1px solid var(--tp-border);
+    display: flex; align-items: center; justify-content: center; font-size: 1.4rem;
+  }
   .tp-case-head h3 { color: var(--tp-text); font-size: 1.1rem; font-weight: 700; }
   .tp-case-head p { color: var(--tp-gold); font-size: 0.82rem; font-weight: 600; margin-top: 2px; }
   .tp-case-metrics { display: grid; gap: 8px; margin-top: 20px; }
   .tp-case-metric { display: flex; align-items: center; justify-content: space-between; gap: 10px; border-radius: 10px; background: rgba(244,241,234,0.03); border: 1px solid var(--tp-border); padding: 10px 14px; }
+  /* Phrase-length values (the tracked search term) stack under their label —
+     opposite it they collide in this narrow column and wrap mid-phrase. */
+  .tp-case-metric--stack { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .tp-case-metric--stack .tp-case-metric-val { font-size: 0.92rem; line-height: 1.4; }
   .tp-case-metric-val { color: var(--tp-gold); font-size: 1rem; font-weight: 700; }
   .tp-case-metric-label { color: var(--tp-text-muted); font-size: 0.78rem; }
+
 
   /* ── Before/after slider ── */
   .tp-baf-labels { display: flex; justify-content: space-between; margin-bottom: 8px; gap: 8px; }
@@ -345,8 +367,12 @@ const CSS = `
   /* Fixed aspect-ratio box, with BOTH before/after images object-fit: cover'd into
      it the same way — using one image's natural size to define the box (and only
      force-fitting the other) made mismatched-resolution before/after screenshot
-     pairs visibly jump in scale right at the seam. */
-  .tp-baf-frame { position: relative; overflow: hidden; border-radius: 14px; border: 1px solid var(--tp-border); background: #0d1520; max-width: 460px; margin: 0 auto; aspect-ratio: 1 / 1; touch-action: none; cursor: ew-resize; }
+     pairs visibly jump in scale right at the seam.
+     800/743 is the exact pixel ratio of the rank-scan frames after their date
+     header is cropped off. Matching it means object-fit: cover has nothing to crop,
+     so the grid's outermost ranking bubbles stay inside the frame — at 1/1 the
+     box ate ~7% of the width and clipped the edge columns. */
+  .tp-baf-frame { position: relative; overflow: hidden; border-radius: 14px; border: 1px solid var(--tp-border); background: #0d1520; max-width: 460px; margin: 0 auto; aspect-ratio: 800 / 743; touch-action: none; cursor: ew-resize; }
   .tp-baf-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
   .tp-baf-clip { position: absolute; inset: 0; overflow: hidden; }
   .tp-baf-line { position: absolute; top: 0; bottom: 0; width: 2px; background: rgba(244,241,234,0.85); transform: translateX(-50%); pointer-events: none; z-index: 2; }
@@ -456,8 +482,12 @@ const CSS = `
     background: var(--tp-gold); color: var(--tp-bg);
     font-size: 0.8rem; font-weight: 700; letter-spacing: 0.02em;
     padding: 0 22px; cursor: pointer; box-shadow: var(--tp-shadow);
-    transition: background 0.2s ease;
+    opacity: 0; transform: translateY(8px); pointer-events: none;
+    transition: background 0.2s ease, opacity 0.25s ease, transform 0.25s ease;
   }
+  /* Applied once the hero (and the primary CTA it contains) leaves the
+     viewport, so the pill can never sit on top of that button. */
+  .tp-floating-cta--in { opacity: 1; transform: none; pointer-events: auto; }
   .tp-floating-cta:hover { background: var(--tp-gold-soft); }
   @media (max-width: 640px) {
     .tp-floating-cta { right: 14px; bottom: 14px; font-size: 0.74rem; padding: 0 16px; min-height: 46px; }
@@ -467,27 +497,6 @@ const CSS = `
     .tp-footer-bottom { flex-direction: row; justify-content: space-between; }
   }
 `;
-
-const testimonials = [
-  {
-    name: "Lina Petrova",
-    company: "Placeholder Dental Studio",
-    avatar: avatarLina,
-    text: "We are very satisfied with the work delivered. Communication was smooth, with clear monthly reports. We reached our promised rankings sooner than expected.",
-  },
-  {
-    name: "Omar Farouq",
-    company: "Placeholder Auto Care Dubai",
-    avatar: avatarOmar,
-    text: "The LlamaMaps team exceeded our expectations. In a short time, they pushed our rankings into the TOP 5 and kept them there consistently.",
-  },
-  {
-    name: "Emily Carter",
-    company: "Placeholder Clinic Group UK",
-    avatar: avatarEmily,
-    text: "The results speak for themselves — within a few months, our Google Maps traffic increased multiple times, and the team kept us informed every step of the way.",
-  },
-];
 
 const brandLogos = [
   { src: artfiksa, alt: "Artfiksa Plytelės" },
@@ -622,7 +631,7 @@ const onboardingStepDetails = [
 ];
 
 const planFeatureList = [
-  "Guaranteed TOP 3 Positions",
+  "Top 3 Google Maps Positions Targeted",
   "AI-Powered Local Signal Boost",
   "GPS-Based Local Activity",
   "Google Business Profile SEO",
@@ -645,7 +654,7 @@ const communityIncluded = new Set(
 const plans = [
   {
     name: "Community",
-    badge: "Guaranteed Top 3 on Google Maps in 90 days",
+    badge: "Top 3 on Google Maps in 90 Days",
     image: pricingCommunity,
     description: "Perfect for local shops and service businesses that want better Google Maps visibility.",
     radius: "2.5-mile radius · 10 keywords · 10–20 direction signals/day",
@@ -654,7 +663,7 @@ const plans = [
   },
   {
     name: "City",
-    badge: "Guaranteed Top 3 on Google Maps in 90 days",
+    badge: "Top 3 on Google Maps in 90 Days",
     image: pricingCity,
     description: "Ideal for competitive businesses like clinics that want to dominate Google Maps locally.",
     radius: "5-mile radius · 20 keywords · 30–40 direction signals/day",
@@ -744,10 +753,10 @@ const TrialHero = () => {
   return (
     <section id="tp-home" className="tp-hero tp-topo">
       <div className="tp-container tp-hero-inner">
-        <span className="tp-hero-badge">🏆 Top 3 Google Maps in 90 days</span>
+        <span className="tp-hero-badge">Top 3 Google Maps in 90 Days</span>
         <span className="tp-hero-eyebrow">Clinic &amp; Local Business Owners:</span>
         <h1 className="tp-hero-h1">
-          Rank <em>TOP 3 on Google Maps</em> in 90 days — or we work for free
+          Rank <em>TOP 3 on Google Maps</em> in 90 Days
         </h1>
         <p className="tp-hero-sub">
           No paid ads. No outdated SEO tricks. No relying on word of mouth. Just a proven system that pushes your
@@ -806,7 +815,6 @@ const TrialRatingAndReviews = () => (
         <h2 className="tp-h2">What local businesses say</h2>
       </div>
 
-      {/* TODO: replace with real client testimonials */}
       <div style={{ marginTop: 44 }}>
         <Carousel opts={{ align: "start" }}>
           <CarouselContent>
@@ -820,7 +828,20 @@ const TrialRatingAndReviews = () => (
                   transition={{ duration: 0.45, delay: i * 0.1 }}
                 >
                   <div className="tp-testimonial-head">
-                    <img loading="lazy" decoding="async" className="tp-testimonial-avatar" src={t.avatar} alt={t.name} />
+                    {t.avatar ? (
+                      <img
+                        loading="lazy"
+                        decoding="async"
+                        className="tp-testimonial-avatar"
+                        style={t.avatarFit === "contain" ? { objectFit: "contain", padding: 8, background: "#fff" } : undefined}
+                        src={t.avatar}
+                        alt={t.name}
+                      />
+                    ) : (
+                      <div className="tp-testimonial-avatar tp-testimonial-avatar--initials" aria-hidden="true">
+                        {initialsOf(t.name)}
+                      </div>
+                    )}
                     <div>
                       <div className="tp-testimonial-name">{t.name}</div>
                       <div className="tp-testimonial-company">{t.company}</div>
@@ -831,8 +852,10 @@ const TrialRatingAndReviews = () => (
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="-left-4" />
-          <CarouselNext className="-right-4" />
+          {/* Hidden on phones: at 390px these sit on top of the review text.
+              The carousel is swipeable, which is the expected gesture there. */}
+          <CarouselPrevious className="-left-4 hidden sm:inline-flex" />
+          <CarouselNext className="-right-4 hidden sm:inline-flex" />
         </Carousel>
       </div>
     </div>
@@ -898,6 +921,34 @@ const TrialMission = () => {
   );
 };
 
+const TrialCaseCard = ({ study }: { study: CaseStudy }) => (
+  <article className="tp-case">
+    <div>
+      <div className="tp-case-head">
+        <div className="tp-case-icon" aria-hidden="true">{study.icon}</div>
+        <div>
+          <h3>{study.business}</h3>
+          <p>{study.location}</p>
+        </div>
+      </div>
+      <div className="tp-case-metrics">
+        {study.metrics.map((m) => (
+          <div key={m.label} className={`tp-case-metric${m.stack ? " tp-case-metric--stack" : ""}`}>
+            <span className="tp-case-metric-label">{m.label}</span>
+            <span className="tp-case-metric-val">{m.value}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+    <BeforeAfterSlider
+      before={study.before}
+      after={study.after}
+      beforeLabel={study.beforeLabel}
+      afterLabel={study.afterLabel}
+    />
+  </article>
+);
+
 const TrialCaseStudies = () => {
   const { openTrialModal } = useTrialModal();
   return (
@@ -909,84 +960,15 @@ const TrialCaseStudies = () => {
             How local businesses <em>grew</em> on Google Maps
           </h2>
           <p className="tp-lead tp-center">
-            From a dental clinic in Utena to an auto repair shop in Kaunas and a spa retreat — these are live, verified
-            projects.
+            Eleven real clients across five countries, seventeen before/after maps — metalwork in West Sussex, hail repair in Texas, removals on the
+            Sunshine Coast. Drag the handle to see the same map before and after.
           </p>
         </div>
 
-        {/* TODO: replace with verified before/after screenshots per case */}
         <div className="tp-cases">
-          <article className="tp-case">
-            <div>
-              <div className="tp-case-head">
-                <div style={{ width: 50, height: 50, borderRadius: 12, background: "var(--tp-bg)", border: "1px solid var(--tp-border)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.4rem", flexShrink: 0 }}>🦷</div>
-                <div>
-                  <h3>Clinic DPC Utena</h3>
-                  <p>Local SEO success story</p>
-                </div>
-              </div>
-              <div className="tp-case-metrics">
-                <div className="tp-case-metric"><span className="tp-case-metric-label">Position achieved</span><span className="tp-case-metric-val">Rank 1</span></div>
-                <div className="tp-case-metric"><span className="tp-case-metric-label">Calls increased</span><span className="tp-case-metric-val">2.7x</span></div>
-                <div className="tp-case-metric"><span className="tp-case-metric-label">Organic Maps traffic</span><span className="tp-case-metric-val">+187%</span></div>
-                <div className="tp-case-metric"><span className="tp-case-metric-label">Rankings improved (local radius)</span><span className="tp-case-metric-val">6 weeks</span></div>
-              </div>
-            </div>
-            <BeforeAfterSlider
-              before={clinicBefore}
-              after={clinicAfter}
-              beforeLabel="Before · Rank 9"
-              afterLabel="After · Rank 1"
-            />
-          </article>
-
-          <article className="tp-case">
-            <div>
-              <div className="tp-case-head">
-                <img loading="lazy" decoding="async" className="tp-case-logo" src={wheelshopLogo} alt="WheelShop" />
-                <div>
-                  <h3>WheelShop Auto Service</h3>
-                  <p>Kaunas</p>
-                </div>
-              </div>
-              <div className="tp-case-metrics">
-                <div className="tp-case-metric"><span className="tp-case-metric-label">Position achieved</span><span className="tp-case-metric-val">Top 2</span></div>
-                <div className="tp-case-metric"><span className="tp-case-metric-label">Enquiries increased</span><span className="tp-case-metric-val">3.1x</span></div>
-                <div className="tp-case-metric"><span className="tp-case-metric-label">Organic Maps traffic</span><span className="tp-case-metric-val">+312%</span></div>
-                <div className="tp-case-metric"><span className="tp-case-metric-label">Rankings improved (local radius)</span><span className="tp-case-metric-val">8 weeks</span></div>
-              </div>
-            </div>
-            <BeforeAfterSlider
-              before={wheelshopBefore}
-              after={wheelshopAfter}
-              beforeLabel="Before · Not found"
-              afterLabel="After · Top 2"
-            />
-          </article>
-
-          <article className="tp-case">
-            <div>
-              <div className="tp-case-head">
-                <img loading="lazy" decoding="async" className="tp-case-logo" src={svajoniuLogo} alt="Svajonių SPA" />
-                <div>
-                  <h3>Svajonių SPA</h3>
-                  <p>Local SEO success story</p>
-                </div>
-              </div>
-              <div className="tp-case-metrics">
-                <div className="tp-case-metric"><span className="tp-case-metric-label">Position achieved</span><span className="tp-case-metric-val">Rank 1</span></div>
-                <div className="tp-case-metric"><span className="tp-case-metric-label">Bookings increased</span><span className="tp-case-metric-val">2.2x</span></div>
-                <div className="tp-case-metric"><span className="tp-case-metric-label">Organic Maps traffic</span><span className="tp-case-metric-val">+164%</span></div>
-                <div className="tp-case-metric"><span className="tp-case-metric-label">Rankings improved (local radius)</span><span className="tp-case-metric-val">7 weeks</span></div>
-              </div>
-            </div>
-            <BeforeAfterSlider
-              before={svajoniuBefore}
-              after={svajoniuAfter}
-              beforeLabel="Before · Rank 11"
-              afterLabel="After · Rank 1"
-            />
-          </article>
+          {caseStudies.map((c) => (
+            <TrialCaseCard key={c.slug} study={c} />
+          ))}
         </div>
 
         <div className="tp-cta-row">
@@ -1336,7 +1318,7 @@ const TrialPage = () => {
     <>
       <SEO
         title="Free 7-Day Google Maps Trial | LlamaMaps"
-        description="Rank TOP 3 on Google Maps in 90 days — or we work for free. Start your free trial with LlamaMaps, no account access or credit card required."
+        description="Rank TOP 3 on Google Maps in 90 days. Start your free trial with LlamaMaps, no account access or credit card required."
         noindex
         jsonLd={[organizationSchema(), faqSchema(faqs)]}
       />

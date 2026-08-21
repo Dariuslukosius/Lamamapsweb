@@ -27,7 +27,14 @@ const ISOLATED_LANDING_PATHS = new Set(["/trial", "/trial-hormozi"]);
 
 const GlobalCalendlyBadge = () => {
   const { pathname } = useLocation();
-  if (ISOLATED_LANDING_PATHS.has(pathname)) return null;
+  // Match on a normalised path, not the raw one. Ad URLs arrive in whatever
+  // shape they were pasted into the ad platform, and llamamaps.com serves
+  // "/trial/" with a 200 rather than redirecting it to "/trial" — so the raw
+  // lookup missed, the badge rendered on the landing page anyway, and it sits
+  // in the same corner as the page's own floating CTA, intercepting its clicks.
+  // Paid traffic would have been sent to the one URL shape that breaks the CTA.
+  const normalizedPath = pathname.replace(/\/+$/, "").toLowerCase() || "/";
+  if (ISOLATED_LANDING_PATHS.has(normalizedPath)) return null;
   return <CalendlyBadge />;
 };
 

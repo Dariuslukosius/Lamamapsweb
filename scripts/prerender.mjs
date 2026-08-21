@@ -33,6 +33,24 @@ async function launchBrowser() {
   return chromium.launch();
 }
 
+
+// page.content() serialises the LIVE DOM, which by then contains the <script>
+// tags third-party loaders injected into themselves. The Meta Pixel is the one
+// that matters: its inline snippet in index.html injects fbevents.js at runtime,
+// so baking those injected tags into the snapshot makes the browser fetch and
+// execute fbevents.js several times on a real visit. The second copy overwrites
+// the first one's module registry and the page throws
+// "a.__fbeventsModules[e] is not a function" — with ad traffic pointed at these
+// exact pages, a half-initialised pixel is the last thing we want.
+//
+// Strip them; the inline snippet re-injects a single clean copy at runtime.
+function stripInjectedVendorScripts(html) {
+  return html.replace(
+    /<script[^>]*\ssrc="https:\/\/connect\.facebook\.net\/[^"]*"[^>]*>\s*<\/script>/g,
+    "",
+  );
+}
+
 async function main() {
   const server = await preview({ preview: { port: 4173, strictPort: true } });
   const base = `http://localhost:4173`;
@@ -46,7 +64,7 @@ async function main() {
     // networkidle resolve. A short extra wait lets React finish rendering.
     await page.goto(`${base}${route}`, { waitUntil: "load", timeout: 30000 });
     await page.waitForTimeout(1500);
-    const html = await page.content();
+    const html = stripInjectedVendorScripts(await page.content());
 
     const outDir = route === "/" ? "dist" : path.join("dist", route.replace(/^\//, ""));
     await mkdir(outDir, { recursive: true });
