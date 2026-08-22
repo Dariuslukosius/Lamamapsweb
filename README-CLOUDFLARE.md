@@ -226,6 +226,31 @@ sending from an automated browser on an unrecognised host — expected, not a
 defect. The pixel's health is proven by the other checks. Confirm real beacons
 on the live domain with the Meta Pixel Helper extension after the first deploy.
 
+### Turn off Cloudflare's AI crawler blocking
+
+**Cloudflare enables "AI Crawl Control" by default on new zones, and it breaks
+this site's GEO/AEO setup.** Measured on the first live deployment:
+
+- `GET /robots.txt` was intercepted at the edge and answered with Cloudflare's
+  own generated file — prepended above ours, declaring `Content-Signal:
+  ai-train=no` and `Disallow: /` for GPTBot, ClaudeBot, CCBot, Amazonbot,
+  Bytespider, Google-Extended, Applebot-Extended and meta-externalagent. Our
+  `_headers` never applied to it either.
+- Worse, the crawlers were **403ed at the HTTP level**, not merely asked not to
+  crawl: GPTBot, OAI-SearchBot, ChatGPT-User, ClaudeBot, Claude-User,
+  Claude-SearchBot, PerplexityBot, Perplexity-User, DuckAssistBot,
+  MistralAI-User, YouBot, CCBot, Amazonbot, Bytespider, meta-externalagent.
+  Googlebot, Bingbot, Applebot, LinkedInBot and Twitterbot were unaffected.
+
+`OAI-SearchBot`, `ChatGPT-User`, `Claude-User` and `PerplexityBot` are *answer
+engine* fetchers, not training crawlers — blocking them removes the site from
+ChatGPT, Claude and Perplexity answers entirely, which is the opposite of what
+`ai.json`, `llms.txt`, `agents.json` and `.well-known/agent-card.json` exist for.
+
+Fix in the dashboard: **the zone → Security → Bots → AI Crawl Control** —
+disable the managed `robots.txt` and the block rule. Nothing in this repo can
+override it. `scripts/verify-deploy.mjs` detects the managed file and says so.
+
 ### After every deploy, check by hand
 
 ```bash

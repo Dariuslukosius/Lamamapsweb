@@ -85,9 +85,10 @@ export async function startPagesServer({ dist = "dist", port = 8791, onRequest }
     const abs = path.join(dist, rel);
 
     if (rel && await isFile(abs)) {
-      // Pages canonicalises .html URLs to their extensionless form.
+      // Pages canonicalises .html URLs to their extensionless form. It uses
+      // 307, not the 308 the docs imply — measured against the live deployment.
       if (abs.endsWith(".html") && !abs.endsWith("index.html")) {
-        return { redirect: pathname.replace(/\.html$/, ""), status: 308 };
+        return { redirect: pathname.replace(/\.html$/, ""), status: 307 };
       }
       return { file: abs };
     }

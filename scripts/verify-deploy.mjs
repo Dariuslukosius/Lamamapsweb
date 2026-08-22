@@ -91,8 +91,12 @@ async function checkTrailingSlashAndHtml() {
       `${route}/ must redirect to ${route}`,
       `got ${slashed.status} -> ${slashed.headers.get("location")}`);
 
+    // Cloudflare answers this one with a 307, not a 308 — measured against the
+    // live deployment, where the docs had implied 308. Harmless: nothing links
+    // to a .html URL, none are in the sitemap, and the canonical on the page
+    // points at the extensionless form regardless.
     const dotHtml = await get(`${route}.html`);
-    check([301, 308].includes(dotHtml.status) && dotHtml.headers.get("location") === route,
+    check([301, 307, 308].includes(dotHtml.status) && dotHtml.headers.get("location")?.endsWith(route),
       `${route}.html must redirect to ${route}`,
       `got ${dotHtml.status} -> ${dotHtml.headers.get("location")}`);
   }
@@ -145,6 +149,35 @@ async function checkCrawlerFiles() {
 
   const security = await get("/*");
   check(security.status === 404 || security.status === 200, "server sanity");
+
+  await checkRobotsIsOurs();
+}
+
+// Cloudflare ships an "AI Crawl Control" / managed-robots.txt feature that is
+// ON BY DEFAULT on new zones. When enabled it intercepts GET /robots.txt at the
+// edge and serves its OWN generated file — our _headers never apply, and worse,
+// its block declares `Disallow: /` for GPTBot, ClaudeBot, CCBot, Google-Extended
+// and friends, plus `Content-Signal: ai-train=no`.
+//
+// That is the exact inverse of this project's robots.txt, which deliberately
+// allows every answer engine and training crawler, and it silently undoes the
+// GEO/AEO work. It is a dashboard setting, so no amount of correct build output
+// fixes it — which is why this check names the cause instead of just reporting
+// three missing headers.
+async function checkRobotsIsOurs() {
+  const res = await get("/robots.txt", "follow");
+  const body = await res.text();
+  const managed = /Cloudflare Managed content|Content-Signal:/i.test(body);
+  check(!managed,
+    "robots.txt is being replaced by Cloudflare's managed robots.txt",
+    "Turn it off: Cloudflare dashboard -> the zone -> AI Crawl Control (Security -> Bots) " +
+    "-> disable the managed robots.txt AND the 'block AI crawlers' rule. It currently serves " +
+    "Disallow: / for the AI crawlers this site's own robots.txt explicitly allows.");
+
+  if (!managed) {
+    check(body.includes("User-agent: GPTBot") && body.includes("Sitemap:"),
+      "robots.txt served is the one in public/", "the body does not match the repo's file");
+  }
 }
 
 async function checkSecurityAndCacheHeaders() {
