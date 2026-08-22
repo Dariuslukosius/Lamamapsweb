@@ -985,7 +985,6 @@ const ServicesPage = () => {
               <img loading="lazy" decoding="async"
                 src={logo.src}
                 alt={logo.alt}
-                loading="lazy"
                 className="h-14 w-auto object-contain brightness-0 md:h-16"
               />
             </motion.div>

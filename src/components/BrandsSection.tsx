@@ -59,7 +59,6 @@ const BrandsSection = () => (
             <img loading="lazy" decoding="async"
               src={b.src}
               alt={b.alt}
-              loading="lazy"
               className="h-14 md:h-16 w-auto object-contain brightness-0"
             />
           </motion.div>

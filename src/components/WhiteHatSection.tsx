@@ -18,7 +18,6 @@ const WhiteHatSection = () => (
               src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80"
               alt="SEO analytics dashboard showing organic growth"
               className="w-full h-full object-cover"
-              loading="lazy"
             />
           </div>
           <div className="absolute -bottom-6 -right-6 rounded-xl bg-card shadow-lg border border-border p-5 flex items-center gap-3">
