@@ -1,4 +1,9 @@
-export const SITE_URL = "https://llamamaps.com";
+import { BRAND_URL, SITE_URL } from "./siteConfig";
+
+// Re-exported so the seven modules that already import SITE_URL from here keep
+// working. BRAND_URL vs SITE_URL is explained in siteConfig.ts: entity @ids and
+// cross-page links use BRAND_URL, this page's own URLs use SITE_URL.
+export { SITE_URL };
 
 const SOCIAL_PROFILES = [
   "https://www.facebook.com/profile.php?id=61576212845220",
@@ -15,18 +20,18 @@ export const organizationSchema = ({ aggregateRating, employees }: OrganizationO
   // Google and answer engines classify Llamamaps as a service provider rather
   // than a generic company, which is what local/agency queries match against.
   "@type": ["Organization", "ProfessionalService"],
-  "@id": `${SITE_URL}/#organization`,
+  "@id": `${BRAND_URL}/#organization`,
   name: "Llamamaps",
   alternateName: "LlamaMaps",
-  url: `${SITE_URL}/`,
+  url: `${BRAND_URL}/`,
   logo: {
     "@type": "ImageObject",
-    "@id": `${SITE_URL}/#logo`,
-    url: `${SITE_URL}/llama-logo.png`,
-    contentUrl: `${SITE_URL}/llama-logo.png`,
+    "@id": `${BRAND_URL}/#logo`,
+    url: `${BRAND_URL}/llama-logo.png`,
+    contentUrl: `${BRAND_URL}/llama-logo.png`,
     caption: "Llamamaps",
   },
-  image: `${SITE_URL}/og-image.png`,
+  image: `${BRAND_URL}/og-image.png`,
   slogan: "TOP 3 on Google Maps in 90 days, or we work for free.",
   knowsAbout: [
     "Local SEO",
@@ -44,7 +49,7 @@ export const organizationSchema = ({ aggregateRating, employees }: OrganizationO
   contactPoint: {
     "@type": "ContactPoint",
     contactType: "customer service",
-    url: `${SITE_URL}/contacts`,
+    url: `${BRAND_URL}/contacts`,
     availableLanguage: ["English"],
   },
   ...(aggregateRating
@@ -55,7 +60,7 @@ export const organizationSchema = ({ aggregateRating, employees }: OrganizationO
             ratingValue: "4.5",
             reviewCount: "22",
             bestRating: "5",
-            itemReviewed: { "@id": `${SITE_URL}/#organization` },
+            itemReviewed: { "@id": `${BRAND_URL}/#organization` },
             url: "https://www.trustpilot.com/review/llamamaps.com",
           },
           {
@@ -63,7 +68,7 @@ export const organizationSchema = ({ aggregateRating, employees }: OrganizationO
             ratingValue: "4.9",
             reviewCount: "45",
             bestRating: "5",
-            itemReviewed: { "@id": `${SITE_URL}/#organization` },
+            itemReviewed: { "@id": `${BRAND_URL}/#organization` },
           },
         ],
       }
@@ -81,12 +86,12 @@ export const organizationSchema = ({ aggregateRating, employees }: OrganizationO
 
 export const websiteSchema = () => ({
   "@type": "WebSite",
-  "@id": `${SITE_URL}/#website`,
-  url: `${SITE_URL}/`,
+  "@id": `${BRAND_URL}/#website`,
+  url: `${BRAND_URL}/`,
   name: "Llamamaps",
   description:
     "Local SEO agency helping local businesses reach TOP 3 rankings on Google Maps.",
-  publisher: { "@id": `${SITE_URL}/#organization` },
+  publisher: { "@id": `${BRAND_URL}/#organization` },
   inLanguage: "en-US",
 });
 
@@ -113,9 +118,9 @@ export const webPageSchema = ({
   name,
   description,
   primaryImageOfPage: { "@type": "ImageObject", url: image },
-  isPartOf: { "@id": `${SITE_URL}/#website` },
-  about: { "@id": `${SITE_URL}/#organization` },
-  publisher: { "@id": `${SITE_URL}/#organization` },
+  isPartOf: { "@id": `${BRAND_URL}/#website` },
+  about: { "@id": `${BRAND_URL}/#organization` },
+  publisher: { "@id": `${BRAND_URL}/#organization` },
   inLanguage: "en-US",
 });
 
@@ -126,15 +131,15 @@ export const webPageSchema = ({
  */
 export const contactPageSchema = () => ({
   "@type": "ContactPage",
-  "@id": `${SITE_URL}/contacts#contactpage`,
-  url: `${SITE_URL}/contacts`,
+  "@id": `${BRAND_URL}/contacts#contactpage`,
+  url: `${BRAND_URL}/contacts`,
   name: "Contact Llamamaps",
   description:
     "Contact Llamamaps to request a free Google Maps SEO audit or book a 30-minute consultation with a local search specialist.",
-  isPartOf: { "@id": `${SITE_URL}/#website` },
-  about: { "@id": `${SITE_URL}/#organization` },
+  isPartOf: { "@id": `${BRAND_URL}/#website` },
+  about: { "@id": `${BRAND_URL}/#organization` },
   mainEntity: {
-    "@id": `${SITE_URL}/#organization`,
+    "@id": `${BRAND_URL}/#organization`,
   },
   potentialAction: {
     "@type": "ReserveAction",
@@ -150,6 +155,9 @@ export const contactPageSchema = () => ({
   },
 });
 
+// SITE_URL, not BRAND_URL: a breadcrumb describes the trail to *this* page on
+// *this* host. It is only ever emitted by the main-site pages (About, Contacts,
+// Privacy, Services), where the two are the same value anyway.
 export const breadcrumbSchema =(items: { name: string; path: string }[]) => ({
   "@type": "BreadcrumbList",
   itemListElement: items.map((item, index) => ({
@@ -174,12 +182,12 @@ export const faqSchema = (faqs: { question: string; answer: string }[]) => ({
 
 export const serviceSchema = () => ({
   "@type": "Service",
-  "@id": `${SITE_URL}/services#service`,
+  "@id": `${BRAND_URL}/services#service`,
   name: "Local SEO & Google Maps Ranking Service",
   serviceType: "Local SEO",
-  provider: { "@id": `${SITE_URL}/#organization` },
+  provider: { "@id": `${BRAND_URL}/#organization` },
   areaServed: "Europe",
-  url: `${SITE_URL}/services`,
+  url: `${BRAND_URL}/services`,
   description:
     "Local SEO service focused on Google Business Profile optimization, on-page local SEO, link building, and ranking-signal generation to reach TOP 3 on Google Maps.",
   hasOfferCatalog: {
@@ -191,9 +199,9 @@ export const serviceSchema = () => ({
         name: "Community Plan",
         priceCurrency: "GBP",
         price: "500",
-        url: `${SITE_URL}/services`,
+        url: `${BRAND_URL}/services`,
         availability: "https://schema.org/InStock",
-        seller: { "@id": `${SITE_URL}/#organization` },
+        seller: { "@id": `${BRAND_URL}/#organization` },
         priceSpecification: {
           "@type": "UnitPriceSpecification",
           price: "500",
@@ -211,9 +219,9 @@ export const serviceSchema = () => ({
         name: "City Plan",
         priceCurrency: "GBP",
         price: "1000",
-        url: `${SITE_URL}/services`,
+        url: `${BRAND_URL}/services`,
         availability: "https://schema.org/InStock",
-        seller: { "@id": `${SITE_URL}/#organization` },
+        seller: { "@id": `${BRAND_URL}/#organization` },
         priceSpecification: {
           "@type": "UnitPriceSpecification",
           price: "1000",

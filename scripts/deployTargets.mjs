@@ -1,0 +1,82 @@
+// Single source of truth for what each deployment contains.
+//
+// The build pipeline has two Node steps that both need to agree with the React
+// router in src/App.tsx about which paths exist: prerender.mjs (which snapshots
+// them) and site-files.mjs (which lists them in sitemap.xml). Cloudflare Pages
+// has no SPA catch-all in this setup — see cloudflare/_headers-and-redirects in
+// README-CLOUDFLARE.md for why — so a path that App.tsx routes but this file
+// forgets is a hard 404 in production, not a slow client-side render.
+//
+// src/test/routes.test.ts fails the build if this file and App.tsx disagree.
+
+/** @typedef {"main" | "trial" | "landingpage"} DeployTarget */
+
+/** @type {DeployTarget[]} */
+export const DEPLOY_TARGETS = ["main", "trial", "landingpage"];
+
+export const DEFAULT_SITE_URL = "https://llamamaps.com";
+
+/**
+ * Reads the target for the current build. Kept in one place so prerender and
+ * site-files can never disagree about which product they are producing.
+ * @returns {DeployTarget}
+ */
+export function currentTarget() {
+  const target = process.env.VITE_DEPLOY_TARGET || "main";
+  if (!DEPLOY_TARGETS.includes(target)) {
+    throw new Error(
+      `VITE_DEPLOY_TARGET="${target}" is not one of: ${DEPLOY_TARGETS.join(", ")}`,
+    );
+  }
+  return /** @type {DeployTarget} */ (target);
+}
+
+export function currentSiteUrl() {
+  return (process.env.VITE_SITE_URL || DEFAULT_SITE_URL).replace(/\/+$/, "");
+}
+
+const TARGETS = {
+  // The live site. This list is deliberately identical to the one the project
+  // ran on Vercel, so the migration itself changes no URL.
+  main: {
+    // Prerendered and served as static HTML.
+    routes: ["/", "/about", "/services", "/contacts", "/privacy", "/trial", "/free-trial", "/landingpage"],
+    // Listed in sitemap.xml. /trial, /free-trial and /landingpage carry a
+    // page-level noindex, so listing them would send Google contradictory
+    // signals — the same reasoning the hand-written sitemap already used.
+    indexable: ["/", "/services", "/about", "/contacts", "/privacy"],
+    // Server-side 301s, emitted into _redirects.
+    redirects: [
+      // The A/B variant shipped as /trial-hormozi before it was renamed to
+      // /landingpage. Anything already linking to the old path keeps working.
+      ["/trial-hormozi", "/landingpage"],
+    ],
+  },
+  // Phase 2: /trial gets its own domain and becomes that domain's home page.
+  trial: {
+    routes: ["/"],
+    indexable: [],
+    redirects: [["/trial", "/"]],
+  },
+  // Phase 2: /landingpage gets its own domain, on the same terms.
+  landingpage: {
+    routes: ["/"],
+    indexable: [],
+    redirects: [["/landingpage", "/"]],
+  },
+};
+
+/** @param {DeployTarget} target */
+export function targetConfig(target) {
+  const config = TARGETS[target];
+  if (!config) throw new Error(`Unknown deploy target: ${target}`);
+  return config;
+}
+
+/**
+ * Path used to prerender the catch-all route into dist/404.html.
+ * Cloudflare Pages resolves extensionless URLs, so "/404" is the URL this
+ * snapshot is reachable at — which keeps its self-referencing canonical
+ * honest instead of pointing at a path that does not exist.
+ */
+export const NOT_FOUND_PRERENDER_PATH = "/404";

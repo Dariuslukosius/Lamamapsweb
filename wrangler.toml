@@ -1,0 +1,14 @@
+# Cloudflare Pages project configuration.
+#
+# `pages_build_output_dir` is what makes this a Pages project rather than a
+# Worker: wrangler uploads that directory, and Cloudflare picks up dist/_headers
+# and dist/_redirects from inside it.
+#
+# The three deployments (main site, /trial domain, /landingpage domain) are
+# three separate Pages projects built from this same repo, distinguished by
+# their VITE_DEPLOY_TARGET / VITE_SITE_URL environment variables — see
+# README-CLOUDFLARE.md. Override the project name per deployment with
+# `wrangler pages deploy dist --project-name=<name>`.
+name = "llamamaps"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-08-22"

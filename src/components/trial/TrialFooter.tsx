@@ -1,5 +1,6 @@
 import { Facebook, Instagram } from "lucide-react";
 import llamaLogo from "@/assets/llama-logo.webp";
+import { privacyUrl } from "@/lib/siteConfig";
 
 const footerLinks = [
   { label: "Case Studies", href: "#case-studies" },
@@ -29,7 +30,7 @@ const TrialFooter = () => (
           </a>
         ))}
         {/* Privacy Policy is a legal requirement — the only exception to this page's no-outbound-links rule */}
-        <a href="/privacy" target="_blank" rel="noreferrer">
+        <a href={privacyUrl()} target="_blank" rel="noreferrer">
           Privacy Policy
         </a>
       </nav>

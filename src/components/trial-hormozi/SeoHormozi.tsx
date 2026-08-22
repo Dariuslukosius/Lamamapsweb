@@ -1,7 +1,7 @@
-// Copy of components/SEO.tsx, owned by /trial-hormozi alone.
+// Copy of components/SEO.tsx, owned by /landingpage alone.
 //
 // Why a copy rather than an edit: SEO.tsx is imported by seven live pages, and
-// /trial-hormozi needs one thing none of them do — a canonical that points at a
+// /landingpage needs one thing none of them do — a canonical that points at a
 // *different* URL than its own. It is an A/B duplicate of /trial, so it must
 // declare /trial as the authoritative original instead of itself.
 import { useEffect } from "react";
@@ -60,8 +60,12 @@ const SeoHormozi = ({
     // Canonical URL — built from the real domain, not window.location, so it
     // stays correct when prerendered on a build host.
     const ownPath = location.pathname === "/" ? "/" : location.pathname.replace(/\/$/, "");
-    const pathname = canonicalPath ?? ownPath;
-    const canonicalUrl = `${SITE_URL}${pathname}`;
+    const target = canonicalPath ?? ownPath;
+    // canonicalPath accepts an absolute URL as well as a path. It has to: once
+    // /trial moves to its own domain, the page this one defers to is no longer
+    // on this origin, and joining it to SITE_URL would produce a 404 on our own
+    // host. See landingPageCanonical() in lib/siteConfig.ts.
+    const canonicalUrl = /^https?:\/\//.test(target) ? target : `${SITE_URL}${target}`;
     const imageUrl = absoluteUrl(image ?? DEFAULT_OG_IMAGE);
 
     // Update OpenGraph Title & Description

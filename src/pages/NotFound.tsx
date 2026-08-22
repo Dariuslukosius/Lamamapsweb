@@ -1,5 +1,6 @@
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import SEO from "@/components/SEO";
 
 const NotFound = () => {
   const location = useLocation();
@@ -10,6 +11,16 @@ const NotFound = () => {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted">
+      {/* Without this the page inherited index.html's head verbatim: the site
+          title, "index, follow", and a canonical claiming to be the home page.
+          Cloudflare serves this component's prerendered snapshot for every
+          unknown URL, so that head would have invited Google to index an
+          unlimited number of URLs as duplicates of the home page. */}
+      <SEO
+        title="404 — Page Not Found | Llamamaps"
+        description="This page does not exist. Return to Llamamaps for local SEO services that put your business in the TOP 3 on Google Maps."
+        noindex
+      />
       <div className="text-center">
         <h1 className="mb-4 text-4xl font-bold">404</h1>
         <p className="mb-4 text-xl text-muted-foreground">Oops! Page not found</p>

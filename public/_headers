@@ -1,0 +1,116 @@
+# Cloudflare Pages header rules. Direct translation of the "headers" block that
+# vercel.json used, so the migration changes no response header.
+#
+# Differences forced by the format, not by choice:
+#   - Cloudflare matches path patterns with a `*` splat, not regex, so Vercel's
+#     single `/(.*)\.(png|jpg|...)` rule becomes one block per extension.
+#   - There is no alternation, so `/(ai.json|agents.json|...)` becomes one block
+#     per file.
+# Rules are cumulative: every matching block contributes its headers, and a
+# later block wins on a header both set. Limit is 100 rules; this uses ~25.
+
+# ── Site-wide security headers ───────────────────────────────────────────────
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: SAMEORIGIN
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), interest-cohort=()
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+
+# ── Immutable build output ───────────────────────────────────────────────────
+# Everything under /assets/ carries a content hash in its filename, so a
+# one-year immutable cache can never serve a stale file.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# ── Static media ─────────────────────────────────────────────────────────────
+# Matches Vercel's extension rule. Note these paths are NOT content-hashed
+# (og-image.png, favicon.ico, the overview PDF), so replacing one of them means
+# giving it a new filename — an immutable year is exactly what it says.
+/*.png
+  Cache-Control: public, max-age=31536000, immutable
+/*.jpg
+  Cache-Control: public, max-age=31536000, immutable
+/*.jpeg
+  Cache-Control: public, max-age=31536000, immutable
+/*.gif
+  Cache-Control: public, max-age=31536000, immutable
+/*.webp
+  Cache-Control: public, max-age=31536000, immutable
+/*.svg
+  Cache-Control: public, max-age=31536000, immutable
+/*.ico
+  Cache-Control: public, max-age=31536000, immutable
+/*.woff
+  Cache-Control: public, max-age=31536000, immutable
+/*.woff2
+  Cache-Control: public, max-age=31536000, immutable
+/*.pdf
+  Cache-Control: public, max-age=31536000, immutable
+
+# ── Crawler- and agent-facing documents ──────────────────────────────────────
+# Short cache so a policy edit propagates in minutes; CORS open so answer
+# engines can fetch them from a browser context; X-Robots-Tag: all to override
+# any inherited noindex.
+/ai.json
+  Content-Type: application/json; charset=utf-8
+  Access-Control-Allow-Origin: *
+  X-Robots-Tag: all
+  Cache-Control: public, max-age=300, must-revalidate
+/agents.json
+  Content-Type: application/json; charset=utf-8
+  Access-Control-Allow-Origin: *
+  X-Robots-Tag: all
+  Cache-Control: public, max-age=300, must-revalidate
+/manifest.json
+  Content-Type: application/json; charset=utf-8
+  Access-Control-Allow-Origin: *
+  X-Robots-Tag: all
+  Cache-Control: public, max-age=300, must-revalidate
+/.well-known/agent-card.json
+  Content-Type: application/json; charset=utf-8
+  Access-Control-Allow-Origin: *
+  X-Robots-Tag: all
+  Cache-Control: public, max-age=300, must-revalidate
+/.well-known/tdmrep.json
+  Content-Type: application/json; charset=utf-8
+  Access-Control-Allow-Origin: *
+  X-Robots-Tag: all
+  Cache-Control: public, max-age=300, must-revalidate
+
+/ai.txt
+  Content-Type: text/plain; charset=utf-8
+  Access-Control-Allow-Origin: *
+  X-Robots-Tag: all
+  Cache-Control: public, max-age=300, must-revalidate
+/llms.txt
+  Content-Type: text/plain; charset=utf-8
+  Access-Control-Allow-Origin: *
+  X-Robots-Tag: all
+  Cache-Control: public, max-age=300, must-revalidate
+/llms-full.txt
+  Content-Type: text/plain; charset=utf-8
+  Access-Control-Allow-Origin: *
+  X-Robots-Tag: all
+  Cache-Control: public, max-age=300, must-revalidate
+/humans.txt
+  Content-Type: text/plain; charset=utf-8
+  Access-Control-Allow-Origin: *
+  X-Robots-Tag: all
+  Cache-Control: public, max-age=300, must-revalidate
+/robots.txt
+  Content-Type: text/plain; charset=utf-8
+  Access-Control-Allow-Origin: *
+  X-Robots-Tag: all
+  Cache-Control: public, max-age=300, must-revalidate
+/.well-known/security.txt
+  Content-Type: text/plain; charset=utf-8
+  Access-Control-Allow-Origin: *
+  X-Robots-Tag: all
+  Cache-Control: public, max-age=300, must-revalidate
+
+/sitemap.xml
+  Content-Type: application/xml; charset=utf-8
+  Access-Control-Allow-Origin: *
+  X-Robots-Tag: all
+  Cache-Control: public, max-age=300, must-revalidate

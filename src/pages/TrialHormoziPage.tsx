@@ -4,6 +4,7 @@ import { ArrowRight, Check, X, Star } from "lucide-react";
 
 import SeoHormozi from "@/components/trial-hormozi/SeoHormozi";
 import { organizationSchema, faqSchema } from "@/lib/structuredData";
+import { landingPageCanonical } from "@/lib/siteConfig";
 import TrialNavbar from "@/components/trial-hormozi/TrialNavbar";
 import TrialFooter from "@/components/trial-hormozi/TrialFooter";
 import { TrialModalProvider, useTrialModal } from "@/components/trial-hormozi/TrialModalContext";
@@ -25,18 +26,26 @@ import llamaLogo from "@/assets/llama-logo.webp";
 import googlePartnerLogo from "@/assets/partners/google-partner-logo-png_seeklogo-428155.webp";
 
 
+import agrijaBrand from "@/assets/brands/agrija.webp";
 import artfiksa from "@/assets/brands/artfiksa.webp";
 import autoVela from "@/assets/brands/auto-vela.webp";
 import clinicDpcLogo from "@/assets/brands/clinic-dpc.webp";
 import ecoResort from "@/assets/brands/eco-resort.webp";
 import eraEsthetic from "@/assets/brands/era-esthetic.webp";
 import fastCar from "@/assets/brands/fast-car.webp";
+import geraDovana from "@/assets/brands/gera-dovana.webp";
+import gok from "@/assets/brands/gok.webp";
+import kurtasServiceBrand from "@/assets/brands/kurtas-service.webp";
+import miracleK9Academy from "@/assets/brands/miracle-k9-academy.webp";
 import motoSvajone from "@/assets/brands/moto-svajone.webp";
+import proteraServisas from "@/assets/brands/protera-servisas.webp";
 import royalHorse from "@/assets/brands/royal-horse.webp";
 import sokrato from "@/assets/brands/sokrato.webp";
 import svajoniuSpaLogo from "@/assets/brands/svajoniu-spa.webp";
+import svytintysDantysBrand from "@/assets/brands/svytintys-dantys.webp";
 import televizoriu from "@/assets/brands/televizoriu.webp";
 import wheelshopBrand from "@/assets/brands/wheelshop.webp";
+import zeeinklover from "@/assets/brands/zeeinklover.webp";
 
 import increaseLocalVisibility from "@/assets/services/increase-local-visibility.webp";
 import improveSearchPerformance from "@/assets/services/improve-search-performance.webp";
@@ -375,8 +384,8 @@ const CSS = `
      header is cropped off. Matching it means object-fit: cover has nothing to crop,
      so the grid's outermost ranking bubbles stay inside the frame — at 1/1 the
      box ate ~7% of the width and clipped the edge columns. */
-  .tp-baf-frame { position: relative; overflow: hidden; border-radius: 14px; border: 1px solid var(--tp-border); background: #0d1520; max-width: 460px; margin: 0 auto; aspect-ratio: 800 / 743; touch-action: none; cursor: ew-resize; }
-  .tp-baf-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  .tp-baf-frame { position: relative; overflow: hidden; border-radius: 14px; border: 1px solid var(--tp-border); background: #0d1520; max-width: 460px; margin: 0 auto; aspect-ratio: 800 / 743; touch-action: none; cursor: ew-resize; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+  .tp-baf-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; -webkit-user-drag: none; -webkit-touch-callout: none; pointer-events: none; }
   .tp-baf-clip { position: absolute; inset: 0; overflow: hidden; }
   .tp-baf-line { position: absolute; top: 0; bottom: 0; width: 2px; background: rgba(244,241,234,0.85); transform: translateX(-50%); pointer-events: none; z-index: 2; }
   .tp-baf-handle { position: absolute; top: 50%; transform: translate(-50%, -50%); z-index: 3; display: flex; align-items: center; gap: 4px; background: var(--tp-text); color: var(--tp-bg); border-radius: 999px; padding: 8px 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.35); pointer-events: none; }
@@ -501,7 +510,7 @@ const CSS = `
   }
 
   /* ══════════════════════════════════════════════════════════════════════
-     /trial-hormozi additions — everything below is scoped with a .tph- prefix.
+     /landingpage additions — everything below is scoped with a .tph- prefix.
      Colours, fonts, radii and component styling are inherited unchanged from
      the rules above: this variant is a content test, not a redesign, so any
      visual delta would confound the result.
@@ -610,6 +619,14 @@ const brandLogos = [
   { src: svajoniuSpaLogo, alt: "Svajonių SPA" },
   { src: televizoriu, alt: "Televizorių Išparduotuvė" },
   { src: wheelshopBrand, alt: "Wheelshop.lt" },
+  { src: gok, alt: "GOK Grožio ir Odontologijos Klinika" },
+  { src: geraDovana, alt: "Gera Dovana" },
+  { src: zeeinklover, alt: "Zeeinklover" },
+  { src: proteraServisas, alt: "ProTera Servisas" },
+  { src: miracleK9Academy, alt: "Miracle K9 Academy" },
+  { src: kurtasServiceBrand, alt: "Kurtas Service" },
+  { src: agrijaBrand, alt: "Agrija" },
+  { src: svytintysDantysBrand, alt: "Švytintys Dantys" },
 ];
 
 const missionStats = [
@@ -1148,6 +1165,12 @@ const TrialCaseStudies = () => {
           ))}
         </div>
 
+        <p className="tp-cases-note">
+          Rankings, dates and search terms above are measured directly from the Google Maps grid scans shown.
+          Rows marked <em>(est.)</em> are estimates modelled from that ranking change using published local-pack
+          click-through rates — not figures reported by the client.
+        </p>
+
         <div className="tp-cta-row">
           <button type="button" className="tp-btn" onClick={() => openTrialModal("primary")}>
             {COPY.cta.primary}
@@ -1521,7 +1544,10 @@ const TrialHormoziPage = () => {
         // original so /trial keeps all the authority and the two never compete
         // for the same query. Combined with noindex it is also kept out of
         // sitemap.xml, which lists indexable pages only.
-        canonicalPath="/trial"
+        //
+        // Resolved rather than hard-coded because "/trial" stops being a path
+        // on this origin once the two pages get separate domains.
+        canonicalPath={landingPageCanonical()}
         jsonLd={[organizationSchema(), faqSchema(faqs)]}
       />
       <TrialModalProvider>
