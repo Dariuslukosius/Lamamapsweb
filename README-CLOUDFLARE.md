@@ -168,9 +168,16 @@ call the binaries directly instead.
 node scripts/prerender.mjs              # snapshot every route + 404.html
 node scripts/site-files.mjs             # write _redirects, verify crawler files
 node scripts/verify-deploy.mjs          # full pre-deploy verification
+node scripts/cf-preview.mjs             # browse the build at localhost:8788
 ./node_modules/.bin/vitest run          # tests (incl. the route-parity guard)
 ./node_modules/.bin/tsc -p tsconfig.app.json --noEmit
 ```
+
+`scripts/cf-preview.mjs` serves `dist/` through the same Pages-rules
+implementation the verifier uses, so trailing-slash redirects, the 404 status
+and the `_headers` rules all behave as they will in production — unlike
+`vite preview`, which knows nothing about any of them. On macOS 13.5+, use
+`wrangler pages dev dist` instead; it is the real runtime.
 
 Build a landing-page target locally:
 

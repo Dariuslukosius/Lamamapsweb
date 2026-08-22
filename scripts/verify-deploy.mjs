@@ -14,11 +14,11 @@
 // dev` — requires macOS 13.5+, which this machine does not have. On a machine
 // that can run it, `npm run cf:preview` is the stronger check and this script's
 // assertions can be pointed at that server with VERIFY_BASE_URL.
-import { createServer } from "node:http";
-import { readFile, readdir, stat } from "node:fs/promises";
-import { existsSync, readFileSync } from "node:fs";
+import { readdir } from "node:fs/promises";
+import { existsSync } from "node:fs";
 import path from "node:path";
 import { chromium } from "playwright-core";
+import { startPagesServer } from "./pagesServer.mjs";
 import { NOT_FOUND_PRERENDER_PATH, currentTarget, targetConfig } from "./deployTargets.mjs";
 
 const DIST = "dist";
@@ -34,129 +34,6 @@ function check(ok, label, detail) {
   return false;
 }
 
-// ── Cloudflare Pages request resolution ──────────────────────────────────────
-// Order, per developers.cloudflare.com/pages/configuration/{redirects,serving-pages}:
-//   1. _redirects is consulted FIRST — "redirects are always followed,
-//      regardless of whether or not an asset matches the incoming request".
-//   2. Exact asset match.
-//   3. HTML handling in the default "auto-trailing-slash" mode: /foo serves
-//      foo.html; /foo/ serves foo/index.html; /foo.html 308s to /foo; and /foo
-//      308s to /foo/ when only foo/index.html exists.
-//   4. No match: the nearest 404.html, with a 404 status.
-const MIME = {
-  ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8",
-  ".css": "text/css; charset=utf-8", ".json": "application/json; charset=utf-8",
-  ".txt": "text/plain; charset=utf-8", ".xml": "application/xml; charset=utf-8",
-  ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".gif": "image/gif",
-  ".webp": "image/webp", ".svg": "image/svg+xml", ".ico": "image/x-icon",
-  ".woff": "font/woff", ".woff2": "font/woff2", ".pdf": "application/pdf",
-  ".json5": "application/json", ".map": "application/json",
-};
-
-function parseRedirects(text) {
-  return text.split("\n")
-    .map((l) => l.trim())
-    .filter((l) => l && !l.startsWith("#"))
-    .map((l) => {
-      const [from, to, status] = l.split(/\s+/);
-      return { from, to, status: Number(status || 302) };
-    });
-}
-
-function parseHeaders(text) {
-  const rules = [];
-  let current = null;
-  for (const raw of text.split("\n")) {
-    if (!raw.trim() || raw.trim().startsWith("#")) continue;
-    if (!/^\s/.test(raw)) {
-      current = { pattern: raw.trim(), headers: {} };
-      rules.push(current);
-    } else if (current) {
-      const idx = raw.indexOf(":");
-      current.headers[raw.slice(0, idx).trim()] = raw.slice(idx + 1).trim();
-    }
-  }
-  return rules;
-}
-
-const matchesPattern = (pattern, pathname) => {
-  if (!pattern.includes("*")) return pattern === pathname;
-  const rx = new RegExp(`^${pattern.split("*").map((s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join(".*")}$`);
-  return rx.test(pathname);
-};
-
-const REDIRECTS = existsSync(path.join(DIST, "_redirects"))
-  ? parseRedirects(readFileSync(path.join(DIST, "_redirects"), "utf-8")) : [];
-const HEADER_RULES = existsSync(path.join(DIST, "_headers"))
-  ? parseHeaders(readFileSync(path.join(DIST, "_headers"), "utf-8")) : [];
-
-async function resolveAsset(pathname) {
-  const rel = decodeURIComponent(pathname).replace(/^\/+/, "");
-  const abs = path.join(DIST, rel);
-
-  const isFile = async (p) => { try { return (await stat(p)).isFile(); } catch { return false; } };
-
-  if (rel && await isFile(abs)) {
-    // Pages canonicalises .html URLs to their extensionless form.
-    if (abs.endsWith(".html") && !abs.endsWith("index.html")) {
-      return { redirect: pathname.replace(/\.html$/, ""), status: 308 };
-    }
-    return { file: abs };
-  }
-  if (pathname.endsWith("/")) {
-    const idx = path.join(abs, "index.html");
-    if (await isFile(idx)) return { file: idx };
-  } else {
-    if (await isFile(`${abs}.html`)) return { file: `${abs}.html` };
-    if (await isFile(path.join(abs, "index.html"))) return { redirect: `${pathname}/`, status: 308 };
-  }
-  return { notFound: true };
-}
-
-function headersFor(pathname, file) {
-  const out = {
-    "Content-Type": MIME[path.extname(file || "")] ?? "application/octet-stream",
-    // Pages sets these on every response by default.
-    "X-Content-Type-Options": "nosniff",
-    "Cache-Control": "public, max-age=0, must-revalidate",
-  };
-  for (const rule of HEADER_RULES) {
-    if (matchesPattern(rule.pattern, pathname)) Object.assign(out, rule.headers);
-  }
-  return out;
-}
-
-function startServer() {
-  const server = createServer(async (req, res) => {
-    const url = new URL(req.url, `http://localhost:${PORT}`);
-    const pathname = url.pathname;
-
-    for (const rule of REDIRECTS) {
-      if (matchesPattern(rule.from, pathname)) {
-        res.writeHead(rule.status, { Location: rule.to });
-        return res.end();
-      }
-    }
-
-    const resolved = await resolveAsset(pathname);
-    if (resolved.redirect) {
-      res.writeHead(resolved.status, { Location: resolved.redirect });
-      return res.end();
-    }
-    if (resolved.notFound) {
-      const notFoundPage = path.join(DIST, "404.html");
-      if (existsSync(notFoundPage)) {
-        res.writeHead(404, headersFor(pathname, notFoundPage));
-        return res.end(await readFile(notFoundPage));
-      }
-      res.writeHead(404, { "Content-Type": "text/plain" });
-      return res.end("Not found");
-    }
-    res.writeHead(200, headersFor(pathname, resolved.file));
-    res.end(await readFile(resolved.file));
-  });
-  return new Promise((resolve) => server.listen(PORT, "127.0.0.1", () => resolve(server)));
-}
 
 // ── Checks ───────────────────────────────────────────────────────────────────
 const BASE = process.env.VERIFY_BASE_URL || `http://127.0.0.1:${PORT}`;
@@ -427,7 +304,7 @@ async function checkMetaPixel() {
 }
 
 async function main() {
-  const server = await startServer();
+  const server = await startPagesServer({ dist: DIST, port: PORT });
   console.log(`Verifying target "${TARGET}" against ${BASE}\n`);
   try {
     await checkRoutes();
