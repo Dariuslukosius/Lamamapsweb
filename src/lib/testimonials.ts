@@ -3,7 +3,7 @@ import kurtasServiceLogo from "@/assets/testimonials/kurtas-service-logo.jpg";
 import agrijaLogo from "@/assets/testimonials/agrija-logo.png";
 
 /**
- * Client testimonials shown on /trial and /trial-hormozi.
+ * Client testimonials shown on /trial and /landingpage.
  *
  * Shared for the same reason `caseStudies` is: the two pages are an A/B pair, so
  * a quote edited on one and not the other would eventually publish two different

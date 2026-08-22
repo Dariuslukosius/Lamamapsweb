@@ -31,7 +31,9 @@ const BeforeAfterSlider = ({ before, after, beforeLabel, afterLabel }: BeforeAft
   };
   const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
     setDragging(false);
-    e.currentTarget.releasePointerCapture(e.pointerId);
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
   };
 
   const transitionStyle = dragging ? "none" : undefined;
@@ -48,7 +50,7 @@ const BeforeAfterSlider = ({ before, after, beforeLabel, afterLabel }: BeforeAft
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
-        onPointerLeave={handlePointerUp}
+        onPointerCancel={handlePointerUp}
       >
         <img
           src={after}

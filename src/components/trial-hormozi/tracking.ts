@@ -1,5 +1,5 @@
 /**
- * Analytics for /trial-hormozi only.
+ * Analytics for /landingpage only.
  *
  * Every event here is namespaced `trial_hormozi_*` and fired through Meta's
  * `trackCustom`, which keeps it in a separate bucket from the standard `Lead`

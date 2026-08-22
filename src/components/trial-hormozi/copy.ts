@@ -1,5 +1,5 @@
 /**
- * Single source of truth for every headline, CTA and badge on /trial-hormozi.
+ * Single source of truth for every headline, CTA and badge on /landingpage.
  *
  * The weekly A/B cycle (see TESTING.md) swaps one element per week against the
  * /trial control. That is only workable if each swappable string lives in
