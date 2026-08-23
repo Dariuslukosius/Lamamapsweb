@@ -10,9 +10,9 @@
 // first — this serves the build output, not source.
 import { existsSync } from "node:fs";
 import { startPagesServer } from "./pagesServer.mjs";
-import { currentTarget, targetConfig } from "./deployTargets.mjs";
+import { currentOutDir, currentTarget, targetConfig } from "./deployTargets.mjs";
 
-const DIST = "dist";
+const DIST = currentOutDir();
 const PORT = Number(process.env.PORT || 8788);
 
 if (!existsSync(DIST)) {

@@ -31,3 +31,6 @@ dist-ssr
 
 # Temporary files
 *_frames
+
+# Per-deployment build output (llamamaps.eu, llamamaps.co.uk)
+dist-*

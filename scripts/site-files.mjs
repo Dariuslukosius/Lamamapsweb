@@ -10,9 +10,9 @@
 // with no history to preserve, so there they are rewritten.
 import { readFile, writeFile, rm, access } from "node:fs/promises";
 import path from "node:path";
-import { currentSiteUrl, currentTarget, targetConfig } from "./deployTargets.mjs";
+import { currentOutDir, currentSiteUrl, currentTarget, targetConfig } from "./deployTargets.mjs";
 
-const DIST = "dist";
+const DIST = currentOutDir();
 const TARGET = currentTarget();
 const SITE_URL = currentSiteUrl();
 const config = targetConfig(TARGET);
@@ -136,7 +136,27 @@ async function writeLandingCrawlerFiles() {
   delete manifest.shortcuts;
   await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf-8");
 
+  await pruneMainSiteOnlyAssets();
   console.log("robots.txt rewritten, sitemap.xml removed, manifest shortcuts stripped");
+}
+
+// public/ is copied wholesale into every build, which puts an 18.5 MB PDF on
+// the two single-page landing domains that never link to it — it is referenced
+// nowhere in src/, in any prerendered page, or in any of the crawler files.
+//
+// It is dropped only from the landing deployments, not from public/ and not
+// from the main site: it is reachable there by direct URL, and someone may well
+// be sharing that link. This removes 37 MB of upload across the two landing
+// domains without touching anything that could already be linked.
+async function pruneMainSiteOnlyAssets() {
+  const mainSiteOnly = ["llamamaps-system-overview.pdf"];
+  for (const file of mainSiteOnly) {
+    const target = path.join(DIST, file);
+    if (await exists(target)) {
+      await rm(target);
+      console.log(`  pruned ${file} (not referenced on a landing-page domain)`);
+    }
+  }
 }
 
 async function main() {

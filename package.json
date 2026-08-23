@@ -8,7 +8,7 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "prerender": "node scripts/prerender.mjs",
-    "build:prerender": "vite build && node scripts/prerender.mjs && node scripts/site-files.mjs",
+    "build:prerender": "node scripts/build.mjs com",
     "lint": "eslint .",
     "typecheck": "tsc -p tsconfig.app.json --noEmit",
     "preview": "vite preview",
@@ -17,7 +17,11 @@
     "cf:preview": "wrangler pages dev dist",
     "cf:preview:local": "node scripts/cf-preview.mjs",
     "cf:deploy": "wrangler pages deploy dist",
-    "verify:cf": "node scripts/verify-deploy.mjs"
+    "verify:cf": "node scripts/verify-deploy.mjs",
+    "build:all": "node scripts/build.mjs --verify",
+    "build:com": "node scripts/build.mjs com",
+    "build:eu": "node scripts/build.mjs eu",
+    "build:couk": "node scripts/build.mjs couk"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

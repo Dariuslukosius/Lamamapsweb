@@ -90,55 +90,82 @@ the reason it is safe not to have a catch-all.
 
 ---
 
-## 3. Phase 2 — `/trial` and `/landingpage` on their own domains
+## 3. Phase 2 — the `.eu` and `.co.uk` domains
 
-Each landing page becomes its **own Pages project** built from this same repo
-and the same branch. The difference is entirely in environment variables.
+The two landing pages are already wired to their domains. Each is its **own
+Pages project**, built from this same repo and branch, into **its own folder**.
 
-Separate projects rather than one project with three custom domains, because
-canonical URLs are baked in at build time. One build serving three hosts would
-publish the same canonical on all of them, and two of the three would be wrong.
+| Domain | Page | Folder | Deployment name |
+| --- | --- | --- | --- |
+| `llamamaps.com` | the full site | `dist/` | `com` |
+| `llamamaps.eu` | `/trial` — the A/B **control** | `dist-eu/` | `eu` |
+| `llamamaps.co.uk` | `/landingpage` — the Hormozi **variant** | `dist-couk/` | `couk` |
 
-### Trial domain
+On the landing domains the page is served at `/`, not at a sub-path.
 
-| Setting | Value |
-| --- | --- |
-| Build command | `npm run build:prerender` |
-| Output directory | `dist` |
-| `VITE_DEPLOY_TARGET` | `trial` |
-| `VITE_SITE_URL` | `https://<trial-domain>` |
+### Build them
 
-### Landing-page domain
+```bash
+node scripts/build.mjs              # all three
+node scripts/build.mjs eu           # just llamamaps.eu
+node scripts/build.mjs --verify     # all three, each fully verified
+```
 
-| Setting | Value |
-| --- | --- |
-| Build command | `npm run build:prerender` |
-| Output directory | `dist` |
-| `VITE_DEPLOY_TARGET` | `landingpage` |
-| `VITE_SITE_URL` | `https://<landing-domain>` |
-| `VITE_TRIAL_URL` | `https://<trial-domain>` |
+Every domain, page and variable is baked into `DEPLOYMENTS` in
+`scripts/deployTargets.mjs` — there is nothing to type at deploy time and
+nothing to get wrong.
 
-`VITE_SITE_URL` must be a bare `https` origin with no trailing slash. The build
-fails immediately on a malformed value rather than shipping broken canonicals.
+### Deploy them
 
-### What each target build does differently
+```bash
+./node_modules/.bin/wrangler pages deploy dist-eu   --project-name=llamamaps-eu
+./node_modules/.bin/wrangler pages deploy dist-couk --project-name=llamamaps-couk
+```
 
-| | `main` | `trial` / `landingpage` |
+Or connect each Pages project to the repo with these settings:
+
+| | `llamamaps.eu` | `llamamaps.co.uk` |
 | --- | --- | --- |
-| Routes | all 8 | the landing page, promoted to `/` |
-| Old sub-path | — | `/trial` (or `/landingpage`) 301s to `/` |
-| JS bundle | 760 kB | ~545 kB — the rest of the site is tree-shaken out |
+| Build command | `node scripts/build.mjs eu` | `node scripts/build.mjs couk` |
+| Output directory | `dist-eu` | `dist-couk` |
+
+No environment variables needed — the build script sets them from `DEPLOYMENTS`.
+
+### Why separate folders
+
+All three are built from one checkout. With a single shared `dist/`, whichever
+build ran last silently decides what `wrangler pages deploy dist` uploads — and
+putting the Hormozi variant on the `.com` domain is not a mistake you notice
+quickly. `dist-*` is gitignored.
+
+### Why the control goes on `.eu`
+
+`/landingpage` is an A/B duplicate of `/trial` and declares `/trial` as its
+canonical so the original absorbs the authority. With the pair split across two
+hosts that canonical has to be absolute, so the `.co.uk` build sets
+`VITE_TRIAL_URL=https://llamamaps.eu` and its page declares
+`<link rel="canonical" href="https://llamamaps.eu/">`. Swap which page goes
+where and that field has to swap with it — it is one entry in `DEPLOYMENTS`.
+
+### What the landing builds do differently
+
+| | `llamamaps.com` | `.eu` / `.co.uk` |
+| --- | --- | --- |
+| Routes | all 8 | one page at `/` |
+| Old sub-path | — | `/trial` (resp. `/landingpage`) 301s to `/` |
+| JS bundle | 760 kB | ~549 kB — the rest of the site is tree-shaken out |
 | `sitemap.xml` | published | removed (the page is noindex) |
 | `robots.txt` | full policy | minimal, crawlable, no sitemap line |
-| `manifest.json` | with shortcuts | shortcuts stripped (they pointed at pages that do not exist there) |
+| `manifest.json` | with shortcuts | shortcuts stripped (they pointed at absent pages) |
 | Footer privacy link | `/privacy` | `https://llamamaps.com/privacy` |
 | Global Calendly badge | on the main site | never rendered |
+| 18.5 MB overview PDF | kept | pruned — unreferenced there |
 
 ### Things that deliberately stay on `llamamaps.com`
 
 - **schema.org entity `@id`s.** The Organization, WebSite and logo nodes are
-  pinned to the brand origin via `BRAND_URL`. If the trial domain published
-  `@id: https://<trial-domain>/#organization`, answer engines would see two
+  pinned to the brand origin via `BRAND_URL`. If `.eu` published
+  `@id: https://llamamaps.eu/#organization`, answer engines would see three
   unrelated organizations for one business and split the reputation signals.
 - **Cross-page links inside structured data** (`/services`, `/contacts`) — those
   pages only exist on the main site.
@@ -147,16 +174,16 @@ fails immediately on a malformed value rather than shipping broken canonicals.
 
 ### After the split — the ad-platform checklist
 
-1. Update the destination URL in Meta Ads to the new domain's `/`.
-2. Add the new domain in **Meta Events Manager → Domains** and verify it. The
+1. Update the destination URL in Meta Ads to `https://llamamaps.eu/` or
+   `https://llamamaps.co.uk/`.
+2. Add each new domain in **Meta Events Manager → Domains** and verify it. The
    pixel ID is unchanged, but Meta scopes domain verification and Aggregated
-   Event Measurement per domain — skipping this is the usual cause of "the pixel
-   worked yesterday" after a domain move.
-3. Confirm one `PageView` beacon on the live domain (see §5).
-4. Keep the old `llamamaps.com/trial` URL alive, or add a redirect to the new
-   domain, for as long as any ad, QR code or bookmark still points at it.
-
----
+   Event Measurement **per domain** — skipping this is the usual cause of "the
+   pixel worked yesterday" after a domain move.
+3. Confirm one `PageView` on the live domain with the Meta Pixel Helper.
+4. Keep `llamamaps.com/trial` and `/landingpage` alive, or redirect them to the
+   new domains, for as long as any ad, QR code or bookmark points at them.
+5. Turn off AI Crawl Control on the new zones too (see §5).
 
 ## 4. Commands
 
@@ -179,18 +206,9 @@ and the `_headers` rules all behave as they will in production — unlike
 `vite preview`, which knows nothing about any of them. On macOS 13.5+, use
 `wrangler pages dev dist` instead; it is the real runtime.
 
-Build a landing-page target locally:
-
-```bash
-VITE_DEPLOY_TARGET=trial VITE_SITE_URL=https://example.com \
-  ./node_modules/.bin/vite build && node scripts/prerender.mjs && node scripts/site-files.mjs
-```
-
-Deploy by direct upload instead of git integration:
-
-```bash
-./node_modules/.bin/wrangler pages deploy dist --project-name=<name>
-```
+`node scripts/build.mjs <com|eu|couk>` wraps the first three of those with the
+right variables and output folder for one deployment — prefer it over running
+them by hand.
 
 ---
 

@@ -9,6 +9,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import {
   NOT_FOUND_PRERENDER_PATH,
+  currentOutDir,
   currentTarget,
   targetConfig,
 } from "./deployTargets.mjs";
@@ -25,6 +26,7 @@ import {
 // caused by one side lacking a snapshot would contaminate the test.
 const TARGET = currentTarget();
 const ROUTES = targetConfig(TARGET).routes;
+const OUT_DIR = currentOutDir();
 
 // Serverless and CI build containers have no local Chromium install and are
 // missing the shared libraries a vanilla `playwright install chromium` binary
@@ -106,8 +108,8 @@ function assertSnapshotIsSound(route, html) {
 // scripts/site-files.mjs adds "/about/" -> "/about" redirects so the slashed
 // shape, which ad URLs are known to arrive in, still resolves.
 function outputFileFor(route) {
-  if (route === "/") return "dist/index.html";
-  return path.join("dist", `${route.replace(/^\//, "")}.html`);
+  if (route === "/") return path.join(OUT_DIR, "index.html");
+  return path.join(OUT_DIR, `${route.replace(/^\//, "")}.html`);
 }
 
 // "load" waits for every subresource, and these pages pull in Google Fonts, a
@@ -142,7 +144,12 @@ async function snapshotWithRetry(page, url, route) {
 }
 
 async function main() {
-  const server = await preview({ preview: { port: 4173, strictPort: true } });
+  // preview() defaults to serving "dist"; each deployment builds into its own
+  // folder, so it has to be told which one this run produced.
+  const server = await preview({
+    build: { outDir: OUT_DIR },
+    preview: { port: 4173, strictPort: true },
+  });
   const base = `http://localhost:4173`;
 
   const browser = await launchBrowser();
@@ -155,7 +162,7 @@ async function main() {
   // soft 404; this is both correct and the SPA still boots from it.
   const jobs = [
     ...ROUTES.map((route) => ({ route, outFile: outputFileFor(route) })),
-    { route: NOT_FOUND_PRERENDER_PATH, outFile: "dist/404.html" },
+    { route: NOT_FOUND_PRERENDER_PATH, outFile: path.join(OUT_DIR, "404.html") },
   ];
 
   for (const { route, outFile } of jobs) {
@@ -167,7 +174,7 @@ async function main() {
 
   await browser.close();
   await server.httpServer.close();
-  console.log(`Prerender complete for target "${TARGET}" (${jobs.length} pages).`);
+  console.log(`Prerender complete for target "${TARGET}" -> ${OUT_DIR}/ (${jobs.length} pages).`);
 }
 
 main().catch((err) => {

@@ -19,9 +19,9 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 import { chromium } from "playwright-core";
 import { startPagesServer } from "./pagesServer.mjs";
-import { NOT_FOUND_PRERENDER_PATH, currentTarget, targetConfig } from "./deployTargets.mjs";
+import { NOT_FOUND_PRERENDER_PATH, currentOutDir, currentTarget, targetConfig } from "./deployTargets.mjs";
 
-const DIST = "dist";
+const DIST = currentOutDir();
 const PORT = 8791;
 const TARGET = currentTarget();
 const { routes, indexable } = targetConfig(TARGET);
@@ -174,9 +174,19 @@ async function checkRobotsIsOurs() {
     "-> disable the managed robots.txt AND the 'block AI crawlers' rule. It currently serves " +
     "Disallow: / for the AI crawlers this site's own robots.txt explicitly allows.");
 
-  if (!managed) {
+  if (managed) return;
+
+  // What "ours" looks like differs by target: the main site serves the full
+  // hand-written policy from public/, while site-files.mjs replaces it on the
+  // landing-page domains with a minimal crawlable one that deliberately has no
+  // Sitemap line (the single page there is noindex).
+  if (TARGET === "main") {
     check(body.includes("User-agent: GPTBot") && body.includes("Sitemap:"),
-      "robots.txt served is the one in public/", "the body does not match the repo's file");
+      "robots.txt served is the full policy from public/", "the body does not match the repo's file");
+  } else {
+    check(body.includes("Allow: /") && !body.includes("Sitemap:"),
+      "robots.txt served is the generated landing-page one",
+      "expected a minimal crawlable robots.txt with no Sitemap line");
   }
 }
 

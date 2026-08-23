@@ -35,6 +35,63 @@ export function currentSiteUrl() {
   return (process.env.VITE_SITE_URL || DEFAULT_SITE_URL).replace(/\/+$/, "");
 }
 
+/**
+ * Build output directory for the current build. Each deployment gets its own so
+ * all three can exist side by side — otherwise building the .eu site would
+ * overwrite the .com one, and `wrangler pages deploy dist` would be a coin flip
+ * on which product is actually in there.
+ */
+export function currentOutDir() {
+  return process.env.BUILD_OUT_DIR || "dist";
+}
+
+// ── Deployments ──────────────────────────────────────────────────────────────
+// A deployment binds a domain to one of the three products and to its own
+// output folder. `npm run build:all` produces all three; `node scripts/build.mjs
+// <name>` produces one.
+//
+// The domain split, as decided: the original /trial is the control and goes to
+// llamamaps.eu; the Hormozi A/B variant goes to llamamaps.co.uk. That ordering
+// matters to the canonical — /landingpage declares /trial as the original, so
+// the .co.uk build points VITE_TRIAL_URL at llamamaps.eu, where the page it
+// defers to actually lives.
+export const DEPLOYMENTS = {
+  com: {
+    domain: "llamamaps.com",
+    target: "main",
+    outDir: "dist",
+    siteUrl: "https://llamamaps.com",
+    description: "the full site",
+  },
+  eu: {
+    domain: "llamamaps.eu",
+    target: "trial",
+    outDir: "dist-eu",
+    siteUrl: "https://llamamaps.eu",
+    description: "/trial (control) as the home page",
+  },
+  couk: {
+    domain: "llamamaps.co.uk",
+    target: "landingpage",
+    outDir: "dist-couk",
+    siteUrl: "https://llamamaps.co.uk",
+    // The A/B original is on the .eu domain, so that is what this page's
+    // canonical has to point at. Without it the canonical would resolve to
+    // llamamaps.co.uk/trial — a URL that does not exist on this deployment.
+    trialUrl: "https://llamamaps.eu",
+    description: "/landingpage (Hormozi variant) as the home page",
+  },
+};
+
+/** @param {string} name */
+export function deployment(name) {
+  const config = DEPLOYMENTS[name];
+  if (!config) {
+    throw new Error(`Unknown deployment "${name}". Expected one of: ${Object.keys(DEPLOYMENTS).join(", ")}`);
+  }
+  return config;
+}
+
 const TARGETS = {
   // The live site. This list is deliberately identical to the one the project
   // ran on Vercel, so the migration itself changes no URL.
