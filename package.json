@@ -21,7 +21,8 @@
     "build:all": "node scripts/build.mjs --verify",
     "build:com": "node scripts/build.mjs com",
     "build:eu": "node scripts/build.mjs eu",
-    "build:couk": "node scripts/build.mjs couk"
+    "build:couk": "node scripts/build.mjs couk",
+    "build:hostinger": "node scripts/build.mjs eu couk --verify --zip"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

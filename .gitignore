@@ -34,3 +34,6 @@ dist-ssr
 
 # Per-deployment build output (llamamaps.eu, llamamaps.co.uk)
 dist-*
+
+# Upload archives for Hostinger
+dist-*.zip

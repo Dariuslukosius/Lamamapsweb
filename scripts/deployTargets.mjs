@@ -61,6 +61,8 @@ export const DEPLOYMENTS = {
     target: "main",
     outDir: "dist",
     siteUrl: "https://llamamaps.com",
+    // Cloudflare Pages: routing and headers come from _redirects and _headers.
+    host: "cloudflare",
     description: "the full site",
   },
   eu: {
@@ -68,6 +70,11 @@ export const DEPLOYMENTS = {
     target: "trial",
     outDir: "dist-eu",
     siteUrl: "https://llamamaps.eu",
+    // Hostinger shared hosting is Apache. _redirects and _headers are a
+    // Cloudflare Pages format and do nothing there — worse, Apache would serve
+    // them as plain text to anyone who asked. Apache builds get .htaccess
+    // instead, and the Pages files are removed from the output.
+    host: "apache",
     description: "/trial (control) as the home page",
   },
   couk: {
@@ -79,6 +86,7 @@ export const DEPLOYMENTS = {
     // canonical has to point at. Without it the canonical would resolve to
     // llamamaps.co.uk/trial — a URL that does not exist on this deployment.
     trialUrl: "https://llamamaps.eu",
+    host: "apache",
     description: "/landingpage (Hormozi variant) as the home page",
   },
 };

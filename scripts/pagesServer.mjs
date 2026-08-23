@@ -60,6 +60,65 @@ function parseHeaders(text) {
   return rules;
 }
 
+
+// ── Apache (.htaccess) ───────────────────────────────────────────────────────
+// The Hostinger-hosted landing domains are served by Apache, not Cloudflare, so
+// the file that decides their routing and headers is .htaccess. Parsing it here
+// — rather than re-deriving the rules from the same config that generated it —
+// is the point: it means the verifier checks the artifact that actually ships.
+//
+// Deliberately handles only the directives scripts/htaccess.mjs emits.
+function parseHtaccess(text) {
+  const redirects = [];
+  const headerRules = [];
+  let errorDocument = null;
+  let filesMatch = null;
+  let pendingConds = [];
+
+  for (const raw of text.split("\n")) {
+    const line = raw.trim();
+    if (!line || line.startsWith("#")) continue;
+
+    const openFiles = line.match(/^<FilesMatch\s+"(.+)"\s*>$/);
+    if (openFiles) {
+      filesMatch = { pattern: new RegExp(openFiles[1]), headers: {} };
+      headerRules.push(filesMatch);
+      continue;
+    }
+    if (/^<\/FilesMatch>$/.test(line)) { filesMatch = null; continue; }
+    if (/^<\/?IfModule/.test(line)) continue;
+
+    const err = line.match(/^ErrorDocument\s+404\s+(\S+)$/);
+    if (err) { errorDocument = err[1]; continue; }
+
+    if (/^RewriteCond\s/.test(line)) { pendingConds.push(line); continue; }
+
+    const rule = line.match(/^RewriteRule\s+(\S+)\s+(\S+)(?:\s+\[([^\]]*)\])?$/);
+    if (rule) {
+      const [, pattern, dest, flags = ""] = rule;
+      const conds = pendingConds;
+      pendingConds = [];
+      // Protocol- and host-level rules (HTTPS, www) cannot be exercised over
+      // plain http on localhost, and "-" is a pass-through, not a redirect.
+      const hostLevel = conds.some((c) => /%\{HTTPS\}|HTTP_HOST|X-Forwarded-Proto/.test(c));
+      if (hostLevel || dest === "-") continue;
+      const status = Number((flags.match(/R=(\d+)/) || [])[1] || 302);
+      redirects.push({ pattern: new RegExp(pattern), to: dest, status });
+      continue;
+    }
+    pendingConds = [];
+
+    const header = line.match(/^Header\s+(?:always\s+)?set\s+(\S+)\s+"(.*)"$/);
+    if (header) {
+      const [, name, value] = header;
+      if (filesMatch) filesMatch.headers[name] = value;
+      else headerRules.push({ pattern: null, headers: { [name]: value } });
+    }
+  }
+
+  return { redirects, headerRules, errorDocument };
+}
+
 const matchesPattern = (pattern, pathname) => {
   if (!pattern.includes("*")) return pattern === pathname;
   const rx = new RegExp(`^${pattern.split("*").map((s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join(".*")}$`);
@@ -73,10 +132,16 @@ const matchesPattern = (pattern, pathname) => {
  * @param {(line: string) => void} [options.onRequest] called with a log line per request
  */
 export async function startPagesServer({ dist = "dist", port = 8791, onRequest } = {}) {
-  const redirects = existsSync(path.join(dist, "_redirects"))
-    ? parseRedirects(readFileSync(path.join(dist, "_redirects"), "utf-8")) : [];
-  const headerRules = existsSync(path.join(dist, "_headers"))
-    ? parseHeaders(readFileSync(path.join(dist, "_headers"), "utf-8")) : [];
+  // Apache builds ship .htaccess and no _redirects/_headers; Cloudflare builds
+  // ship the reverse. Whichever the folder contains is what gets served here,
+  // so each deployment is verified through its own real config.
+  const htaccessPath = path.join(dist, ".htaccess");
+  const apache = existsSync(htaccessPath) ? parseHtaccess(readFileSync(htaccessPath, "utf-8")) : null;
+
+  const redirects = apache ? [] : (existsSync(path.join(dist, "_redirects"))
+    ? parseRedirects(readFileSync(path.join(dist, "_redirects"), "utf-8")) : []);
+  const headerRules = apache ? [] : (existsSync(path.join(dist, "_headers"))
+    ? parseHeaders(readFileSync(path.join(dist, "_headers"), "utf-8")) : []);
 
   const isFile = async (p) => { try { return (await stat(p)).isFile(); } catch { return false; } };
 
@@ -109,6 +174,15 @@ export async function startPagesServer({ dist = "dist", port = 8791, onRequest }
       "X-Content-Type-Options": "nosniff",
       "Cache-Control": "public, max-age=0, must-revalidate",
     };
+    if (apache) {
+      // Apache matches <FilesMatch> against the file's BASENAME, not the URL —
+      // which is why "/" picks up the .html cache rule via index.html.
+      const basename = path.basename(file || "");
+      for (const rule of apache.headerRules) {
+        if (!rule.pattern || rule.pattern.test(basename)) Object.assign(out, rule.headers);
+      }
+      return out;
+    }
     for (const rule of headerRules) {
       if (matchesPattern(rule.pattern, pathname)) Object.assign(out, rule.headers);
     }
@@ -118,6 +192,18 @@ export async function startPagesServer({ dist = "dist", port = 8791, onRequest }
   const server = createServer(async (req, res) => {
     const pathname = new URL(req.url, `http://localhost:${port}`).pathname;
     const log = (status, extra = "") => onRequest?.(`${String(status).padEnd(3)} ${pathname}${extra}`);
+
+    if (apache) {
+      // RewriteRule patterns match the path with no leading slash.
+      const relative = pathname.replace(/^\/+/, "");
+      for (const rule of apache.redirects) {
+        if (rule.pattern.test(relative)) {
+          res.writeHead(rule.status, { Location: rule.to });
+          log(rule.status, ` -> ${rule.to}`);
+          return res.end();
+        }
+      }
+    }
 
     for (const rule of redirects) {
       if (matchesPattern(rule.from, pathname)) {
@@ -134,7 +220,7 @@ export async function startPagesServer({ dist = "dist", port = 8791, onRequest }
       return res.end();
     }
     if (resolved.notFound) {
-      const notFoundPage = path.join(dist, "404.html");
+      const notFoundPage = path.join(dist, apache?.errorDocument?.replace(/^\//, "") ?? "404.html");
       if (existsSync(notFoundPage)) {
         res.writeHead(404, headersFor(pathname, notFoundPage));
         log(404, " (404.html)");

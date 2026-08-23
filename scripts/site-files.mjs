@@ -10,12 +10,19 @@
 // with no history to preserve, so there they are rewritten.
 import { readFile, writeFile, rm, access } from "node:fs/promises";
 import path from "node:path";
-import { currentOutDir, currentSiteUrl, currentTarget, targetConfig } from "./deployTargets.mjs";
+import { DEPLOYMENTS, currentOutDir, currentSiteUrl, currentTarget, targetConfig } from "./deployTargets.mjs";
+import { renderHtaccess } from "./htaccess.mjs";
 
 const DIST = currentOutDir();
 const TARGET = currentTarget();
 const SITE_URL = currentSiteUrl();
 const config = targetConfig(TARGET);
+
+// Which host this output is going to decides whether it gets Cloudflare's
+// _redirects/_headers or an Apache .htaccess. Matched by output directory so a
+// build always gets the config for the deployment it actually belongs to.
+const DEPLOYMENT = Object.values(DEPLOYMENTS).find((d) => d.outDir === DIST) ?? { host: "cloudflare", domain: currentSiteUrl() };
+const HOST = DEPLOYMENT.host ?? "cloudflare";
 
 const exists = (file) => access(file).then(() => true, () => false);
 
@@ -68,6 +75,21 @@ async function writeRedirects() {
   ];
   await writeFile(path.join(DIST, "_redirects"), lines.join("\n"), "utf-8");
   console.log(`_redirects written (${rules.length} rules)`);
+}
+
+async function writeHtaccess() {
+  const body = renderHtaccess({
+    domain: DEPLOYMENT.domain,
+    target: TARGET,
+    redirects: [
+      // Same two jobs the Cloudflare _redirects file does: consolidate the
+      // trailing-slash shape, and keep the retired sub-path alive.
+      ...config.routes.filter((r) => r !== "/").map((r) => [`${r}/`, r]),
+      ...config.redirects,
+    ],
+  });
+  await writeFile(path.join(DIST, ".htaccess"), body, "utf-8");
+  console.log(`.htaccess written for ${DEPLOYMENT.domain} (Apache/Hostinger)`);
 }
 
 // ── robots.txt / sitemap.xml ─────────────────────────────────────────────────
@@ -161,7 +183,7 @@ async function pruneMainSiteOnlyAssets() {
 
 async function main() {
   console.log(`site-files: target="${TARGET}" site="${SITE_URL}"`);
-  await writeRedirects();
+  await (HOST === "apache" ? writeHtaccess() : writeRedirects());
 
   if (TARGET === "main") {
     await verifyMainCrawlerFiles();
@@ -169,8 +191,23 @@ async function main() {
     await writeLandingCrawlerFiles();
   }
 
-  if (!(await exists(path.join(DIST, "_headers")))) {
-    throw new Error("dist/_headers is missing — public/_headers did not make it into the build.");
+  if (HOST === "cloudflare") {
+    if (!(await exists(path.join(DIST, "_headers")))) {
+      throw new Error(`${DIST}/_headers is missing — public/_headers did not make it into the build.`);
+    }
+  } else {
+    // public/_headers is copied into every build by Vite. On Apache it is inert
+    // config that Apache would serve as readable plain text, so it goes.
+    for (const stray of ["_headers", "_redirects"]) {
+      const file = path.join(DIST, stray);
+      if (await exists(file)) {
+        await rm(file);
+        console.log(`  removed ${stray} (Cloudflare-only format, this build is Apache)`);
+      }
+    }
+    if (!(await exists(path.join(DIST, ".htaccess")))) {
+      throw new Error(`${DIST}/.htaccess was not written.`);
+    }
   }
   console.log("site-files: done");
 }

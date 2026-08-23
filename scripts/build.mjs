@@ -5,6 +5,7 @@
 //   node scripts/build.mjs eu         # llamamaps.eu    -> dist-eu/
 //   node scripts/build.mjs couk       # llamamaps.co.uk -> dist-couk/
 //   node scripts/build.mjs eu --verify
+//   node scripts/build.mjs eu --zip     # also produce dist-eu.zip for upload
 //
 // Separate folders rather than rebuilding into dist/ each time, because all
 // three are deployed from the same checkout: with one shared folder, whichever
@@ -16,10 +17,12 @@
 // npm, because this checkout's path contains a ":" and npm run cannot cope
 // with it.
 import { spawnSync } from "node:child_process";
+import { rmSync, statSync } from "node:fs";
 import { DEPLOYMENTS, deployment } from "./deployTargets.mjs";
 
 const args = process.argv.slice(2);
 const verify = args.includes("--verify");
+const zip = args.includes("--zip");
 const names = args.filter((a) => !a.startsWith("--"));
 const selected = names.length ? names : Object.keys(DEPLOYMENTS);
 
@@ -59,6 +62,27 @@ for (const name of selected) {
   run("node", ["scripts/prerender.mjs"], env);
   run("node", ["scripts/site-files.mjs"], env);
   if (verify) run("node", ["scripts/verify-deploy.mjs"], env);
+  if (zip) makeZip(config);
+}
+
+// Hostinger's File Manager uploads one file at a time, and a landing build is
+// ~70 files. Zipping the folder turns the upload into one file plus "Extract".
+//
+// `zip -r <archive> .` from *inside* the folder is what makes the archive
+// extract as loose files into public_html rather than into a nested directory —
+// and it is also what includes .htaccess and .well-known/, which a glob of `*`
+// would silently skip. Losing .htaccess would mean no redirects, no security
+// headers, and Apache's default 404 page instead of the prerendered one.
+function makeZip(config) {
+  const archive = `${config.outDir}.zip`;
+  rmSync(archive, { force: true });
+  const result = spawnSync("zip", ["-r", "-q", `../${archive}`, "."], { cwd: config.outDir, stdio: "inherit" });
+  if (result.status !== 0) {
+    console.error(`\nFAILED to create ${archive}`);
+    process.exit(result.status ?? 1);
+  }
+  const size = (statSync(archive).size / 1048576).toFixed(1);
+  console.log(`\n  ${archive} (${size} MB) — upload to ${config.domain} public_html and Extract`);
 }
 
 console.log(`\nBuilt ${selected.length} deployment(s):`);
