@@ -181,6 +181,35 @@ async function pruneMainSiteOnlyAssets() {
   }
 }
 
+// Meta requires the facebook-domain-verification tag to be present in the raw
+// HTML the server returns on first load — explicitly NOT injected by
+// client-side JS, which is how every other meta tag on this site is set (see
+// SEO.tsx). It has to go directly into the built index.html.
+//
+// This runs after prerender.mjs, so DIST/index.html at this point is already
+// the prerendered snapshot for "/" — the actual file Apache/Cloudflare serves
+// for the domain root, which is what Meta's crawler fetches to check the tag.
+// Injecting into the raw Vite template instead would have been overwritten by
+// that prerender step.
+async function injectMetaDomainVerification() {
+  const code = DEPLOYMENT.fbDomainVerification;
+  if (!code) return;
+
+  const indexPath = path.join(DIST, "index.html");
+  const html = await readFile(indexPath, "utf-8");
+  const tag = `<meta name="facebook-domain-verification" content="${code}" />`;
+
+  if (html.includes(tag)) {
+    console.log("Meta domain verification tag already present, skipped");
+    return;
+  }
+  if (!html.includes("<head>")) {
+    throw new Error(`${indexPath} has no <head> tag to inject the Meta verification meta into`);
+  }
+  await writeFile(indexPath, html.replace("<head>", `<head>\n    ${tag}`), "utf-8");
+  console.log(`Meta domain verification tag injected for ${DEPLOYMENT.domain}`);
+}
+
 async function main() {
   console.log(`site-files: target="${TARGET}" site="${SITE_URL}"`);
   await (HOST === "apache" ? writeHtaccess() : writeRedirects());
@@ -190,6 +219,8 @@ async function main() {
   } else {
     await writeLandingCrawlerFiles();
   }
+
+  await injectMetaDomainVerification();
 
   if (HOST === "cloudflare") {
     if (!(await exists(path.join(DIST, "_headers")))) {

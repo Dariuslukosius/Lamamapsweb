@@ -87,6 +87,13 @@ export const DEPLOYMENTS = {
     // llamamaps.co.uk/trial — a URL that does not exist on this deployment.
     trialUrl: "https://llamamaps.eu",
     host: "apache",
+    // Meta Business Manager domain verification. Each domain gets its own code
+    // from Meta — Settings -> Brand Safety -> Domains -> Add. Meta requires the
+    // <meta name="facebook-domain-verification"> tag to be present in the raw
+    // HTML the server returns, not injected by client-side JS, so this is
+    // written into the built index.html by site-files.mjs rather than rendered
+    // by a React component. Add llamamaps.eu's own code here once it exists.
+    fbDomainVerification: "efy12ykxkminqedcmyryOkyxyfzi7v",
     description: "/landingpage (Hormozi variant) as the home page",
   },
 };

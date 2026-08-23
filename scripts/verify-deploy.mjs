@@ -19,7 +19,7 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 import { chromium } from "playwright-core";
 import { startPagesServer } from "./pagesServer.mjs";
-import { NOT_FOUND_PRERENDER_PATH, currentOutDir, currentTarget, targetConfig } from "./deployTargets.mjs";
+import { DEPLOYMENTS, NOT_FOUND_PRERENDER_PATH, currentOutDir, currentTarget, targetConfig } from "./deployTargets.mjs";
 
 const DIST = currentOutDir();
 const PORT = 8791;
@@ -241,6 +241,22 @@ async function checkLinksAndAssets() {
   notes.push(`checked ${seen.size} distinct internal link/asset targets across ${routes.length} pages`);
 }
 
+// ── Meta Business domain verification ───────────────────────────────────────
+// Meta's crawler fetches "/" with plain HTTP — no JS execution — and looks for
+// this exact meta tag in the raw response. Checking it the same way (fetch, not
+// a browser) is what actually proves the requirement Meta states explicitly:
+// the tag must be in the static HTML, not injected client-side.
+async function checkMetaDomainVerification() {
+  const config = Object.values(DEPLOYMENTS).find((d) => d.outDir === DIST);
+  const code = config?.fbDomainVerification;
+  if (!code) return;
+
+  const html = await (await get("/", "follow")).text();
+  const tag = `<meta name="facebook-domain-verification" content="${code}" />`;
+  check(html.includes(tag), `Meta domain verification tag for ${config.domain} must be in the raw HTML of /`,
+    `expected to find: ${tag}`);
+}
+
 // ── Meta Pixel ───────────────────────────────────────────────────────────────
 // Method per the project's established harness: let fbevents.js load for real
 // (that is the only way the duplicate-registry crash reproduces) but abort the
@@ -357,6 +373,7 @@ async function main() {
     await checkCrawlerFiles();
     await checkSecurityAndCacheHeaders();
     await checkLinksAndAssets();
+    await checkMetaDomainVerification();
     await checkMetaPixel();
   } finally {
     server.close();
