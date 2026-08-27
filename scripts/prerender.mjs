@@ -28,6 +28,14 @@ const TARGET = currentTarget();
 const ROUTES = targetConfig(TARGET).routes;
 const OUT_DIR = currentOutDir();
 
+// Which of this target's routes render the trial landing page (or its A/B
+// variant), and therefore must carry the before/after screenshots. The
+// landing-page builds promote that page to "/", where the main build serves its
+// homepage instead — so this cannot be one fixed list.
+const TRIAL_ROUTES = new Set(
+  TARGET === "main" ? ["/trial", "/landingpage"] : ["/"],
+);
+
 // Serverless and CI build containers have no local Chromium install and are
 // missing the shared libraries a vanilla `playwright install chromium` binary
 // needs to launch. @sparticuz/chromium ships a build made for exactly that kind
@@ -80,6 +88,19 @@ function assertSnapshotIsSound(route, html) {
   };
 
   if (/<div id="root">\s*<\/div>/.test(html)) fail("React rendered nothing into #root");
+
+  // The proof screenshots are the page's whole argument, and they are now
+  // viewport-gated, so "the scroll pass silently stopped working" is a real and
+  // otherwise invisible failure mode. Assert the snapshot actually carries them.
+  if (TRIAL_ROUTES.has(route)) {
+    const sliderImages = html.match(/class="tp-baf-img"/g)?.length ?? 0;
+    const withSource = html.match(/<img[^>]+class="tp-baf-img"[^>]*\ssrc="/g)?.length ?? 0;
+    if (sliderImages === 0) fail("no before/after slider images in the snapshot");
+    if (withSource < sliderImages) {
+      fail(`${sliderImages - withSource} of ${sliderImages} slider images have no src — ` +
+        "revealLazyContent() did not trip their observers");
+    }
+  }
   if (!/<title>[^<]+<\/title>/.test(html)) fail("no <title> in the snapshot");
   if (!/<link[^>]+rel="canonical"/.test(html)) fail("no canonical link in the snapshot");
 
@@ -112,15 +133,63 @@ function outputFileFor(route) {
   return path.join(OUT_DIR, `${route.replace(/^\//, "")}.html`);
 }
 
-// "load" waits for every subresource, and these pages pull in Google Fonts, a
-// Calendly widget and YouTube iframes from the open internet. A single slow
-// third party is therefore enough to time out the navigation and fail the whole
+// "load" waits for every subresource, and these pages still reach the open
+// internet for the Calendly widget and the Meta Pixel. A single slow third
+// party is therefore enough to time out the navigation and fail the whole
 // deploy — which is exactly what happened once while building this. Retrying is
 // the right response: the failure is transient and not about our own output.
 //
-// ("networkidle" is not the fix. The YouTube embeds keep making background
-// requests indefinitely, so networkidle would never resolve at all.)
+// (Webfonts and the YouTube players used to be on that list too. Fonts are now
+// served from our own origin, and the video embeds are click-to-load, so
+// neither can stall a build any more.)
+//
+// ("networkidle" is not the fix. Calendly keeps polling in the background, so
+// networkidle would never resolve at all.)
 const ATTEMPTS = 3;
+
+// The case-study screenshots only get a `src` once their card nears the
+// viewport (see components/trial/useNearViewport.ts). At rest that means a
+// snapshot taken at scroll position 0 would bake in seventeen empty frames —
+// and these pages are prerendered precisely so that scrapers and ad reviewers,
+// which do not run JavaScript, see the proof images.
+//
+// So walk the page top to bottom first. That trips every observer, React fills
+// the `src` attributes in, and the snapshot is complete. Scrolling back to the
+// top afterwards keeps the serialised DOM in its natural initial state.
+async function revealLazyContent(page) {
+  await page.evaluate(async () => {
+    // The trial pages set `html { scroll-behavior: smooth }` for their anchor
+    // nav. Left in place it animates every scrollTo below, so re-targeting on a
+    // 100ms cadence just keeps restarting an easing curve and the walk never
+    // reaches the bottom of a 29,000px page — it got four images in out of
+    // thirty-four. Pin it to instant for the duration of the walk.
+    const root = document.documentElement;
+    const previousBehavior = root.style.scrollBehavior;
+    root.style.scrollBehavior = "auto";
+
+    const step = Math.max(1, window.innerHeight);
+    for (let y = 0; y < document.documentElement.scrollHeight; y += step) {
+      window.scrollTo(0, y);
+      // A frame is not enough here, and getting that wrong is what the
+      // assertion in assertSnapshotIsSound() first caught: an observer
+      // notification is delivered in its own task, and React then needs a
+      // further render pass to put the `src` on the element. Give each step
+      // long enough for both to happen before scrolling away from it.
+      await new Promise((r) => setTimeout(r, 100));
+    }
+    window.scrollTo(0, 0);
+    root.style.scrollBehavior = previousBehavior;
+  });
+
+  // Then wait on the actual outcome rather than on a duration. Pages with no
+  // gated images satisfy this immediately; a trial page that genuinely failed
+  // to reveal them times out here and is caught by the snapshot assertion.
+  await page.waitForFunction(
+    () => [...document.querySelectorAll("img.tp-baf-img")].every((img) => img.getAttribute("src")),
+    null,
+    { timeout: 20000 },
+  );
+}
 
 async function snapshotWithRetry(page, url, route) {
   let lastError;
@@ -129,6 +198,7 @@ async function snapshotWithRetry(page, url, route) {
       await page.goto(url, { waitUntil: "load", timeout: 45000 });
       // A short extra wait lets React finish rendering after load fires.
       await page.waitForTimeout(1500);
+      await revealLazyContent(page);
       const html = stripInjectedVendorScripts(await page.content());
       assertSnapshotIsSound(route, html);
       return html;

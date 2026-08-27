@@ -1,5 +1,7 @@
 import { useRef, useState } from "react";
 
+import { useNearViewport } from "@/components/trial-hormozi/useNearViewport";
+
 interface BeforeAfterSliderProps {
   before: string;
   after: string;
@@ -11,6 +13,9 @@ const BeforeAfterSlider = ({ before, after, beforeLabel, afterLabel }: BeforeAft
   const [pos, setPos] = useState(50);
   const [dragging, setDragging] = useState(false);
   const frameRef = useRef<HTMLDivElement>(null);
+  // Seventeen of these cards sit below the fold, two 800px screenshots each.
+  // They are only worth fetching once the reader is heading for them.
+  const [cardRef, near] = useNearViewport<HTMLDivElement>();
 
   const updateFromClientX = (clientX: number) => {
     const el = frameRef.current;
@@ -39,7 +44,7 @@ const BeforeAfterSlider = ({ before, after, beforeLabel, afterLabel }: BeforeAft
   const transitionStyle = dragging ? "none" : undefined;
 
   return (
-    <div className="tp-baf">
+    <div className="tp-baf" ref={cardRef}>
       <div className="tp-baf-labels">
         <span className="tp-baf-label tp-baf-label--before">{beforeLabel}</span>
         <span className="tp-baf-label tp-baf-label--after">{afterLabel}</span>
@@ -53,7 +58,7 @@ const BeforeAfterSlider = ({ before, after, beforeLabel, afterLabel }: BeforeAft
         onPointerCancel={handlePointerUp}
       >
         <img
-          src={after}
+          src={near ? after : undefined}
           alt="After"
           className="tp-baf-img"
           draggable={false}
@@ -65,7 +70,7 @@ const BeforeAfterSlider = ({ before, after, beforeLabel, afterLabel }: BeforeAft
           style={{ clipPath: `inset(0 ${100 - pos}% 0 0)`, transition: transitionStyle }}
         >
           <img
-            src={before}
+            src={near ? before : undefined}
             alt="Before"
             className="tp-baf-img"
             draggable={false}
