@@ -7,14 +7,22 @@
     <link rel="canonical" href="https://llamamaps.com/" />
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
 
-    <!-- Third-party origins the app connects to on every page. Warming the
-         connections here removes a round-trip from the render-blocking Google
-         Fonts import in src/index.css and from the Meta Pixel request. -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Webfonts are self-hosted (see the @font-face block at the top of
+         src/index.css), so there is no fonts.googleapis.com/fonts.gstatic.com
+         connection left to warm. Preloading the body font here starts it during
+         HTML parse, in parallel with the stylesheet that references it, instead
+         of one round trip after it. crossorigin is required even same-origin:
+         fonts are always fetched in CORS mode, and without it the preload is
+         discarded and fetched a second time. -->
+    <link rel="preload" href="/fonts/dm-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
+
+    <!-- Third-party origins the app connects to. These stay dns-prefetch rather
+         than preconnect: nothing on the critical path uses them, and the video
+         embeds are click-to-load, so youtube.com is only reached on interaction. -->
     <link rel="dns-prefetch" href="https://connect.facebook.net" />
     <link rel="dns-prefetch" href="https://assets.calendly.com" />
     <link rel="dns-prefetch" href="https://www.youtube.com" />
+    <link rel="dns-prefetch" href="https://i.ytimg.com" />
 
     <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" href="/llama-logo.png" />

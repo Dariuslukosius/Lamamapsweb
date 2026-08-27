@@ -1,4 +1,78 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+/* Self-hosted webfonts, latin subset, variable weight axis.
+ *
+ * These were an @import of fonts.googleapis.com, which cost the first paint two
+ * serial round trips it could not start until this stylesheet had itself
+ * downloaded: HTML -> index.css -> googleapis CSS -> gstatic woff2. Nothing
+ * painted until that chain finished. Serving the woff2 from our own origin
+ * collapses it, and lets index.html preload the files at parse time.
+ *
+ * The `latin` subset only (Google's default also ships latin-ext, vietnamese
+ * and cyrillic cuts), and one variable file per family instead of four static
+ * weights: 152 kB for all three families against 530 kB before.
+ *
+ * Update these by re-running scripts/fetch-fonts.mjs, not by hand. */
+/* Metric-matched fallbacks.
+ *
+ * `font-display: swap` paints the page in a system font and then re-lays it out
+ * when the webfont lands. Because the system font sets to a different width and
+ * line height, that re-layout MOVES text — which both shifts the page (CLS) and
+ * re-records LCP at the swap instead of at first paint. Measured on the trial
+ * hero, the LCP paragraph grew from 39,676px^2 to 41,292px^2 on swap and LCP
+ * jumped from 1.5s to 3.5s purely because of it.
+ *
+ * Overriding the fallback's metrics to match the real face makes the two
+ * interchangeable at layout level: the swap becomes a pure change of letter
+ * shapes, nothing reflows, and LCP is settled at first paint.
+ *
+ * Percentages are measured, not guessed — see scripts/fetch-fonts.mjs for where
+ * the faces come from; the ratios were taken from canvas TextMetrics against
+ * the local fallback at the same pixel size. `ascent-override` and
+ * `descent-override` are relative to the ALREADY size-adjusted em, which is why
+ * they are divided by size-adjust rather than used raw. */
+@font-face {
+  font-family: 'DM Sans Fallback';
+  src: local('Arial'), local('Helvetica Neue'), local('Roboto'), local('Liberation Sans');
+  size-adjust: 91.6%;
+  ascent-override: 108.0%;
+  descent-override: 33.8%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Fraunces Fallback';
+  src: local('Times New Roman'), local('Times'), local('Liberation Serif'), local('Noto Serif');
+  size-adjust: 92.9%;
+  ascent-override: 105.5%;
+  descent-override: 28.0%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'DM Sans';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/dm-sans-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/space-grotesk-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* Only /trial and /landingpage render Fraunces (--tp-serif), but the rule is
+ * declared for every page: an unused @font-face downloads nothing. The preload
+ * that does force the download is target-gated in vite.config.ts. */
+@font-face {
+  font-family: 'Fraunces';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/fraunces-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
 
 @tailwind base;
 @tailwind components;

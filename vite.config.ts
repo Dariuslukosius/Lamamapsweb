@@ -26,6 +26,43 @@ function validateDeployEnv() {
   }
 }
 
+/**
+ * Preloads the display font, but only on the builds whose "/" actually renders
+ * it. Fraunces is `--tp-serif` — the face the trial hero's <h1> is set in, and
+ * that <h1> is the LCP element on both landing pages. Without a preload the
+ * browser cannot discover it until it has downloaded the stylesheet, matched a
+ * rule and laid out the text, which puts three serial hops in front of the
+ * largest paint.
+ *
+ * The main build is deliberately excluded: its "/" is the marketing homepage,
+ * which is set in Space Grotesk and DM Sans. It still routes /trial and
+ * /landingpage, and those still render Fraunces correctly — they just discover
+ * it the normal way rather than paying 67 kB of preload on every homepage hit.
+ * @returns {import("vite").Plugin}
+ */
+function preloadDisplayFont() {
+  const TRIAL_TARGETS = ["trial", "landingpage"];
+  return {
+    name: "llamamaps-preload-display-font",
+    transformIndexHtml() {
+      if (!TRIAL_TARGETS.includes(process.env.VITE_DEPLOY_TARGET ?? "")) return [];
+      return [
+        {
+          tag: "link",
+          attrs: {
+            rel: "preload",
+            href: "/fonts/fraunces-latin.woff2",
+            as: "font",
+            type: "font/woff2",
+            crossorigin: "",
+          },
+          injectTo: "head-prepend" as const,
+        },
+      ];
+    },
+  };
+}
+
 // https://vitejs.dev/config/
 export default defineConfig(() => {
   validateDeployEnv();
@@ -38,7 +75,7 @@ export default defineConfig(() => {
         overlay: false,
       },
     },
-    plugins: [react()],
+    plugins: [react(), preloadDisplayFont()],
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),

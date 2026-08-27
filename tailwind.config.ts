@@ -15,8 +15,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        heading: ["Space Grotesk", "sans-serif"],
-        body: ["DM Sans", "sans-serif"],
+        heading: ["Space Grotesk", "DM Sans Fallback", "sans-serif"],
+        body: ["DM Sans", "DM Sans Fallback", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
