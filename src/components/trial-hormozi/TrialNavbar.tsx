@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
-import llamaLogo from "@/assets/llama-logo.webp";
+import llamaLogo from "@/assets/llama-logo-icon.webp";
 import { useTrialModal } from "./TrialModalContext";
 import { COPY } from "./copy";
 
@@ -22,6 +22,10 @@ const TrialNavbar = () => {
       <div className="tp-navbar-inner">
         <a href="#tp-home" className="tp-navbar-logo" onClick={() => setOpen(false)}>
           <img src={llamaLogo} alt="LlamaMaps" />
+          <span className="tp-navbar-logo-text">
+            <span className="tp-navbar-logo-name">llamamaps</span>
+            <span className="tp-navbar-logo-tagline">Be First On Google</span>
+          </span>
         </a>
 
         <div className="tp-navbar-links">

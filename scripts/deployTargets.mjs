@@ -75,6 +75,9 @@ export const DEPLOYMENTS = {
     // them as plain text to anyone who asked. Apache builds get .htaccess
     // instead, and the Pages files are removed from the output.
     host: "apache",
+    // Meta Business Manager domain verification code for this domain. See the
+    // matching field on "couk" below for how it gets into the built page.
+    fbDomainVerification: "cuofigg98zbstafg1y8nzl8gc0xw7w",
     description: "/trial (control) as the home page",
   },
   couk: {

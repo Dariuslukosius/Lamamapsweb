@@ -1,5 +1,5 @@
 import { Facebook, Instagram } from "lucide-react";
-import llamaLogo from "@/assets/llama-logo.webp";
+import llamaLogo from "@/assets/llama-logo-icon.webp";
 import { privacyUrl } from "@/lib/siteConfig";
 
 const footerLinks = [
@@ -19,6 +19,7 @@ const TrialFooter = () => (
     <div className="tp-footer-inner">
       <a href="#tp-home" className="tp-footer-logo">
         <img src={llamaLogo} alt="LlamaMaps" />
+        <span className="tp-footer-logo-name">llamamaps</span>
       </a>
 
       <p className="tp-footer-tagline">Find out how we can help your business grow online.</p>
