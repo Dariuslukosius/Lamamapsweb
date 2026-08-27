@@ -10,6 +10,7 @@ import TrialFooter from "@/components/trial-hormozi/TrialFooter";
 import { TrialModalProvider, useTrialModal } from "@/components/trial-hormozi/TrialModalContext";
 import TrialFloatingCta from "@/components/trial-hormozi/TrialFloatingCta";
 import BeforeAfterSlider from "@/components/trial-hormozi/BeforeAfterSlider";
+import YouTubeFacade from "@/components/trial-hormozi/YouTubeFacade";
 import RankCounter from "@/components/trial-hormozi/RankCounter";
 import HeroRankClimb from "@/components/trial-hormozi/HeroRankClimb";
 import TrialInvisibilitySection from "@/components/trial-hormozi/TrialInvisibilitySection";
@@ -23,6 +24,11 @@ import { trackHormoziView, installScrollDepthTracking } from "@/components/trial
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 
 import llamaLogo from "@/assets/llama-logo.webp";
+
+import posterAutoRepair from "@/assets/video-posters/auto-repair.webp";
+import posterMoversStorage from "@/assets/video-posters/movers-storage.webp";
+import posterPhysiotherapy from "@/assets/video-posters/physiotherapy.webp";
+import posterDentalClinic from "@/assets/video-posters/dental-clinic.webp";
 import googlePartnerLogo from "@/assets/partners/google-partner-logo-png_seeklogo-428155.webp";
 
 
@@ -56,9 +62,8 @@ import pricingCommunity from "@/assets/services/pricing-community.webp";
 import pricingCity from "@/assets/services/pricing-city.webp";
 
 const CSS = `
-  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap');
 
-  .tp-page { overflow-x: hidden; font-family: 'DM Sans', sans-serif; background: var(--tp-bg); color: var(--tp-text); }
+  .tp-page { overflow-x: hidden; font-family: 'DM Sans', 'DM Sans Fallback', sans-serif; background: var(--tp-bg); color: var(--tp-text); }
   .tp-page {
     --tp-bg: #0B1420;
     --tp-bg-card: #111C2B;
@@ -70,7 +75,7 @@ const CSS = `
     --tp-border: rgba(138, 147, 166, 0.18);
     --tp-border-strong: rgba(138, 147, 166, 0.32);
     --tp-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
-    --tp-serif: 'Fraunces', serif;
+    --tp-serif: 'Fraunces', 'Fraunces Fallback', serif;
   }
   html { scroll-behavior: smooth; scroll-padding-top: 92px; }
   .tp-container { max-width: 1240px; margin: 0 auto; padding: 0 20px; }
@@ -111,7 +116,11 @@ const CSS = `
      would then stick relative to that box instead of the viewport. */
   .tp-navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(11,20,32,0.94); backdrop-filter: blur(10px); border-bottom: 1px solid var(--tp-border); }
   .tp-navbar-inner { max-width: 1240px; margin: 0 auto; padding: 0 20px; height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
-  .tp-navbar-logo img { height: 34px; width: auto; display: block; }
+  .tp-navbar-logo { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; text-decoration: none; }
+  .tp-navbar-logo img { height: 30px; width: auto; display: block; }
+  .tp-navbar-logo-text { display: flex; flex-direction: column; align-items: center; gap: 1px; line-height: 1; }
+  .tp-navbar-logo-name { color: var(--tp-text); font-size: 0.8rem; font-weight: 700; letter-spacing: -0.01em; }
+  .tp-navbar-logo-tagline { color: var(--tp-text); font-size: 0.5rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.85; white-space: nowrap; }
   .tp-navbar-links { display: none; align-items: center; gap: 24px; margin-left: auto; }
   .tp-navbar-link { color: var(--tp-text); font-size: 0.88rem; font-weight: 500; text-decoration: none; white-space: nowrap; }
   .tp-navbar-link:hover { color: var(--tp-gold); }
@@ -420,6 +429,29 @@ const CSS = `
   .tp-video-card { border-radius: 16px; border: 1px solid var(--tp-border); background: var(--tp-bg-card); box-shadow: var(--tp-shadow); padding: 8px; }
   .tp-video-frame { position: relative; width: 100%; padding-bottom: 177.78%; border-radius: 10px; overflow: hidden; background: #000; }
   .tp-video-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+  /* Click-to-load poster (see YouTubeFacade). It occupies the frame exactly, so
+     swapping it for the real iframe on click shifts no layout — the aspect box
+     around it is fixed by .tp-video-frame's padding-bottom either way. */
+  .tp-video-facade {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    padding: 0; border: 0; background: #000; cursor: pointer; display: block;
+  }
+  .tp-video-poster { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .tp-video-play {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    display: grid; place-items: center; width: 58px; height: 58px; border-radius: 999px;
+    background: rgba(12, 20, 32, 0.72); color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(2px);
+    padding-left: 4px; /* optical centring: the glyph's mass sits left of centre */
+    transition: transform 160ms ease, background 160ms ease;
+  }
+  .tp-video-facade:hover .tp-video-play { transform: translate(-50%, -50%) scale(1.08); background: rgba(12, 20, 32, 0.88); }
+  .tp-video-facade:focus-visible { outline: 2px solid var(--tp-gold); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) {
+    .tp-video-facade:hover .tp-video-play { transform: translate(-50%, -50%); }
+  }
   .tp-video-ranks { margin-top: 10px; padding: 0 4px 4px; }
   /* Crossfades between Before/After on hover (desktop) or tap (mobile) rather
      than showing both at once — a small "transformation" moment tied to the
@@ -475,7 +507,9 @@ const CSS = `
   /* ── Footer ── */
   .tp-footer { border-top: 1px solid var(--tp-border); padding: 56px 0 32px; }
   .tp-footer-inner { max-width: 1240px; margin: 0 auto; padding: 0 20px; display: flex; flex-direction: column; align-items: center; gap: 24px; text-align: center; }
+  .tp-footer-logo { display: flex; flex-direction: column; align-items: center; gap: 6px; }
   .tp-footer-logo img { height: 30px; width: auto; }
+  .tp-footer-logo-name { color: var(--tp-text); font-size: 0.85rem; font-weight: 700; letter-spacing: -0.01em; }
   .tp-footer-tagline { color: var(--tp-text); font-size: 1.2rem; font-weight: 600; letter-spacing: -0.01em; max-width: 520px; line-height: 1.4; }
   .tp-footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
   .tp-footer-links a { color: var(--tp-text-muted); font-size: 0.88rem; font-weight: 500; text-decoration: none; }
@@ -690,10 +724,10 @@ const traditionalMissing = new Set([
 
 // First entry intentionally placed last per feedback on video ordering.
 const videoTestimonials = [
-  { id: "-8SFE-Pbm9g", title: "Auto Repair Shop Testimonial", before: "Not found", after: "Top 3" },
-  { id: "Mlt9xpYy00w", title: "Online Movers and Storage", before: "Not ranked", after: "Top 3" },
-  { id: "hp_UzmzN9cU", title: "Physiotherapy Clinic Testimonial", before: "Rank 14", after: "Top 3" },
-  { id: "z7HUliWQ_NU", title: "Dental Clinic Testimonial", before: "Rank 9", after: "Rank 1" },
+  { id: "-8SFE-Pbm9g", title: "Auto Repair Shop Testimonial", before: "Not found", after: "Top 3", poster: posterAutoRepair },
+  { id: "Mlt9xpYy00w", title: "Online Movers and Storage", before: "Not ranked", after: "Top 3", poster: posterMoversStorage },
+  { id: "hp_UzmzN9cU", title: "Physiotherapy Clinic Testimonial", before: "Rank 14", after: "Top 3", poster: posterPhysiotherapy },
+  { id: "z7HUliWQ_NU", title: "Dental Clinic Testimonial", before: "Rank 9", after: "Rank 1", poster: posterDentalClinic },
 ];
 
 const onboardingSteps = ["Start Free Trial", "Try Our System", "Choose Your Plan", "Track Your Progress"];
@@ -1264,12 +1298,7 @@ const TrialVideoTestimonials = () => (
         {videoTestimonials.map((v) => (
           <div key={v.id} className="tp-video-card">
             <div className="tp-video-frame">
-              <iframe
-                src={`https://www.youtube.com/embed/${v.id}`}
-                title={v.title}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
+              <YouTubeFacade videoId={v.id} title={v.title} poster={v.poster} />
             </div>
             <div className="tp-video-ranks">
               <RankCrossfadeBadge before={v.before} after={v.after} />
