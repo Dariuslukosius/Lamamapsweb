@@ -37,3 +37,4 @@ dist-*
 
 # Upload archives for Hostinger
 dist-*.zip
+.tile-cache/
