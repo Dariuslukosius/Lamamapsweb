@@ -14,6 +14,8 @@ import NotFound from "./pages/NotFound.tsx";
 import FreeTrialPage from "./pages/FreeTrialPage.tsx";
 import TrialPage from "./pages/TrialPage.tsx";
 import TrialHormoziPage from "./pages/TrialHormoziPage.tsx";
+import TrialV2Page from "./pages/TrialV2Page.tsx";
+import LandingPageV2Page from "./pages/LandingPageV2Page.tsx";
 import PrivacyPage from "./pages/PrivacyPage.tsx";
 import CalendlyBadge from "./components/CalendlyBadge.tsx";
 
@@ -27,7 +29,7 @@ const queryClient = new QueryClient();
 //
 // On the single-landing-page targets the badge is not rendered at all, so the
 // path list only has to cover the main site, where both live on sub-paths.
-const ISOLATED_LANDING_PATHS = new Set(["/trial", "/landingpage"]);
+const ISOLATED_LANDING_PATHS = new Set(["/trial", "/landingpage", "/trial-v2", "/landingpage-v2"]);
 
 const GlobalCalendlyBadge = () => {
   const { pathname } = useLocation();
@@ -82,6 +84,13 @@ const AppRoutes = () => {
       <Route path="/free-trial" element={<FreeTrialPage />} />
       <Route path="/trial" element={<TrialPage />} />
       <Route path="/landingpage" element={<TrialHormoziPage />} />
+      {/* Reworked versions of the two landing pages, kept alongside the
+          originals so the two can be compared at the same time. Main
+          target only: the single-page deployments each ship one product,
+          and adding a second copy of it to those bundles is exactly the
+          weight the domain split exists to avoid. */}
+      <Route path="/trial-v2" element={<TrialV2Page />} />
+      <Route path="/landingpage-v2" element={<LandingPageV2Page />} />
       <Route path="/privacy" element={<PrivacyPage />} />
       <Route path="*" element={<NotFound />} />
     </Routes>

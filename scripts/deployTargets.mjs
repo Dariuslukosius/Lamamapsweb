@@ -115,7 +115,15 @@ const TARGETS = {
   // ran on Vercel, so the migration itself changes no URL.
   main: {
     // Prerendered and served as static HTML.
-    routes: ["/", "/about", "/services", "/contacts", "/privacy", "/trial", "/free-trial", "/landingpage"],
+    // /trial-v2 and /landingpage-v2 are the reworked versions of the two
+    // landing pages, live alongside the originals for comparison. Like the
+    // originals they are noindex, so they are prerendered but not listed as
+    // indexable below.
+    routes: [
+      "/", "/about", "/services", "/contacts", "/privacy",
+      "/trial", "/free-trial", "/landingpage",
+      "/trial-v2", "/landingpage-v2",
+    ],
     // Listed in sitemap.xml. /trial, /free-trial and /landingpage carry a
     // page-level noindex, so listing them would send Google contradictory
     // signals — the same reasoning the hand-written sitemap already used.
