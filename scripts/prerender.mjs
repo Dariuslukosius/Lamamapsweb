@@ -32,8 +32,20 @@ const OUT_DIR = currentOutDir();
 // variant), and therefore must carry the before/after screenshots. The
 // landing-page builds promote that page to "/", where the main build serves its
 // homepage instead — so this cannot be one fixed list.
-const TRIAL_ROUTES = new Set(
-  TARGET === "main" ? ["/trial", "/landingpage"] : ["/"],
+// Each maps to the CSS prefix that page's markup uses, because the assertion
+// below greps the snapshot by class name. The V2 pages are deliberate copies
+// scoped under their own prefixes so they cannot restyle the originals, which
+// means a check hard-coded to "tp-" silently passes on them: it finds zero
+// slider images, and zero images all have a src.
+const TRIAL_ROUTES = new Map(
+  TARGET === "main"
+    ? [
+        ["/trial", "tp"],
+        ["/landingpage", "tp"],
+        ["/trial-v2", "t2"],
+        ["/landingpage-v2", "l2"],
+      ]
+    : [["/", "tp"]],
 );
 
 // Serverless and CI build containers have no local Chromium install and are
@@ -92,9 +104,11 @@ function assertSnapshotIsSound(route, html) {
   // The proof screenshots are the page's whole argument, and they are now
   // viewport-gated, so "the scroll pass silently stopped working" is a real and
   // otherwise invisible failure mode. Assert the snapshot actually carries them.
-  if (TRIAL_ROUTES.has(route)) {
-    const sliderImages = html.match(/class="tp-baf-img"/g)?.length ?? 0;
-    const withSource = html.match(/<img[^>]+class="tp-baf-img"[^>]*\ssrc="/g)?.length ?? 0;
+  const trialPrefix = TRIAL_ROUTES.get(route);
+  if (trialPrefix) {
+    const sliderImages = html.match(new RegExp(`class="${trialPrefix}-baf-img"`, "g"))?.length ?? 0;
+    const withSource =
+      html.match(new RegExp(`<img[^>]+class="${trialPrefix}-baf-img"[^>]*\\ssrc="`, "g"))?.length ?? 0;
     if (sliderImages === 0) fail("no before/after slider images in the snapshot");
     if (withSource < sliderImages) {
       fail(`${sliderImages - withSource} of ${sliderImages} slider images have no src — ` +
@@ -185,7 +199,15 @@ async function revealLazyContent(page) {
   // gated images satisfy this immediately; a trial page that genuinely failed
   // to reveal them times out here and is caught by the snapshot assertion.
   await page.waitForFunction(
-    () => [...document.querySelectorAll("img.tp-baf-img")].every((img) => img.getAttribute("src")),
+    // Matched on the class suffix rather than a literal prefix: /trial and
+    // /landingpage render "tp-baf-img", their V2 counterparts "t2-" and "l2-".
+    // Naming only the first meant this resolved instantly on the V2 pages --
+    // an empty list satisfies .every() -- so they were snapshotted on a bare
+    // 1500ms timer with nothing checking the images had actually loaded.
+    () =>
+      [...document.querySelectorAll('img[class*="baf-img"]')].every((img) =>
+        img.getAttribute("src"),
+      ),
     null,
     { timeout: 20000 },
   );
