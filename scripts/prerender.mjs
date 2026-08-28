@@ -170,7 +170,23 @@ const ATTEMPTS = 3;
 // So walk the page top to bottom first. That trips every observer, React fills
 // the `src` attributes in, and the snapshot is complete. Scrolling back to the
 // top afterwards keeps the serialised DOM in its natural initial state.
-async function revealLazyContent(page) {
+// Every gated screenshot on the trial pages and their V2 counterparts. The V1
+// pages render "tp-baf-img", the V2 pages "t2-" and "l2-", so this matches on
+// the shared suffix rather than naming one prefix.
+const LAZY_IMAGE_SELECTOR = 'img[class*="baf-img"]';
+
+// How long to give the images after a walk, and how many walks to try.
+//
+// This was one 20s attempt. That is comfortable on a dev machine -- a warm run
+// here reveals all thirty-four in under 30ms -- but it is the wrong budget for
+// a cold CI container, which is fetching every one of those images for the
+// first time on a single-process Chromium with a small cache. Overshooting
+// costs a few seconds on a build that already takes minutes; undershooting
+// fails the deploy.
+const REVEAL_TIMEOUT_MS = 45000;
+const REVEAL_PASSES = 3;
+
+async function walkWholePage(page) {
   await page.evaluate(async () => {
     // The trial pages set `html { scroll-behavior: smooth }` for their anchor
     // nav. Left in place it animates every scrollTo below, so re-targeting on a
@@ -182,6 +198,9 @@ async function revealLazyContent(page) {
     root.style.scrollBehavior = "auto";
 
     const step = Math.max(1, window.innerHeight);
+    // scrollHeight is re-read each iteration on purpose: revealing images gives
+    // previously-empty frames their real height, so the page grows underneath
+    // the walk and a bound captured up front would stop short of the new bottom.
     for (let y = 0; y < document.documentElement.scrollHeight; y += step) {
       window.scrollTo(0, y);
       // A frame is not enough here, and getting that wrong is what the
@@ -194,23 +213,50 @@ async function revealLazyContent(page) {
     window.scrollTo(0, 0);
     root.style.scrollBehavior = previousBehavior;
   });
+}
 
-  // Then wait on the actual outcome rather than on a duration. Pages with no
-  // gated images satisfy this immediately; a trial page that genuinely failed
-  // to reveal them times out here and is caught by the snapshot assertion.
-  await page.waitForFunction(
-    // Matched on the class suffix rather than a literal prefix: /trial and
-    // /landingpage render "tp-baf-img", their V2 counterparts "t2-" and "l2-".
-    // Naming only the first meant this resolved instantly on the V2 pages --
-    // an empty list satisfies .every() -- so they were snapshotted on a bare
-    // 1500ms timer with nothing checking the images had actually loaded.
-    () =>
-      [...document.querySelectorAll('img[class*="baf-img"]')].every((img) =>
-        img.getAttribute("src"),
-      ),
-    null,
-    { timeout: 20000 },
-  );
+async function countRevealed(page) {
+  return page.evaluate((selector) => {
+    const images = [...document.querySelectorAll(selector)];
+    return { total: images.length, withSrc: images.filter((img) => img.getAttribute("src")).length };
+  }, LAZY_IMAGE_SELECTOR);
+}
+
+// Walk the page so every gated image trips its observer, then wait on the
+// actual outcome rather than on a duration. Pages with no gated images satisfy
+// this immediately.
+//
+// A failed pass re-walks instead of giving up. An observer that fired while its
+// image was still being fetched leaves the element without a src, and the cheap
+// fix is to go past it again once the network has caught up — which is a
+// likelier state on a build container than on a developer's machine.
+async function revealLazyContent(page) {
+  for (let pass = 1; pass <= REVEAL_PASSES; pass += 1) {
+    await walkWholePage(page);
+    try {
+      await page.waitForFunction(
+        (selector) =>
+          [...document.querySelectorAll(selector)].every((img) => img.getAttribute("src")),
+        LAZY_IMAGE_SELECTOR,
+        { timeout: REVEAL_TIMEOUT_MS },
+      );
+      return;
+    } catch (err) {
+      const { total, withSrc } = await countRevealed(page);
+      if (pass === REVEAL_PASSES) {
+        // Say what was actually missing. The old message was a bare Playwright
+        // timeout, which in a CI log gives no clue whether the walk stalled,
+        // the images 404'd, or the page simply never grew.
+        throw new Error(
+          `lazy images never resolved: ${withSrc}/${total} have a src after ` +
+            `${REVEAL_PASSES} scroll passes (${REVEAL_TIMEOUT_MS}ms each)`,
+        );
+      }
+      console.warn(
+        `  reveal pass ${pass}/${REVEAL_PASSES}: ${withSrc}/${total} images ready, walking again…`,
+      );
+    }
+  }
 }
 
 async function snapshotWithRetry(page, url, route) {
