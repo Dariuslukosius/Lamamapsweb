@@ -921,7 +921,7 @@ const TrialHero = () => {
         <span className="t2-hero-badge">Top 3 Google Maps in 90 Days</span>
         <span className="t2-hero-eyebrow">Clinic &amp; Local Business Owners:</span>
         <h1 className="t2-hero-h1">
-          Rank <em>TOP 3 on Google Maps</em> in 90 Days
+          Rank <em>TOP 3 on Google Maps</em> <em>in 90 Days</em>
         </h1>
         <p className="t2-hero-sub">
           No paid ads. No outdated SEO tricks. No relying on word of mouth. Just a proven system that pushes your
