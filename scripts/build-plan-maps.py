@@ -2,8 +2,8 @@
 """
 Builds the plan coverage maps used by the V2 landing pages.
 
-Run once; the outputs are committed. Re-run only to change the location, the
-zoom framing, or the dark treatment.
+Run once; the outputs are committed. Re-run only to change the location or the
+zoom framing.
 
     python3 scripts/build-plan-maps.py
 
@@ -22,6 +22,16 @@ WHAT IS DRAWN HERE AND WHAT IS NOT
 Only the map itself is baked in. The radius circle, the centre marker and the
 labels are drawn by PlanRadiusMap.tsx as SVG on top, so they stay crisp at any
 size and follow the page's palette instead of being frozen into the raster.
+
+COLOUR
+Tiles are kept in their native OSM colour rather than recoloured to match the
+page. An earlier version desaturated and inverted them into the navy palette,
+on the theory that a near-white basemap would glare against a #0B1420 page —
+but the case-study before/after scans on this same page are also plain light
+OSM screenshots, framed in a card with nothing done to their colour, and they
+read as the most "real" and premium images on the page precisely because nobody
+touched them. Recolouring made the plan maps look like an illustration of a
+map; leaving them alone makes them look like a map.
 
 GEOMETRY
 Web Mercator resolution is 156543.03392 * cos(latitude) / 2**zoom metres per
@@ -84,29 +94,6 @@ def fetch_tile(z: int, x: int, y: int) -> Image.Image:
     return Image.open(cached).convert("RGB")
 
 
-def darken(img: Image.Image) -> Image.Image:
-    """Recolour the standard OSM raster into the page's dark navy palette.
-
-    Standard OSM tiles are near-white and would glare against the #0B1420 page.
-    Rather than dropping in a second tile provider for a dark style, the tiles
-    are converted to luminance, inverted (so paper-white becomes deep navy and
-    dark roads become light), and mapped across a two-point ramp between the
-    page background and a muted slate. Roads and water keep their structure and
-    the gold radius circle drawn on top stays the brightest thing in the frame.
-    """
-    lo = (13, 22, 35)  # near the page background, for former white paper
-    hi = (122, 134, 156)  # muted slate, for former dark linework
-
-    grey = img.convert("L")
-    lut = []
-    for channel in range(3):
-        lut += [
-            round(lo[channel] + (hi[channel] - lo[channel]) * ((255 - v) / 255.0))
-            for v in range(256)
-        ]
-    return Image.merge("RGB", (grey, grey, grey)).point(lut)
-
-
 def build(name: str, zoom: int) -> None:
     cx, cy = lonlat_to_pixel(CENTER_LAT, CENTER_LON, zoom)
 
@@ -128,7 +115,12 @@ def build(name: str, zoom: int) -> None:
 
     OUT.mkdir(parents=True, exist_ok=True)
     out = OUT / f"london-{name}.webp"
-    darken(crop).save(out, "WEBP", quality=82, method=6)
+    # 60, not 85: native-colour map tiles are far more compressible than a
+    # photo (huge flat regions of park-green/water-blue), and a side-by-side
+    # crop of the densest label area was visually indistinguishable between
+    # the two — quality=85 was costing ~40% extra bytes for nothing visible.
+    # This one change took the pair from ~315KB to ~180KB combined.
+    crop.save(out, "WEBP", quality=60, method=6)
 
     metres_per_px = 156543.03392 * math.cos(math.radians(CENTER_LAT)) / 2**zoom
     miles = 2.5 if name == "community" else 5.0
