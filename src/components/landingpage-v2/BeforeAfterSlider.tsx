@@ -7,15 +7,9 @@ interface BeforeAfterSliderProps {
   after: string;
   beforeLabel: string;
   afterLabel: string;
-  /**
-   * The client's logo, rendered as a map pin over the scan. Optional: cards
-   * whose client we hold no logo for pass nothing and get no pin, rather than
-   * a stand-in mark on someone else's map.
-   */
-  pin?: React.ReactNode;
 }
 
-const BeforeAfterSlider = ({ before, after, beforeLabel, afterLabel, pin }: BeforeAfterSliderProps) => {
+const BeforeAfterSlider = ({ before, after, beforeLabel, afterLabel }: BeforeAfterSliderProps) => {
   const [pos, setPos] = useState(50);
   const [dragging, setDragging] = useState(false);
   const frameRef = useRef<HTMLDivElement>(null);
@@ -89,7 +83,6 @@ const BeforeAfterSlider = ({ before, after, beforeLabel, afterLabel, pin }: Befo
           <span className="l2-baf-handle-arrow">‹</span>
           <span className="l2-baf-handle-arrow">›</span>
         </div>
-        {pin}
       </div>
     </div>
   );

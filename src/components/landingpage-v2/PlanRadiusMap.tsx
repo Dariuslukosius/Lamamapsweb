@@ -10,18 +10,25 @@ import cityMap from "@/assets/plans-v2/london-city.webp";
  * price list disagreed with each other on what the customer was buying.
  *
  * The map raster is pre-built by scripts/build-plan-maps.py (see that file for
- * why the tiles are baked rather than fetched in the browser). It frames both
- * plans so the radius lands at the same pixel size in each, which is why one
- * RADIUS_PCT covers both: the plans differ by a factor of two in radius and the
- * images differ by exactly one zoom level.
+ * why the tiles are baked rather than fetched in the browser, and why they are
+ * left in native OSM colour instead of retinted). It frames both plans so the
+ * radius lands at the same pixel size in each, which is why one RADIUS_PCT
+ * covers both: the plans differ by a factor of two in radius and the images
+ * differ by exactly one zoom level.
  *
- * Only the map is baked in. The circle is drawn here as SVG so it stays sharp
- * at any width and takes its colour from the page palette rather than being
- * frozen into the image.
+ * Only the map is baked in. The circle, the centred radius pill and the area
+ * badge are drawn here — SVG for the circle so it stays sharp at any width,
+ * HTML for the labels so they get real font rendering instead of SVG <text>'s
+ * worse hinting and line-wrapping.
+ *
+ * area is the bounding square (2 × radius), not the circle's own area — a
+ * "5 mile radius" plan is shown as "100 mi²" (10mi × 10mi), which is the
+ * simpler number a prospect can sanity-check against a map by eye, rather
+ * than a circle-area figure (π × 5² ≈ 78.5 mi²) nobody will mentally verify.
  */
 const MAPS = {
-  community: { src: communityMap, miles: "2.5", label: "2.5 mile radius" },
-  city: { src: cityMap, miles: "5", label: "5 mile radius" },
+  community: { src: communityMap, miles: 2.5, label: "2.5 mile radius" },
+  city: { src: cityMap, miles: 5, label: "5 mile radius" },
 } as const;
 
 export type PlanRadiusKey = keyof typeof MAPS;
@@ -31,6 +38,7 @@ const RADIUS_PCT = 26.4;
 
 const PlanRadiusMap = ({ plan }: { plan: PlanRadiusKey }) => {
   const { src, miles, label } = MAPS[plan];
+  const area = (miles * 2) ** 2;
 
   return (
     <figure className="l2-planmap">
@@ -56,34 +64,31 @@ const PlanRadiusMap = ({ plan }: { plan: PlanRadiusKey }) => {
           cy="50"
           r={RADIUS_PCT}
           fill="var(--l2-gold)"
-          fillOpacity="0.12"
+          fillOpacity="0.22"
           stroke="var(--l2-gold)"
-          strokeWidth="0.7"
+          strokeWidth="1.1"
         />
-        {/* Radius line from the centre out to the edge, so the circle reads as
-            a measured distance rather than a decorative ring. */}
-        <line
-          x1="50"
-          y1="50"
-          x2={50 + RADIUS_PCT}
-          y2="50"
-          stroke="var(--l2-gold)"
-          strokeWidth="0.5"
-          strokeDasharray="2 1.6"
-        />
-        <circle cx="50" cy="50" r="1.9" fill="var(--l2-gold)" />
       </svg>
 
-      <span className="l2-planmap-badge">{miles} mi</span>
+      <span className="l2-planmap-radius">{label}</span>
+      <span className="l2-planmap-area">{area} mi²</span>
 
-      {/* Required by the OpenStreetMap licence wherever its map data is shown. */}
-      <figcaption className="l2-planmap-attr">
-        Illustrative · map data ©{" "}
-        <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">
-          OpenStreetMap
-        </a>{" "}
-        contributors
-      </figcaption>
+      {/* OpenStreetMap's licence requires attribution wherever its map data is
+          shown, but their own attribution guideline explicitly allows collapsing
+          it to a small icon that reveals the full credit on click — the pattern
+          mapping SDKs use in tight UI. This is that: a barely-visible "i" mark
+          rather than a permanent text band sitting across the bottom of the
+          map. https://osmfoundation.org/wiki/Licence/Attribution_Guidelines */}
+      <a
+        className="l2-planmap-attr"
+        href="https://www.openstreetmap.org/copyright"
+        target="_blank"
+        rel="noreferrer"
+        aria-label="Map data © OpenStreetMap contributors"
+        title="Map data © OpenStreetMap contributors"
+      >
+        i
+      </a>
     </figure>
   );
 };

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion, MotionConfig } from "framer-motion";
-import { ArrowRight, Check, X, Star } from "lucide-react";
+import { ArrowRight, Check, X, Star, ChevronLeft, ChevronRight } from "lucide-react";
 
 import SEO from "@/components/SEO";
 import { organizationSchema, faqSchema } from "@/lib/structuredData";
@@ -11,6 +11,7 @@ import TrialFloatingCta from "@/components/trial-v2/TrialFloatingCta";
 import BeforeAfterSlider from "@/components/trial-v2/BeforeAfterSlider";
 import YouTubeFacade from "@/components/trial-v2/YouTubeFacade";
 import { caseStudies, type CaseStudy } from "@/lib/caseStudies";
+import { caseStudyScansV2 } from "@/lib/caseStudyScansV2";
 import CaseStudyLogo from "@/components/trial-v2/CaseStudyLogo";
 import PlanRadiusMap, { type PlanRadiusKey } from "@/components/trial-v2/PlanRadiusMap";
 import { testimonials, initialsOf } from "@/lib/testimonials";
@@ -19,7 +20,14 @@ import HeroRankClimb from "@/components/trial-v2/HeroRankClimb";
 import TrialInvisibilitySection from "@/components/trial-v2/TrialInvisibilitySection";
 import CountUpStat from "@/components/trial-v2/CountUpStat";
 import RankCrossfadeBadge from "@/components/trial-v2/RankCrossfadeBadge";
-import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+  type CarouselApi,
+} from "@/components/ui/carousel";
 
 import llamaLogo from "@/assets/llama-logo.webp";
 
@@ -30,19 +38,26 @@ import posterDentalClinic from "@/assets/video-posters/dental-clinic.webp";
 import googlePartnerLogo from "@/assets/partners/google-partner-logo-png_seeklogo-428155.webp";
 
 
-import agrijaBrand from "@/assets/brands/agrija.webp";
+// V2-only cleaned copies of four brand-strip logos that came out blurry
+// under the strip's white-silhouette filter — see scripts/clean-brand-logos.py
+// for why, and why they are not simply overwritten in place (this same file
+// path is imported by the V1 pages too).
+import proteraServisasClean from "@/assets/brands-v2/protera-servisas.webp";
+import kurtasServiceClean from "@/assets/brands-v2/kurtas-service.webp";
+// Traced to vector rather than raster-cleaned like the other two, since
+// their best available source was too low-resolution for hardening +
+// upscaling alone to fix — see scripts/vectorize-logos.py.
+import agrijaClean from "@/assets/brands-v2/agrija.svg";
+import geraDovanaClean from "@/assets/brands-v2/gera-dovana.svg";
 import artfiksa from "@/assets/brands/artfiksa.webp";
 import autoVela from "@/assets/brands/auto-vela.webp";
 import clinicDpcLogo from "@/assets/brands/clinic-dpc.webp";
 import ecoResort from "@/assets/brands/eco-resort.webp";
 import eraEsthetic from "@/assets/brands/era-esthetic.webp";
 import fastCar from "@/assets/brands/fast-car.webp";
-import geraDovana from "@/assets/brands/gera-dovana.webp";
 import gok from "@/assets/brands/gok.webp";
-import kurtasServiceBrand from "@/assets/brands/kurtas-service.webp";
 import miracleK9Academy from "@/assets/brands/miracle-k9-academy.webp";
 import motoSvajone from "@/assets/brands/moto-svajone.webp";
-import proteraServisas from "@/assets/brands/protera-servisas.webp";
 import royalHorse from "@/assets/brands/royal-horse.webp";
 import sokrato from "@/assets/brands/sokrato.webp";
 import svajoniuSpaLogo from "@/assets/brands/svajoniu-spa.webp";
@@ -174,18 +189,14 @@ const CSS = `
      grey, which needs a light backdrop to stay legible. */
   /* Task: the Google Partner badge was centred directly under the navbar,
      straight above the headline, where it was the first thing the eye landed
-     on. It is a trust marker, not the offer, so it moves to the corner: it
-     still reads on the way in but no longer interrupts the run from navbar to
-     H1. On phones it stays centred -- at 390px a corner tab just crowds the
-     edge of an already narrow column. */
-  .t2-partner-wrap { display: flex; justify-content: center; }
+     on. It is a trust marker, not the offer, so it moves to the corner at
+     every width, including mobile — a small tab tucked against the edge, not
+     a centred interruption between the navbar and the H1. */
+  .t2-partner-wrap { display: flex; justify-content: flex-end; padding-right: clamp(14px, 4vw, 44px); }
   .t2-partner-strip {
     display: inline-flex; align-items: center; justify-content: center;
     background: #fff; border-radius: 0 0 var(--t2-r-control) var(--t2-r-control);
     padding: 6px 18px 8px; box-shadow: 0 8px 20px rgba(0,0,0,0.28);
-  }
-  @media (min-width: 900px) {
-    .t2-partner-wrap { justify-content: flex-end; padding-right: clamp(20px, 3vw, 44px); }
   }
   .t2-partner-strip img { height: 42px; width: auto; display: block; }
   .t2-hero-inner { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; text-align: center; }
@@ -392,29 +403,53 @@ const CSS = `
      background, double width) and a bigger, slower count; the other three
      sit as plain, unboxed numbers so they read as supporting context rather
      than four identical tiles. */
-  .t2-mission-stats { display: grid; gap: 16px 24px; grid-template-columns: repeat(2, minmax(0,1fr)); margin-top: 40px; }
+  /* Two fixed rows, not one grid with a double-wide first cell. A 4-column
+     grid with the lead stat spanning 2 columns leaves exactly 2 columns for
+     the remaining 3 items — one of them has nowhere to go and wraps alone
+     onto its own row, under a wide gap where the 4th column would have been.
+     That happened at every width this grid was used at, not just narrow ones,
+     because the mismatch is 3 items into 2 slots, not a viewport problem.
+     Splitting into "one full-width featured row" + "three equal columns
+     below" removes the mismatch instead of working around it. */
+  .t2-mission-stats { display: flex; flex-direction: column; gap: 20px; margin-top: 40px; }
   .t2-mission-stat { padding: 6px 4px; }
   .t2-mission-stat-num { font-family: var(--t2-serif); font-size: 2rem; font-weight: 600; color: var(--t2-gold); line-height: 1; }
   .t2-mission-stat-label { margin-top: 10px; color: var(--t2-text-muted); font-size: 0.88rem; line-height: 1.5; }
   .t2-mission-stat--featured {
-    grid-column: span 2; border-radius: var(--t2-r-card); background: var(--t2-bg-card);
+    border-radius: var(--t2-r-card); background: var(--t2-bg-card);
     border: 1px solid var(--t2-border); box-shadow: var(--t2-shadow); padding: 24px;
   }
-  .t2-mission-stat--featured .t2-mission-stat-num { font-size: 3.6rem; }
+  .t2-mission-stat--featured .t2-mission-stat-num { font-size: 3rem; }
   .t2-mission-stat--featured .t2-mission-stat-label { font-size: 0.92rem; }
+  .t2-mission-secondary { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px 20px; }
+  @media (min-width: 700px) {
+    .t2-mission-stat--featured .t2-mission-stat-num { font-size: 3.6rem; }
+  }
 
   /* ── Case studies ── */
   /* Task: two case studies per row on desktop, one on mobile. Because each
      card is now half as wide, its own internal layout stops being a two-column
      split and stacks instead -- the 280px metrics column and a map beside it
      do not both fit in half a container. */
-  .t2-cases { display: grid; gap: 20px; margin-top: 40px; }
+  /* minmax(0,1fr) on the single mobile column, not just the 2-column desktop
+     rule below -- without it, an implicit grid column sizes to its content's
+     max-content width instead of clamping to the container, so the widest
+     card's keyword-carousel row (nowrap arrows + counter) silently stretched
+     every card in the grid past the viewport edge, clipped invisibly by
+     .t2-page's overflow-x: hidden rather than showing as a scrollbar. */
+  .t2-cases { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; margin-top: 40px; }
   .t2-case {
     display: flex; flex-direction: column; gap: 20px;
     border: 1px solid var(--t2-border); border-radius: var(--t2-r-card);
     background: var(--t2-bg-card); box-shadow: var(--t2-shadow); padding: 24px;
   }
   .t2-case-head { display: flex; align-items: center; gap: 12px; }
+  /* min-width: 0 overrides the flex default of min-width: auto, which lets a
+     flex child's own intrinsic content width (the business name plus the new
+     "N keywords" badge) win over the row's actual available space instead of
+     wrapping -- the classic, easy-to-miss way a flex row overflows sideways. */
+  .t2-case-head > div:last-child { min-width: 0; }
+  .t2-case-head h3 { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
   /* One tile spec for both the real logos and the fallback glyph, so a row
      mixing the two still lines up. White fill because the client marks are
      drawn for light backgrounds and several are near-black. */
@@ -440,6 +475,43 @@ const CSS = `
   .t2-case-pin { width: 100%; height: 100%; object-fit: contain; display: block; }
   .t2-case-head h3 { color: var(--t2-text); font-size: 1.05rem; font-weight: 700; line-height: 1.3; }
   .t2-case-head p { color: var(--t2-gold); font-size: 0.8rem; font-weight: 600; margin-top: 2px; }
+  /* Keyword switcher for a business tracked on more than one search term —
+     arrows cycle in place instead of stacking a near-duplicate card below. */
+  .t2-case-keywords {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    margin-top: 14px; padding: 6px 6px 6px 14px; width: 100%;
+    box-sizing: border-box; max-width: 100%;
+    border-radius: var(--t2-r-control);
+    background: rgba(201,162,74,0.08); border: 1px solid rgba(201,162,74,0.3);
+  }
+  /* Solid fill rather than the outline every other icon-only control on this
+     page uses -- deliberately: this is the one place a subtle outline button
+     wasn't being noticed against the equally-gold-tinted metric rows right
+     below it. A filled gold circle reads as "press me" at a glance instead of
+     blending into the card's own accent colour. */
+  .t2-case-keyword-arrow {
+    display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+    width: 34px; height: 34px; border-radius: 999px; border: 0;
+    background: var(--t2-gold-btn); color: #FFFFFF;
+    cursor: pointer; transition: background 0.15s ease, transform 0.15s ease;
+  }
+  .t2-case-keyword-arrow:hover { background: var(--t2-gold-btn-hover); transform: scale(1.06); }
+  /* Names how many search terms this business is tracked on, right next to
+     its name -- so the reason an arrow control exists on this card is obvious
+     before a reader's eye even reaches it. */
+  .t2-case-multi-badge {
+    display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 999px;
+    background: rgba(201,162,74,0.16); border: 1px solid rgba(201,162,74,0.4);
+    color: var(--t2-gold); font-size: 0.66rem; font-weight: 700; letter-spacing: 0.02em;
+    text-transform: uppercase; vertical-align: middle;
+  }
+  .t2-case-keyword-current {
+    flex: 1 1 0%; min-width: 0; max-width: 100%; display: flex;
+    align-items: baseline; justify-content: space-between; gap: 10px; box-sizing: border-box;
+    color: var(--t2-text); font-size: 0.84rem; font-weight: 600;
+  }
+  .t2-case-keyword-current > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .t2-case-keyword-count { flex-shrink: 0; color: var(--t2-text-muted); font-size: 0.72rem; font-weight: 500; }
   .t2-case-metrics { display: grid; gap: 8px; margin-top: 20px; }
   .t2-case-metric { display: flex; align-items: center; justify-content: space-between; gap: 10px; border-radius: var(--t2-r-control); background: rgba(244,241,234,0.03); border: 1px solid var(--t2-border); padding: 10px 14px; }
   /* Phrase-length values (the tracked search term) stack under their label —
@@ -557,19 +629,48 @@ const CSS = `
   .t2-planmap { position: relative; margin: 0; aspect-ratio: 1; border-radius: var(--t2-r-control); overflow: hidden; border: 1px solid var(--t2-border); }
   .t2-planmap-img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .t2-planmap-overlay { position: absolute; inset: 0; width: 100%; height: 100%; }
-  .t2-planmap-badge {
-    position: absolute; left: 10px; top: 10px;
+  /* Centred pill naming the radius, sat directly on the circle it describes —
+     the map reads as "this distance" at a glance instead of asking the reader
+     to match a corner label back to the ring. Solid gold with navy text: the
+     same pairing as every other on-page badge, and ~8:1 contrast against the
+     gold fill it sits on. */
+  .t2-planmap-radius {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    border-radius: var(--t2-r-control); padding: 9px 16px;
+    background: var(--t2-gold); color: var(--t2-bg);
+    font-size: 0.86rem; font-weight: 700; letter-spacing: 0.01em; white-space: nowrap;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+  }
+  @media (max-width: 480px) {
+    .t2-planmap-radius { font-size: 0.76rem; padding: 7px 12px; }
+  }
+  /* Coverage footprint as a bounding square (2x radius) rather than the
+     circle's own area — see PlanRadiusMap.tsx for why. Corner placement and
+     quieter treatment than the radius pill: it is a supporting figure, not
+     the headline of the visual. Top-right rather than bottom-right so it
+     never sits over the OSM attribution strip, which owns the bottom edge. */
+  .t2-planmap-area {
+    position: absolute; right: 10px; top: 10px;
     border-radius: var(--t2-r-control); padding: 5px 10px;
     background: rgba(11,20,32,0.82); border: 1px solid rgba(201,162,74,0.45);
     color: var(--t2-gold); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em;
   }
+  /* Collapsed OSM attribution — a small "i" rather than a text band across
+     the map. See the comment beside its markup for why a shrunk icon still
+     satisfies OpenStreetMap's attribution requirement. Kept low-contrast at
+     rest so it doesn't compete with the radius pill; the hover/focus state
+     brings it up to full legibility for anyone who goes looking for it. */
   .t2-planmap-attr {
-    position: absolute; right: 0; bottom: 0; left: 0;
-    padding: 5px 9px; text-align: right;
-    background: linear-gradient(to top, rgba(11,20,32,0.85), rgba(11,20,32,0));
-    color: var(--t2-text-muted); font-size: 0.6rem; line-height: 1.4;
+    position: absolute; right: 8px; bottom: 8px;
+    display: flex; align-items: center; justify-content: center;
+    width: 17px; height: 17px; border-radius: 50%;
+    background: rgba(11,20,32,0.55); color: rgba(244,241,234,0.7);
+    font-family: Georgia, 'Times New Roman', serif; font-style: italic; font-size: 0.72rem;
+    line-height: 1; text-decoration: none;
   }
-  .t2-planmap-attr a { color: var(--t2-text-muted); text-decoration: underline; }
+  .t2-planmap-attr:hover, .t2-planmap-attr:focus-visible {
+    background: rgba(11,20,32,0.85); color: var(--t2-text);
+  }
   .t2-plan h3 { color: var(--t2-text); font-family: var(--t2-serif); font-size: 1.5rem; font-weight: 500; }
   .t2-plan-desc { margin-top: 8px; color: var(--t2-text-muted); font-size: 0.9rem; line-height: 1.65; min-height: 84px; }
   .t2-plan-price { margin-top: 14px; }
@@ -588,7 +689,6 @@ const CSS = `
   .t2-faq-answer { margin-top: 14px; color: var(--t2-text-muted); font-size: 0.94rem; line-height: 1.75; }
 
   @media (min-width: 700px) {
-    .t2-mission-stats { grid-template-columns: repeat(4, minmax(0,1fr)); }
     .t2-videos { grid-template-columns: repeat(4, minmax(0,1fr)); }
     .t2-compare-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
     .t2-plans { grid-template-columns: repeat(2, minmax(0,1fr)); align-items: stretch; }
@@ -669,12 +769,12 @@ const brandLogos = [
   { src: televizoriu, alt: "Televizorių Išparduotuvė" },
   { src: wheelshopBrand, alt: "Wheelshop.lt" },
   { src: gok, alt: "GOK Grožio ir Odontologijos Klinika" },
-  { src: geraDovana, alt: "Gera Dovana" },
+  { src: geraDovanaClean, alt: "Gera Dovana" },
   { src: zeeinklover, alt: "Zeeinklover" },
-  { src: proteraServisas, alt: "ProTera Servisas" },
+  { src: proteraServisasClean, alt: "ProTera Servisas" },
   { src: miracleK9Academy, alt: "Miracle K9 Academy" },
-  { src: kurtasServiceBrand, alt: "Kurtas Service" },
-  { src: agrijaBrand, alt: "Agrija" },
+  { src: kurtasServiceClean, alt: "Kurtas Service" },
+  { src: agrijaClean, alt: "Agrija" },
   { src: svytintysDantysBrand, alt: "Švytintys Dantys" },
 ];
 
@@ -961,8 +1061,50 @@ const TrialHero = () => {
   );
 };
 
-const TrialRatingAndReviews = () => (
-  <section id="reviews" className="t2-section t2-section--sm">
+const TrialRatingAndReviews = () => {
+  // Embla lays every slide out in one flex row and, per the flexbox spec,
+  // sizes that row's own height to its TALLEST slide regardless of
+  // align-items -- items-start (below) only stops shorter slides from being
+  // stretched to match, it does not shrink the row itself. Left alone, the
+  // carousel always reserves space for the longest testimonial in the set,
+  // even though only the current one is visible on a phone: a ~640px section
+  // for a ~230px review, dead space a visitor scrolling past has no way to
+  // account for. Tracking the height of whichever slide(s) are actually in
+  // view and applying it to a wrapper OUTSIDE the shared Carousel component
+  // (not touched here -- V1 uses it too) makes the section's real footprint
+  // match what is actually on screen.
+  const [emblaApi, setEmblaApi] = useState<CarouselApi>();
+  const [carouselHeight, setCarouselHeight] = useState<number>();
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    const updateHeight = () => {
+      const nodes = emblaApi.slideNodes();
+      // slidesInView() is IntersectionObserver-backed and reports empty on the
+      // very first call, before its observer has had a chance to fire once --
+      // which is exactly when this effect's first run needs an answer. Falling
+      // back to the single currently-selected slide (always available
+      // immediately) means the very first paint still gets a real height
+      // instead of the "no height style at all" default this shipped with
+      // originally, which is what left the section at its full stretched size.
+      let inView = emblaApi.slidesInView();
+      if (inView.length === 0) inView = [emblaApi.selectedScrollSnap()];
+      const heights = inView.map((i) => nodes[i]?.getBoundingClientRect().height ?? 0);
+      if (heights.length) setCarouselHeight(Math.max(...heights));
+    };
+    updateHeight();
+    emblaApi.on("select", updateHeight);
+    emblaApi.on("reInit", updateHeight);
+    emblaApi.on("resize", updateHeight);
+    return () => {
+      emblaApi.off("select", updateHeight);
+      emblaApi.off("reInit", updateHeight);
+      emblaApi.off("resize", updateHeight);
+    };
+  }, [emblaApi]);
+
+  return (
+    <section id="reviews" className="t2-section t2-section--sm">
     <div className="t2-container">
       {/* TODO: update rating and review count with real data */}
       <div className="t2-rating">
@@ -980,9 +1122,15 @@ const TrialRatingAndReviews = () => (
         <h2 className="t2-h2">What local businesses say</h2>
       </div>
 
-      <div style={{ marginTop: 44 }}>
-        <Carousel opts={{ align: "start" }}>
-          <CarouselContent>
+      <div style={{ marginTop: 44, height: carouselHeight, overflow: "hidden", transition: "height 300ms ease" }}>
+        <Carousel opts={{ align: "start" }} setApi={setEmblaApi}>
+          {/* items-start overrides the shared Carousel component's default flex
+              align-items: stretch, which we cannot change there — it is used by
+              the V1 pages too. Without it every slide stretches to match the
+              tallest testimonial in the set, and on mobile (one slide visible
+              at a time) that leaves ~180px of dead space below every shorter
+              card, pushed there by a sibling the visitor cannot even see. */}
+          <CarouselContent className="items-start">
             {testimonials.map((t, i) => (
               <CarouselItem key={t.name} className="md:basis-1/2 lg:basis-1/3">
                 <motion.div
@@ -1024,8 +1172,9 @@ const TrialRatingAndReviews = () => (
         </Carousel>
       </div>
     </div>
-  </section>
-);
+    </section>
+  );
+};
 
 const TrialLogosStrip = () => (
   <section className="t2-section--sm">
@@ -1064,14 +1213,22 @@ const TrialMission = () => {
           without waiting years for organic SEO to catch up.
         </p>
         <div className="t2-mission-stats">
-          {missionStats.map((s, i) => (
-            <div key={s.label} className={`t2-mission-stat${i === 0 ? " t2-mission-stat--featured" : ""}`}>
-              <div className="t2-mission-stat-num">
-                <CountUpStat value={s.value} duration={i === 0 ? 1800 : 1200} />
-              </div>
-              <div className="t2-mission-stat-label">{s.label}</div>
+          <div className="t2-mission-stat t2-mission-stat--featured">
+            <div className="t2-mission-stat-num">
+              <CountUpStat value={missionStats[0].value} duration={1800} />
             </div>
-          ))}
+            <div className="t2-mission-stat-label">{missionStats[0].label}</div>
+          </div>
+          <div className="t2-mission-secondary">
+            {missionStats.slice(1).map((s) => (
+              <div key={s.label} className="t2-mission-stat">
+                <div className="t2-mission-stat-num">
+                  <CountUpStat value={s.value} duration={1200} />
+                </div>
+                <div className="t2-mission-stat-label">{s.label}</div>
+              </div>
+            ))}
+          </div>
         </div>
         <div className="t2-cta-row">
           <button type="button" className="t2-btn" onClick={openTrialModal}>
@@ -1086,34 +1243,90 @@ const TrialMission = () => {
   );
 };
 
-const TrialCaseCard = ({ study }: { study: CaseStudy }) => (
-  <article className="t2-case">
-    <div>
-      <div className="t2-case-head">
-        <CaseStudyLogo slug={study.slug} glyph={study.icon} business={study.business} />
-        <div>
-          <h3>{study.business}</h3>
-          <p>{study.location}</p>
+// Several businesses are tracked on more than one search term (Miracle K9 on
+// three, Vairalda and Nida on two, Hanse Trailer on three) — see the docblock
+// on lib/caseStudies.ts for why each still gets its own full CaseStudy entry
+// rather than being folded together. On the page those entries were 17
+// separate stacked cards, and on a phone the ones for the same business ran
+// back to back with nothing distinguishing them but a shorter search-term
+// line — a visitor who cared about one Miracle K9 result had to scroll past
+// two more before the next real business started.
+//
+// Same-business entries are adjacent in caseStudies.ts by construction, so a
+// single linear pass groups them correctly without touching that file.
+const T2_CASE_GROUPS: CaseStudy[][] = (() => {
+  const groups: CaseStudy[][] = [];
+  for (const study of caseStudies) {
+    const last = groups[groups.length - 1];
+    if (last && last[0].business === study.business) last.push(study);
+    else groups.push([study]);
+  }
+  return groups;
+})();
+
+const TrialCaseCard = ({ group }: { group: CaseStudy[] }) => {
+  const [active, setActive] = useState(0);
+  const study = group[active];
+  const multi = group.length > 1;
+
+  return (
+    <article className="t2-case">
+      <div>
+        <div className="t2-case-head">
+          <CaseStudyLogo slug={study.slug} glyph={study.icon} business={study.business} />
+          <div>
+            <h3>
+              {study.business}
+              {multi && <span className="t2-case-multi-badge">{group.length} keywords</span>}
+            </h3>
+            <p>{study.location}</p>
+          </div>
+        </div>
+
+        {multi && (
+          <div className="t2-case-keywords">
+            <button
+              type="button"
+              className="t2-case-keyword-arrow"
+              aria-label="Previous tracked keyword"
+              onClick={() => setActive((i) => (i - 1 + group.length) % group.length)}
+            >
+              <ChevronLeft className="h-4 w-4" strokeWidth={2.5} />
+            </button>
+            <span className="t2-case-keyword-current">
+              <span>{study.metrics[0].value}</span>
+              <span className="t2-case-keyword-count">{active + 1}/{group.length}</span>
+            </span>
+            <button
+              type="button"
+              className="t2-case-keyword-arrow"
+              aria-label="Next tracked keyword"
+              onClick={() => setActive((i) => (i + 1) % group.length)}
+            >
+              <ChevronRight className="h-4 w-4" strokeWidth={2.5} />
+            </button>
+          </div>
+        )}
+
+        <div className="t2-case-metrics">
+          {study.metrics.map((m) => (
+            <div key={m.label} className={`t2-case-metric${m.stack ? " t2-case-metric--stack" : ""}`}>
+              <span className="t2-case-metric-label">{m.label}</span>
+              <span className="t2-case-metric-val">{m.value}</span>
+            </div>
+          ))}
         </div>
       </div>
-      <div className="t2-case-metrics">
-        {study.metrics.map((m) => (
-          <div key={m.label} className={`t2-case-metric${m.stack ? " t2-case-metric--stack" : ""}`}>
-            <span className="t2-case-metric-label">{m.label}</span>
-            <span className="t2-case-metric-val">{m.value}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-    <BeforeAfterSlider
-      before={study.before}
-      after={study.after}
-      beforeLabel={study.beforeLabel}
-      afterLabel={study.afterLabel}
-      pin={<CaseStudyLogo slug={study.slug} glyph={study.icon} business={study.business} variant="pin" />}
-    />
-  </article>
-);
+      <BeforeAfterSlider
+        key={study.slug}
+        before={caseStudyScansV2[study.slug]?.before ?? study.before}
+        after={caseStudyScansV2[study.slug]?.after ?? study.after}
+        beforeLabel={study.beforeLabel}
+        afterLabel={study.afterLabel}
+      />
+    </article>
+  );
+};
 
 const TrialCaseStudies = () => {
   const { openTrialModal } = useTrialModal();
@@ -1132,8 +1345,8 @@ const TrialCaseStudies = () => {
         </div>
 
         <div className="t2-cases">
-          {caseStudies.map((c) => (
-            <TrialCaseCard key={c.slug} study={c} />
+          {T2_CASE_GROUPS.map((group) => (
+            <TrialCaseCard key={group[0].slug} group={group} />
           ))}
         </div>
 
