@@ -29,9 +29,19 @@ const APP_SOURCE = readFileSync(path.resolve(__dirname, "../App.tsx"), "utf-8");
  */
 function declaredPaths(target: string): string[] {
   const branches = [...APP_SOURCE.matchAll(/<Routes>([\s\S]*?)<\/Routes>/g)].map((m) => m[1]);
-  // Branches appear in source order: trial, landingpage, then main (the
-  // fallback return). Matching that order here keeps the mapping explicit.
-  const byTarget: Record<string, string> = { trial: branches[0], landingpage: branches[1], main: branches[2] };
+  // Branches appear in source order: trial, landingpage, trial-v2, trial-v3,
+  // trial-v4, landingpage-v2, landingpage-v3, then main (the fallback
+  // return). Matching that order here keeps the mapping explicit.
+  const byTarget: Record<string, string> = {
+    trial: branches[0],
+    landingpage: branches[1],
+    "trial-v2": branches[2],
+    "trial-v3": branches[3],
+    "trial-v4": branches[4],
+    "landingpage-v2": branches[5],
+    "landingpage-v3": branches[6],
+    main: branches[7],
+  };
   const branch = byTarget[target];
   if (!branch) throw new Error(`No <Routes> branch found in App.tsx for target "${target}"`);
 
@@ -42,8 +52,17 @@ function declaredPaths(target: string): string[] {
 }
 
 describe("deploy targets", () => {
-  it("App.tsx declares exactly the three targets deployTargets.mjs knows about", () => {
-    expect([...DEPLOY_TARGETS].sort()).toEqual(["landingpage", "main", "trial"]);
+  it("App.tsx declares exactly the targets deployTargets.mjs knows about", () => {
+    expect([...DEPLOY_TARGETS].sort()).toEqual([
+      "landingpage",
+      "landingpage-v2",
+      "landingpage-v3",
+      "main",
+      "trial",
+      "trial-v2",
+      "trial-v3",
+      "trial-v4",
+    ]);
     expect(APP_SOURCE.match(/<Routes>/g)).toHaveLength(DEPLOY_TARGETS.length);
   });
 

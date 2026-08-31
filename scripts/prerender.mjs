@@ -37,15 +37,35 @@ const OUT_DIR = currentOutDir();
 // scoped under their own prefixes so they cannot restyle the originals, which
 // means a check hard-coded to "tp-" silently passes on them: it finds zero
 // slider images, and zero images all have a src.
+// Root-promoted targets (trial, landingpage, and the temporary trial-v2 /
+// trial-v3 / trial-v4 / landingpage-v2 / landingpage-v3 review builds) each
+// serve exactly one page at "/", so the prefix for that one entry has to
+// follow which page THIS target promotes — a blanket "tp" for every non-main
+// target silently passed on trial-v2 / trial-v3 / trial-v4 / landingpage-v2 /
+// landingpage-v3, whose markup uses "t2-" / "t3-" / "t4-" / "l2-" / "l3-" and
+// so matched zero slider images under a "tp-" search.
+const ROOT_PROMOTED_PREFIX = {
+  trial: "tp",
+  landingpage: "tp",
+  "trial-v2": "t2",
+  "trial-v3": "t3",
+  "trial-v4": "t4",
+  "landingpage-v2": "l2",
+  "landingpage-v3": "l3",
+};
+
 const TRIAL_ROUTES = new Map(
   TARGET === "main"
     ? [
         ["/trial", "tp"],
         ["/landingpage", "tp"],
         ["/trial-v2", "t2"],
+        ["/trial-v3", "t3"],
+        ["/trial-v4", "t4"],
         ["/landingpage-v2", "l2"],
+        ["/landingpage-v3", "l3"],
       ]
-    : [["/", "tp"]],
+    : [["/", ROOT_PROMOTED_PREFIX[TARGET]]],
 );
 
 // Serverless and CI build containers have no local Chromium install and are

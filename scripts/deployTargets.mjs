@@ -9,10 +9,23 @@
 //
 // src/test/routes.test.ts fails the build if this file and App.tsx disagree.
 
-/** @typedef {"main" | "trial" | "landingpage"} DeployTarget */
+/** @typedef {"main" | "trial" | "landingpage" | "trial-v2" | "trial-v3" | "trial-v4" | "landingpage-v2" | "landingpage-v3"} DeployTarget */
 
+// trial-v2, trial-v3, trial-v4, landingpage-v2 and landingpage-v3 are
+// temporary review builds for the V2 redesigns, not permanent products of
+// their own — see the DEPLOYMENTS entries below and the matching branches in
+// src/App.tsx.
 /** @type {DeployTarget[]} */
-export const DEPLOY_TARGETS = ["main", "trial", "landingpage"];
+export const DEPLOY_TARGETS = [
+  "main",
+  "trial",
+  "landingpage",
+  "trial-v2",
+  "trial-v3",
+  "trial-v4",
+  "landingpage-v2",
+  "landingpage-v3",
+];
 
 export const DEFAULT_SITE_URL = "https://llamamaps.com";
 
@@ -99,6 +112,53 @@ export const DEPLOYMENTS = {
     fbDomainVerification: "efy12ykxkminqedcmyryOkyxyfzi7v",
     description: "/landingpage (Hormozi variant) as the home page",
   },
+  // Temporary review copies of the two V2 redesigns, each promoted to "/" the
+  // same way eu/couk promote their V1 counterparts. Not bound to a real
+  // domain yet — no fbDomainVerification, and host stays "cloudflare" so the
+  // output gets a plain _redirects/_headers pair rather than an
+  // Apache-specific .htaccess. Delete these two entries (and their outDir)
+  // once the V2 pages either replace their V1s or get a real domain of their
+  // own; there is nothing else in the build that depends on them existing.
+  trialv2: {
+    domain: "(unassigned — temporary review build)",
+    target: "trial-v2",
+    outDir: "dist-trial-v2",
+    siteUrl: "https://llamamaps.com",
+    host: "cloudflare",
+    description: "/trial-v2 (V2 redesign) as the home page, for review only",
+  },
+  trialv3: {
+    domain: "(unassigned — temporary review build)",
+    target: "trial-v3",
+    outDir: "dist-trial-v3",
+    siteUrl: "https://llamamaps.com",
+    host: "cloudflare",
+    description: "/trial-v3 (V2 redesign + hero rank-climb video) as the home page, for review only",
+  },
+  trialv4: {
+    domain: "(unassigned — temporary review build)",
+    target: "trial-v4",
+    outDir: "dist-trial-v4",
+    siteUrl: "https://llamamaps.com",
+    host: "cloudflare",
+    description: "/trial-v4 (V2 redesign + dark green #0D1F17 theme) as the home page, for review only",
+  },
+  landingpagev2: {
+    domain: "(unassigned — temporary review build)",
+    target: "landingpage-v2",
+    outDir: "dist-landingpage-v2",
+    siteUrl: "https://llamamaps.com",
+    host: "cloudflare",
+    description: "/landingpage-v2 (V2 redesign) as the home page, for review only",
+  },
+  landingpagev3: {
+    domain: "(unassigned — temporary review build)",
+    target: "landingpage-v3",
+    outDir: "dist-landingpage-v3",
+    siteUrl: "https://llamamaps.com",
+    host: "cloudflare",
+    description: "/landingpage-v3 (V2 redesign + dark green #0D1F17 theme + hero rank-climb video) as the home page, for review only",
+  },
 };
 
 /** @param {string} name */
@@ -122,7 +182,7 @@ const TARGETS = {
     routes: [
       "/", "/about", "/services", "/contacts", "/privacy",
       "/trial", "/free-trial", "/landingpage",
-      "/trial-v2", "/landingpage-v2",
+      "/trial-v2", "/trial-v3", "/trial-v4", "/landingpage-v2", "/landingpage-v3",
     ],
     // Listed in sitemap.xml. /trial, /free-trial and /landingpage carry a
     // page-level noindex, so listing them would send Google contradictory
@@ -146,6 +206,32 @@ const TARGETS = {
     routes: ["/"],
     indexable: [],
     redirects: [["/landingpage", "/"]],
+  },
+  // Temporary review builds — same shape as trial/landingpage above.
+  "trial-v2": {
+    routes: ["/"],
+    indexable: [],
+    redirects: [["/trial-v2", "/"]],
+  },
+  "trial-v3": {
+    routes: ["/"],
+    indexable: [],
+    redirects: [["/trial-v3", "/"]],
+  },
+  "trial-v4": {
+    routes: ["/"],
+    indexable: [],
+    redirects: [["/trial-v4", "/"]],
+  },
+  "landingpage-v2": {
+    routes: ["/"],
+    indexable: [],
+    redirects: [["/landingpage-v2", "/"]],
+  },
+  "landingpage-v3": {
+    routes: ["/"],
+    indexable: [],
+    redirects: [["/landingpage-v3", "/"]],
   },
 };
 

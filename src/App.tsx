@@ -15,7 +15,10 @@ import FreeTrialPage from "./pages/FreeTrialPage.tsx";
 import TrialPage from "./pages/TrialPage.tsx";
 import TrialHormoziPage from "./pages/TrialHormoziPage.tsx";
 import TrialV2Page from "./pages/TrialV2Page.tsx";
+import TrialV3Page from "./pages/TrialV3Page.tsx";
+import TrialV4Page from "./pages/TrialV4Page.tsx";
 import LandingPageV2Page from "./pages/LandingPageV2Page.tsx";
+import LandingPageV3Page from "./pages/LandingPageV3Page.tsx";
 import PrivacyPage from "./pages/PrivacyPage.tsx";
 import CalendlyBadge from "./components/CalendlyBadge.tsx";
 
@@ -29,7 +32,15 @@ const queryClient = new QueryClient();
 //
 // On the single-landing-page targets the badge is not rendered at all, so the
 // path list only has to cover the main site, where both live on sub-paths.
-const ISOLATED_LANDING_PATHS = new Set(["/trial", "/landingpage", "/trial-v2", "/landingpage-v2"]);
+const ISOLATED_LANDING_PATHS = new Set([
+  "/trial",
+  "/landingpage",
+  "/trial-v2",
+  "/trial-v3",
+  "/trial-v4",
+  "/landingpage-v2",
+  "/landingpage-v3",
+]);
 
 const GlobalCalendlyBadge = () => {
   const { pathname } = useLocation();
@@ -75,6 +86,70 @@ const AppRoutes = () => {
     );
   }
 
+  // Temporary review targets for the V2 redesigns, promoting each to "/" the
+  // same way "trial" and "landingpage" do above. Not a permanent product
+  // split like those two — this exists only so the V2 pages can be uploaded
+  // somewhere and reviewed in a real browser before either replaces its V1.
+  //
+  // Why this had to be a real target and not just a copy of the prerendered
+  // trial-v2.html renamed to index.html: the prerendered HTML is only what a
+  // crawler (or curl) sees before JS runs. The instant the "main" bundle's
+  // client-side router hydrates and reads pathname "/", it matches "main"'s
+  // own <Route path="/" element={<Index />} /> above and replaces the
+  // correctly-prerendered markup with the ordinary homepage — a real visitor
+  // in a real browser would see the V2 page flash and then get swapped out
+  // from under them. Only a build whose OWN root route renders TrialV2Page
+  // avoids that mismatch.
+  if (DEPLOY_TARGET === "trial-v2") {
+    return (
+      <Routes>
+        <Route path="/" element={<TrialV2Page />} />
+        <Route path="/trial-v2" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    );
+  }
+
+  if (DEPLOY_TARGET === "trial-v3") {
+    return (
+      <Routes>
+        <Route path="/" element={<TrialV3Page />} />
+        <Route path="/trial-v3" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    );
+  }
+
+  if (DEPLOY_TARGET === "trial-v4") {
+    return (
+      <Routes>
+        <Route path="/" element={<TrialV4Page />} />
+        <Route path="/trial-v4" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    );
+  }
+
+  if (DEPLOY_TARGET === "landingpage-v2") {
+    return (
+      <Routes>
+        <Route path="/" element={<LandingPageV2Page />} />
+        <Route path="/landingpage-v2" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    );
+  }
+
+  if (DEPLOY_TARGET === "landingpage-v3") {
+    return (
+      <Routes>
+        <Route path="/" element={<LandingPageV3Page />} />
+        <Route path="/landingpage-v3" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    );
+  }
+
   return (
     <Routes>
       <Route path="/" element={<Index />} />
@@ -90,7 +165,10 @@ const AppRoutes = () => {
           and adding a second copy of it to those bundles is exactly the
           weight the domain split exists to avoid. */}
       <Route path="/trial-v2" element={<TrialV2Page />} />
+      <Route path="/trial-v3" element={<TrialV3Page />} />
+      <Route path="/trial-v4" element={<TrialV4Page />} />
       <Route path="/landingpage-v2" element={<LandingPageV2Page />} />
+      <Route path="/landingpage-v3" element={<LandingPageV3Page />} />
       <Route path="/privacy" element={<PrivacyPage />} />
       <Route path="*" element={<NotFound />} />
     </Routes>

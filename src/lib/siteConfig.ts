@@ -20,9 +20,31 @@
 // build-variable change rather than a fork of the codebase; each one gets its
 // own canonical origin, so no domain ends up claiming another's URLs.
 
-export type DeployTarget = "main" | "trial" | "landingpage";
+export type DeployTarget =
+  | "main"
+  | "trial"
+  | "landingpage"
+  | "trial-v2"
+  | "trial-v3"
+  | "trial-v4"
+  | "landingpage-v2"
+  | "landingpage-v3";
 
-export const DEPLOY_TARGETS: readonly DeployTarget[] = ["main", "trial", "landingpage"];
+// trial-v2, trial-v3, trial-v4, landingpage-v2 and landingpage-v3 are
+// temporary review targets for the V2 redesigns (see the matching branches in
+// App.tsx) — not permanent products of their own, just root-promoted builds
+// so each can be uploaded somewhere and opened in a real browser before
+// replacing its V1.
+export const DEPLOY_TARGETS: readonly DeployTarget[] = [
+  "main",
+  "trial",
+  "landingpage",
+  "trial-v2",
+  "trial-v3",
+  "trial-v4",
+  "landingpage-v2",
+  "landingpage-v3",
+];
 
 export const DEFAULT_SITE_URL = "https://llamamaps.com";
 

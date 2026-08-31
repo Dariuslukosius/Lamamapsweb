@@ -20,11 +20,20 @@ import { spawnSync } from "node:child_process";
 import { rmSync, statSync } from "node:fs";
 import { DEPLOYMENTS, deployment } from "./deployTargets.mjs";
 
+// The bare, no-argument invocation ("npm run build:all") is the production
+// build-everything command — CI and the release checklist both call it
+// expecting exactly the three real deployments, unattended. trialv2 and
+// landingpagev2 are temporary review builds (see deployTargets.mjs) with no
+// real domain to deploy to yet; they must be named explicitly
+// ("node scripts/build.mjs trialv2") rather than swept into that default, or
+// every future "build everything" run would start silently producing them too.
+const PRODUCTION_DEPLOYMENTS = ["com", "eu", "couk"];
+
 const args = process.argv.slice(2);
 const verify = args.includes("--verify");
 const zip = args.includes("--zip");
 const names = args.filter((a) => !a.startsWith("--"));
-const selected = names.length ? names : Object.keys(DEPLOYMENTS);
+const selected = names.length ? names : PRODUCTION_DEPLOYMENTS;
 
 for (const name of selected) {
   if (!DEPLOYMENTS[name]) {
