@@ -7,7 +7,7 @@ import { openCalendlyPopup } from "@/lib/calendlyPopup";
 const heroHighlights = [
   { value: "8x", label: "Average client growth" },
   { value: "7+", label: "Years expertise in Google marketing" },
-  { value: "Europe", label: "We work with clients across Europe" },
+  { value: "Worldwide", label: "We work with clients worldwide" },
 ] as const;
 
 const HeroSection = () => (
@@ -24,7 +24,7 @@ const HeroSection = () => (
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
         >
-          <span className="inline-block rounded-full bg-accent/20 px-4 py-1.5 text-xs font-semibold tracking-wide text-accent-foreground/90 mb-6">
+          <span className="inline-block rounded-full border border-[rgba(201,162,74,0.4)] bg-[rgba(201,162,74,0.08)] px-4 py-1.5 text-xs font-semibold tracking-wide text-[#C9A24A] mb-6">
             🏆 #1 Local SEO Agency
           </span>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-primary-foreground mb-6">
@@ -38,9 +38,9 @@ const HeroSection = () => (
             {heroHighlights.map((item) => (
               <div
                 key={item.value}
-                className="rounded-2xl border border-primary-foreground/18 bg-primary-foreground/[0.08] px-4 py-3 backdrop-blur-sm"
+                className="rounded-2xl border border-[rgba(138,147,166,0.18)] bg-[rgba(244,241,234,0.05)] px-4 py-3 backdrop-blur-sm"
               >
-                <p className="text-lg font-bold leading-none text-[#79A7FF]">{item.value}</p>
+                <p className="text-lg font-bold leading-none text-[#C9A24A]">{item.value}</p>
                 <p className="mt-1 text-xs leading-5 text-white">{item.label}</p>
               </div>
             ))}
@@ -51,7 +51,7 @@ const HeroSection = () => (
               variant="hero"
               size="lg"
               onClick={openCalendlyPopup}
-              className="bg-[#8b5cf6] text-white hover:bg-[#7c3aed] shadow-[0_12px_30px_rgba(139,92,246,0.30)]"
+              className="bg-[#8A6A1F] text-white hover:bg-[#A37D26] shadow-[0_4px_24px_rgba(0,0,0,0.4)]"
             >
               Start 7-Day Free Trial <ArrowRight className="ml-1 w-4 h-4" />
             </Button>
@@ -67,7 +67,7 @@ const HeroSection = () => (
         >
           <div className="relative w-full">
             <div className="absolute inset-0 bg-accent/20 blur-3xl rounded-full scale-75" />
-            <div className="relative z-10 w-full rounded-3xl overflow-hidden bg-white/10 backdrop-blur-sm border border-white/20 shadow-2xl p-3">
+            <div className="relative z-10 w-full rounded-3xl overflow-hidden bg-[rgba(244,241,234,0.06)] backdrop-blur-sm border border-[rgba(138,147,166,0.18)] shadow-2xl p-3">
               <MapRankAnimation />
             </div>
           </div>

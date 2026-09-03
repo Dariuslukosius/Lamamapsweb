@@ -6,6 +6,8 @@ import SeoHormozi from "@/components/landingpage-v3/SeoHormozi";
 import { organizationSchema, faqSchema } from "@/lib/structuredData";
 import TrialNavbar from "@/components/landingpage-v3/TrialNavbar";
 import TrialFooter from "@/components/landingpage-v3/TrialFooter";
+import Navbar from "@/components/Navbar";
+import SiteFooter from "@/components/SiteFooter";
 import { TrialModalProvider, useTrialModal } from "@/components/landingpage-v3/TrialModalContext";
 import TrialFloatingCta from "@/components/landingpage-v3/TrialFloatingCta";
 import BeforeAfterSlider from "@/components/landingpage-v3/BeforeAfterSlider";
@@ -17,6 +19,9 @@ import CountUpStat from "@/components/landingpage-v3/CountUpStat";
 import RankCrossfadeBadge from "@/components/landingpage-v3/RankCrossfadeBadge";
 import TrustBadges from "@/components/landingpage-v3/TrustBadges";
 import { COPY } from "@/components/landingpage-v3/copy";
+import { faqs } from "@/components/landingpage-v3/faqs";
+import { brandLogos } from "@/lib/brandLogos";
+import { Link } from "react-router-dom";
 import { caseStudies, type CaseStudy } from "@/lib/caseStudies";
 import { caseStudyScansV2 } from "@/lib/caseStudyScansV2";
 import CaseStudyLogo from "@/components/landingpage-v3/CaseStudyLogo";
@@ -45,29 +50,9 @@ import googlePartnerLogo from "@/assets/partners/google-partner-logo-png_seeklog
 // under the strip's white-silhouette filter — see scripts/clean-brand-logos.py
 // for why, and why they are not simply overwritten in place (this same file
 // path is imported by the V1 pages too).
-import proteraServisasClean from "@/assets/brands-v2/protera-servisas.webp";
-import kurtasServiceClean from "@/assets/brands-v2/kurtas-service.webp";
 // Traced to vector rather than raster-cleaned like the other two, since
 // their best available source was too low-resolution for hardening +
 // upscaling alone to fix — see scripts/vectorize-logos.py.
-import agrijaClean from "@/assets/brands-v2/agrija.svg";
-import geraDovanaClean from "@/assets/brands-v2/gera-dovana-v2.webp";
-import artfiksa from "@/assets/brands/artfiksa.webp";
-import autoVela from "@/assets/brands/auto-vela.webp";
-import clinicDpcLogo from "@/assets/brands/clinic-dpc.webp";
-import ecoResort from "@/assets/brands/eco-resort.webp";
-import eraEsthetic from "@/assets/brands/era-esthetic.webp";
-import fastCar from "@/assets/brands/fast-car.webp";
-import gok from "@/assets/brands/gok.webp";
-import miracleK9Academy from "@/assets/brands/miracle-k9-academy.webp";
-import motoSvajone from "@/assets/brands/moto-svajone.webp";
-import royalHorse from "@/assets/brands/royal-horse.webp";
-import sokrato from "@/assets/brands/sokrato.webp";
-import svajoniuSpaLogo from "@/assets/brands/svajoniu-spa.webp";
-import svytintysDantysBrand from "@/assets/brands-v2/svytintys-dantys.webp";
-import televizoriu from "@/assets/brands/televizoriu.webp";
-import wheelshopBrand from "@/assets/brands/wheelshop.webp";
-import zeeinklover from "@/assets/brands/zeeinklover.webp";
 
 // services-v2/ holds the same four illustrations with the Gemini sparkle
 // watermark removed from the two that carried one (no-direct-access and
@@ -124,6 +109,10 @@ const CSS = `
      a flat 20px whatever the viewport. */
   .l3-container { width: 100%; max-width: 1440px; margin: 0 auto; padding: 0 clamp(20px, 3vw, 44px); }
   .l3-main { padding-top: 72px; }
+  /* The same content under the site-wide navbar, which is 80px tall rather than
+     this page's own 72px bar. Matching the offset to the bar that is actually
+     rendered is what keeps the first line of the hero clear of it on /services. */
+  .l3-main--site { padding-top: 80px; }
 
   /* Subtle topographic-contour texture — the only "decorative" background motif,
      tying the visual language back to maps rather than an abstract color blob. */
@@ -432,6 +421,11 @@ const CSS = `
      every card in the grid past the viewport edge, clipped invisibly by
      .l3-page's overflow-x: hidden rather than showing as a scrollbar. */
   .l3-cases { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; margin-top: 40px; }
+  .l3-cases-note {
+    margin-top: 20px; text-align: center; color: var(--l3-text-muted);
+    font-size: 0.76rem; line-height: 1.6; max-width: 720px;
+    margin-left: auto; margin-right: auto;
+  }
   .l3-case {
     display: flex; flex-direction: column; gap: 20px;
     border: 1px solid var(--l3-border); border-radius: var(--l3-r-card);
@@ -838,28 +832,6 @@ const CSS = `
   }
 `;
 
-const brandLogos = [
-  { src: artfiksa, alt: "Artfiksa Plytelės" },
-  { src: autoVela, alt: "Auto Vela" },
-  { src: clinicDpcLogo, alt: "Clinic DPC" },
-  { src: ecoResort, alt: "Eco Resort Trakai" },
-  { src: eraEsthetic, alt: "Era Esthetic Dental" },
-  { src: fastCar, alt: "Fast Car Shop" },
-  { src: motoSvajone, alt: "Moto Svajonė" },
-  { src: royalHorse, alt: "Royal Horse Resort" },
-  { src: sokrato, alt: "Sokrato Clinica" },
-  { src: svajoniuSpaLogo, alt: "Svajonių SPA" },
-  { src: televizoriu, alt: "Televizorių Išparduotuvė" },
-  { src: wheelshopBrand, alt: "Wheelshop.lt" },
-  { src: gok, alt: "GOK Grožio ir Odontologijos Klinika" },
-  { src: geraDovanaClean, alt: "Gera Dovana" },
-  { src: zeeinklover, alt: "Zeeinklover" },
-  { src: proteraServisasClean, alt: "ProTera Servisas" },
-  { src: miracleK9Academy, alt: "Miracle K9 Academy" },
-  { src: kurtasServiceClean, alt: "Kurtas Service" },
-  { src: agrijaClean, alt: "Agrija" },
-  { src: svytintysDantysBrand, alt: "Švytintys Dantys" },
-];
 
 const missionStats = [
   { value: "93%", label: "of consumers use Google to find local businesses" },
@@ -1024,73 +996,6 @@ const plans = [
  * above the fold of the FAQ so scepticism is answered before the reader gives
  * up on the section. The remaining nine keep their original order.
  */
-const faqs = [
-  {
-    question: "Why don't you need access to my Google Business Profile or website?",
-    answer:
-      "Our system builds ranking signals externally — through verified local citations, GPS-based activity, and profile optimization techniques — without ever needing login access to your Google Business Profile or website. This keeps your accounts fully secure while we still move your rankings forward.",
-  },
-  {
-    question: "How fast will I see results?",
-    answer:
-      "Most clients see measurable ranking movement within 4 to 6 weeks, and most reach the Top 3 within 90 days. You’ll get reports every two weeks tracking progress the entire way.",
-  },
-  {
-    question: "Do I have to sign a contract?",
-    answer:
-      "No long-term contracts. You pay monthly and can cancel anytime. We don't lock you in because we believe results should speak louder than contracts.",
-  },
-  {
-    question: 'How do I know this is not some "black hat" or risky SEO?',
-    answer:
-      "Everything we do follows Google's guidelines. We use verified ranking signals, legitimate directory citations, authentic review strategies, and proper profile optimization. This is white-hat SEO that's been proven to work consistently for years.",
-  },
-  {
-    question: "What are the requirements for the free trial?",
-    answer:
-      "You'll get the best results if you already have a verified Google Business Profile, a rating of 3.5 stars or higher, at least 15 reviews, a working website, and you serve customers in a local area.",
-  },
-  {
-    question: "How do I get started?",
-    answer:
-      "Book a short call on this page. We'll review your business, confirm eligibility for the trial, and walk you through goals and next steps on the call.",
-  },
-  {
-    question: "What's the free trial exactly?",
-    answer:
-      "The free trial gives you 7 days to experience the system. We start the audit, activate your profile optimization, and begin generating ranking signals. You'll see if it works before paying anything. After 7 days, it's your choice to continue or cancel.",
-  },
-  {
-    question: "Is this different from Google Ads or PPC?",
-    answer:
-      "Completely different. Google Ads requires paying for every click. GMB SEO (organic rankings) means you get free clicks once you're ranked. You pay a flat monthly fee for the service, but each customer call from Google Maps is completely free. Most clients see ROI of 3:1 to 10:1.",
-  },
-  {
-    question: "What if I already have a good Google Business Profile?",
-    answer:
-      "Even if your profile looks good, there's usually room for optimization. Our audit will show what you're missing. Most businesses have incomplete profiles, missing keywords, weak descriptions, or insufficient ranking signals. We'll fix all of that.",
-  },
-  {
-    question: "Can you guarantee #1 rankings?",
-    answer:
-      "No one can guarantee a specific position on a specific day, because Google changes its algorithm. What we commit to is the work, full transparency, and a proven methodology — and most of our clients reach the Top 3 within 90 days. Some reach #1. Our focus is the calls that come with it.",
-  },
-  {
-    question: "How many profiles can I have optimized?",
-    answer:
-      "Our packages cover a single primary location. If you have multiple locations, we can discuss multi-location pricing. Most solo practices and small businesses start with their main location.",
-  },
-  {
-    question: "What happens if I cancel?",
-    answer:
-      "You can cancel anytime with no penalty. Your GBP profile stays optimized, but ranking signals and new backlinks stop being generated. Your rankings may gradually decline over time, but the optimization we've done remains.",
-  },
-  {
-    question: "Can I speak with someone before starting?",
-    answer:
-      "Of course. Book a free consultation with our team using any of the buttons on this page. We'll discuss your specific situation, answer all your questions, and explain exactly how this can help your business.",
-  },
-];
 
 const TrialPartnerStrip = () => (
   <div className="l3-partner-wrap l3h-partner-wrap">
@@ -1528,6 +1433,57 @@ const TrialCaseStudies = () => {
   );
 };
 
+/* A short run of the same case-study cards, for the home page.
+ *
+ * It renders the page's own stylesheet and .l3-page wrapper because these cards
+ * are styled entirely by the .l3-* rules in CSS above — there is no Tailwind
+ * fallback for them, and forking a subset of those rules into a second file
+ * would drift the moment either copy is edited. The <style> is the same string
+ * constant, so this costs a second <style> element, not a second stylesheet.
+ *
+ * No modal provider here: the home page's cards close on a link to /services
+ * rather than the trial modal, so this component can be dropped anywhere.
+ *
+ * The "(est.)" disclaimer travels with the cards deliberately — several metrics
+ * on them are modelled rather than measured, and that has to be said wherever
+ * the numbers are shown. */
+export const LandingV3CaseHighlights = ({ limit = 4 }: { limit?: number }) => (
+  <div className="l3-page">
+    <style dangerouslySetInnerHTML={{ __html: CSS }} />
+    <section className="l3-section">
+      <div className="l3-container">
+        <div className="l3-section-head">
+          <span className="l3-eyebrow">Real results</span>
+          <h2 className="l3-h2">
+            How local businesses <em>grew</em> on Google Maps
+          </h2>
+          <p className="l3-lead l3-center">
+            Real clients, real before/after Google Maps scans. Drag the handle to see the same map before and after.
+          </p>
+        </div>
+
+        <div className="l3-cases">
+          {L2_CASE_GROUPS.slice(0, limit).map((group) => (
+            <TrialCaseCard key={group[0].slug} group={group} />
+          ))}
+        </div>
+
+        <p className="l3-cases-note">
+          Rankings, dates and search terms above are measured directly from the Google Maps grid scans shown.
+          Rows marked <em>(est.)</em> are estimates modelled from that ranking change using published local-pack
+          click-through rates — not figures reported by the client.
+        </p>
+
+        <div className="l3-cta-row">
+          <Link to="/services" className="l3-btn">
+            See all case studies
+          </Link>
+        </div>
+      </div>
+    </section>
+  </div>
+);
+
 const TrialMoreLeads = () => {
   const { openTrialModal } = useTrialModal();
   return (
@@ -1833,18 +1789,30 @@ const TrialFinalCta = () => {
   );
 };
 
-const LandingPageV3Content = () => (
+/* Which chrome wraps the v3 content.
+ *
+ * "landing" is the original: the page's own compact navbar (in-page anchors, no
+ * way out) and its own footer, because /landingpage-v3 is an ad destination and
+ * every link off it is a lost conversion.
+ *
+ * "site" is /services, where the same content is a page of llamamaps.com and has
+ * to carry the site's navigation and footer like every other page. The body of
+ * the page — every section, every word, every style — is identical between the
+ * two; only the top and bottom differ. */
+export type LandingV3Chrome = "landing" | "site";
+
+export const LandingPageV3Content = ({ chrome = "landing" }: { chrome?: LandingV3Chrome }) => (
   <MotionConfig reducedMotion="user">
     <div className="l3-page">
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
-      <TrialNavbar />
+      {chrome === "site" ? <Navbar /> : <TrialNavbar />}
       {/* Order is deliberate and differs from /trial: the strongest proof
           (verified before/after maps, then client video) sits immediately under
           the hero and stays statically visible, because roughly 60% of visitors
           never scroll and nobody sees what is parked behind a carousel. The
           weakest proof — the written testimonials — drops to position
           12, and the guarantee and objection blocks are new. */}
-      <main className="l3-main">
+      <main className={chrome === "site" ? "l3-main l3-main--site" : "l3-main"}>
         {/* 1 */} <TrialHero />
         {/* Task: the "Why aren't you visible on Google?" section moves up to
             sit directly under the hero. It is the page's problem statement --
@@ -1866,7 +1834,7 @@ const LandingPageV3Content = () => (
         {/* 14 */} <TrialFinalCta />
         <TrialLogosStrip />
       </main>
-      <TrialFooter />
+      {chrome === "site" ? <SiteFooter /> : <TrialFooter />}
       <TrialFloatingCta />
     </div>
   </MotionConfig>

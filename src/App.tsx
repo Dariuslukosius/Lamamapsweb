@@ -32,6 +32,13 @@ const queryClient = new QueryClient();
 //
 // On the single-landing-page targets the badge is not rendered at all, so the
 // path list only has to cover the main site, where both live on sub-paths.
+//
+// /services joins the list for a different reason than the rest. It is an
+// ordinary page of the site, not an isolated ad destination — but it now renders
+// the landingpage-v3 content, which brings that page's own floating CTA with it.
+// That CTA sits in the same bottom corner as the site-wide Calendly badge, so
+// leaving both on would stack two buttons on top of each other and let the badge
+// swallow the clicks meant for the page's own booking flow.
 const ISOLATED_LANDING_PATHS = new Set([
   "/trial",
   "/landingpage",
@@ -40,6 +47,7 @@ const ISOLATED_LANDING_PATHS = new Set([
   "/trial-v4",
   "/landingpage-v2",
   "/landingpage-v3",
+  "/services",
 ]);
 
 const GlobalCalendlyBadge = () => {

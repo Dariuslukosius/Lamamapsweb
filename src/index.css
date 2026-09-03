@@ -79,40 +79,68 @@
 @tailwind utilities;
 
 @layer base {
+  /* Site theme — the landingpage-v3 dark green system, promoted from one landing
+   * page to the whole of llamamaps.com.
+   *
+   * The raw --l3-* values below are the design source of truth (they are the
+   * same literals the .l3-page CSS in LandingPageV3Page.tsx declares). The
+   * shadcn/Tailwind tokens under them are those same colours expressed as HSL
+   * triplets, so every `bg-background` / `text-foreground` / `border` utility
+   * already scattered through the site flips to the new theme without being
+   * touched one by one.
+   *
+   * The pages that must NOT flip — /free-trial and every /trial* and
+   * /landingpage* ad landing — restore the old light values in the scoped block
+   * further down. See "Legacy page scopes". */
   :root {
-    --background: 140 10% 97%;
-    --foreground: 160 50% 8%;
+    --l3-bg: #0D1F17;
+    --l3-bg-card: #132722;
+    --l3-text: #F4F1EA;
+    --l3-text-sub: #B7C0D0;
+    --l3-text-muted: #8A93A6;
+    --l3-gold: #C9A24A;
+    --l3-gold-soft: #DEC584;
+    --l3-gold-btn: #8A6A1F;
+    --l3-gold-btn-hover: #A37D26;
+    --l3-emerald: #1F4D3D;
+    --l3-border: rgba(138, 147, 166, 0.18);
+    --l3-border-strong: rgba(138, 147, 166, 0.32);
+    --l3-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+    --l3-serif: 'Fraunces', 'Fraunces Fallback', serif;
 
-    --card: 0 0% 100%;
-    --card-foreground: 160 50% 8%;
+    --background: 153 41% 9%;
+    --foreground: 42 31% 94%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 160 50% 8%;
+    --card: 165 34% 11%;
+    --card-foreground: 42 31% 94%;
 
-    --primary: 152 52% 22%;
+    --popover: 165 34% 11%;
+    --popover-foreground: 42 31% 94%;
+
+    --primary: 42 63% 33%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 152 20% 94%;
-    --secondary-foreground: 152 52% 22%;
+    --secondary: 165 34% 11%;
+    --secondary-foreground: 42 31% 94%;
 
-    --muted: 150 10% 94%;
-    --muted-foreground: 160 10% 45%;
+    --muted: 165 30% 14%;
+    --muted-foreground: 221 14% 60%;
 
-    --accent: 152 60% 38%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 42 54% 54%;
+    --accent-foreground: 153 41% 9%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 150 15% 88%;
-    --input: 150 15% 88%;
-    --ring: 152 52% 22%;
+    --border: 169 18% 17%;
+    --input: 169 18% 17%;
+    --ring: 42 54% 54%;
 
     --radius: 0.75rem;
 
-    --hero-gradient: linear-gradient(135deg, hsl(152, 52%, 22%) 0%, hsl(160, 50%, 8%) 100%);
-    --glow-green: 0 0 60px hsl(152 60% 38% / 0.15);
-    --surface-glass: hsl(0 0% 100% / 0.7);
+    --hero-gradient: linear-gradient(180deg, #0D1F17 0%, #132722 100%);
+    --glow-green: 0 0 60px rgba(201, 162, 74, 0.12);
+    --surface-glass: rgba(19, 39, 34, 0.72);
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -153,6 +181,67 @@
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
+}
+
+/* ─── Legacy page scopes ───────────────────────────────────────────────────
+ *
+ * /free-trial and the /trial* + /landingpage* ad landings are explicitly out of
+ * scope for the dark green redesign: the landings are live ad destinations whose
+ * appearance is being A/B measured, and changing them would change what the test
+ * is measuring. Each of those pages already wraps itself in a single root class,
+ * so restoring the pre-redesign token values on those wrappers pins them to the
+ * old theme no matter what :root says.
+ *
+ * This matters for exactly one thing on the dark landings — the shadcn carousel
+ * arrows, the only token-driven UI they render — and for the whole of
+ * /free-trial, which is a light page that inherits its background from the
+ * tokens rather than declaring one.
+ *
+ * Kept OUTSIDE @layer base on purpose: Tailwind's base layer loses to component
+ * and utility layers, and these overrides have to win over :root regardless. */
+.tp-page,
+.t2-page,
+.t3-page,
+.t4-page,
+.l2-page,
+.l3-page,
+.lm-page {
+  --background: 140 10% 97%;
+  --foreground: 160 50% 8%;
+  --card: 0 0% 100%;
+  --card-foreground: 160 50% 8%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 160 50% 8%;
+  --primary: 152 52% 22%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 152 20% 94%;
+  --secondary-foreground: 152 52% 22%;
+  --muted: 150 10% 94%;
+  --muted-foreground: 160 10% 45%;
+  --accent: 152 60% 38%;
+  --accent-foreground: 0 0% 100%;
+  --border: 150 15% 88%;
+  --input: 150 15% 88%;
+  --ring: 152 52% 22%;
+  --hero-gradient: linear-gradient(135deg, hsl(152, 52%, 22%) 0%, hsl(160, 50%, 8%) 100%);
+  --glow-green: 0 0 60px hsl(152 60% 38% / 0.15);
+  --surface-glass: hsl(0 0% 100% / 0.7);
+}
+
+/* .l3-page is in that list even though it is also the wrapper of the redesigned
+ * /services. The page's own .l3-* rules paint everything inside it with explicit
+ * colours, and so do the site navbar and footer that /services adds, so the only
+ * thing the tokens still reach in there is the review carousel's arrow buttons.
+ * Pinning them keeps /landingpage-v3 pixel-identical to what it was before the
+ * redesign, and keeps /services identical to it. */
+
+/* /free-trial is the one light page left. It declares no background of its own,
+ * so without this it would inherit the new dark body and paint white cards on a
+ * dark green field. */
+.lm-page {
+  min-height: 100vh;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
 }
 
 @layer base {

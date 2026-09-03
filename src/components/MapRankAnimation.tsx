@@ -95,17 +95,23 @@ const CSS = `
 
 .mrka-arrow {
   display: flex; align-items: center; justify-content: center;
-  color: #93c5fd; font-size: 13px; font-weight: 700;
+  color: #B7C0D0; font-size: 13px; font-weight: 700;
   padding: 2px 0;
   transition: color 0.35s;
 }
-.mrka-arrow.done { color: #3b82f6; }
+.mrka-arrow.done { color: #C9A24A; }
+
+/* /free-trial is out of scope for the dark green redesign and renders this same
+ * widget, so it keeps the original blues. */
+.lm-page .mrka-arrow { color: #93c5fd; }
+.lm-page .mrka-arrow.done { color: #3b82f6; }
+.lm-page .mrka-rising { color: #3b82f6; }
 
 .mrka-rising {
   text-align: center;
   font-size: 8px; font-weight: 800;
   letter-spacing: 0.14em; text-transform: uppercase;
-  color: #3b82f6;
+  color: #C9A24A;
   margin-top: 6px;
   animation: mrkaBlink 1.4s ease-in-out infinite;
 }

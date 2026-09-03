@@ -171,7 +171,7 @@ async function writeLandingCrawlerFiles() {
 // be sharing that link. This removes 37 MB of upload across the two landing
 // domains without touching anything that could already be linked.
 async function pruneMainSiteOnlyAssets() {
-  const mainSiteOnly = ["llamamaps-system-overview.pdf"];
+  const mainSiteOnly = [];
   for (const file of mainSiteOnly) {
     const target = path.join(DIST, file);
     if (await exists(target)) {

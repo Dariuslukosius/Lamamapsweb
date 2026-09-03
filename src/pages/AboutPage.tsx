@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import ContactSection from "@/components/ContactSection";
+import SiteFooter from "@/components/SiteFooter";
 import BrandsSection from "@/components/BrandsSection";
 import { motion } from "framer-motion";
 import { Target, Users, Award, Clock } from "lucide-react";
@@ -37,15 +38,34 @@ const values = [
   },
 ];
 
-const team = [
+// firstNameEn is the English equivalent of the FIRST name only — Jurgis is
+// George, Jonas is John — shown in brackets right after it so an English-speaking
+// visitor has a name they can actually say. Surnames are never translated or
+// respelled: they are the person's legal name.
+//
+// Only the names that have a real English counterpart carry one. Žilvinas,
+// Mindaugas and Juventa have none, and Darius is already the same word in
+// English, so those four render as plain names rather than being given an
+// invented equivalent.
+type TeamMember = {
+  name: string;
+  firstNameEn?: string;
+  role: string;
+  image: string;
+  desc: string;
+};
+
+const team: TeamMember[] = [
   {
     name: "Benas Sukys",
+    firstNameEn: "Ben",
     role: "Local SEO Strategist",
     image: benasSukys,
     desc: "Builds local SEO strategies, manages Google Business Profile optimization, and tracks ranking signals to keep clients visible to ready-to-buy local customers.",
   },
   {
-    name: "Jurgis Grigaliunas",
+    name: "Jurgis Grigaliūnas",
+    firstNameEn: "George",
     role: "Client Success Lead",
     image: jurgisGrigaliunas,
     desc: "Coordinates onboarding, manages client communication, and aligns reporting and expectations so every campaign runs smoothly from kickoff to results.",
@@ -58,6 +78,7 @@ const team = [
   },
   {
     name: "Jonas Pernovas",
+    firstNameEn: "John",
     role: "SEO Consultant",
     image: jonasPernovas,
     desc: "Develops SEO strategies, conducts technical and content audits, and translates performance data into prioritized, business-focused actions to drive growth.",
@@ -82,6 +103,7 @@ const team = [
   },
   {
     name: "Laurita Grigaitytė",
+    firstNameEn: "Laura",
     role: "Copywriter",
     image: lauritaGrigaityte,
     desc: "Writes clear, conversion-focused SEO copy for websites, landing pages, and Google Business Profiles to support search visibility and engagement.",
@@ -107,57 +129,57 @@ const AboutPage = () => (
     <Navbar />
 
     {/* Hero */}
-    <section className="relative overflow-hidden bg-[#f3f7ff] pb-14 pt-24 md:pb-16 md:pt-32">
-      <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(59,130,246,0.22)_1.2px,transparent_1.2px)] [background-size:38px_38px] opacity-70" />
+    <section className="relative overflow-hidden bg-[#0D1F17] pb-14 pt-24 md:pb-16 md:pt-32">
+      <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(201,162,74,0.22)_1.2px,transparent_1.2px)] [background-size:38px_38px] opacity-40" />
       <div className="container relative z-10 mx-auto px-4 md:px-8 text-center">
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-          <span className="inline-flex items-center rounded-full border border-slate-200 bg-white px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-[#4b83ff] shadow-[0_8px_24px_rgba(59,130,246,0.08)]">
+          <span className="inline-flex items-center rounded-full border border-[rgba(201,162,74,0.40)] bg-[rgba(201,162,74,0.08)] px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-[#C9A24A]">
             About Us
           </span>
-          <h1 className="mx-auto mt-5 max-w-4xl text-4xl font-bold uppercase leading-[0.95] text-slate-950 md:text-6xl lg:text-[5.2rem]">
+          <h1 className="mx-auto mt-5 max-w-4xl text-4xl font-bold uppercase leading-[0.95] text-[#F4F1EA] md:text-6xl lg:text-[5.2rem]">
             The Local SEO Agency That
-            <span className="block bg-gradient-to-b from-[#4b83ff] to-[#2f6df6] bg-clip-text text-transparent">
+            <span className="block bg-gradient-to-b from-[#DEC584] to-[#C9A24A] bg-clip-text text-transparent">
               Delivers Real Results
             </span>
           </h1>
-          <p className="mx-auto mt-6 max-w-3xl text-lg leading-relaxed text-slate-600 md:text-xl">
+          <p className="mx-auto mt-6 max-w-3xl text-lg leading-relaxed text-[#B7C0D0] md:text-xl">
             Llamamaps was founded with a single mission: help local businesses dominate their market on Google. We combine deep expertise, ethical strategies, and relentless optimization to get you to the top — and keep you there.
           </p>
-          <p className="mx-auto mt-3 max-w-2xl text-xl font-semibold text-slate-900 md:text-2xl">
+          <p className="mx-auto mt-3 max-w-2xl text-xl font-semibold text-[#F4F1EA] md:text-2xl">
             We help businesses win locally, one campaign at a time.
           </p>
 
-          <div className="mx-auto mt-8 max-w-[52rem] overflow-hidden rounded-[1.6rem] border border-slate-200 bg-white/95 p-4 shadow-[0_24px_60px_rgba(30,64,175,0.12)] backdrop-blur-sm sm:p-5">
+          <div className="mx-auto mt-8 max-w-[52rem] overflow-hidden rounded-[1.6rem] border border-[rgba(138,147,166,0.18)] bg-[#132722] p-4 shadow-[0_4px_24px_rgba(0,0,0,0.4)] backdrop-blur-sm sm:p-5">
             <div className="grid gap-4 sm:grid-cols-2 sm:gap-5">
-              <div className="flex items-center gap-3 border-b border-slate-200/80 pb-4 sm:border-b-0 sm:border-r sm:pb-0 sm:pr-5">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-slate-50 shadow-[0_0_0_10px_rgba(15,23,42,0.03)]">
+              <div className="flex items-center gap-3 border-b border-[rgba(138,147,166,0.18)] pb-4 sm:border-b-0 sm:border-r sm:pb-0 sm:pr-5">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[rgba(244,241,234,0.06)] shadow-[0_0_0_10px_rgba(244,241,234,0.03)]">
                   <span className="text-3xl text-emerald-500">★</span>
                 </div>
                 <div className="text-left">
-                  <p className="text-xl font-semibold tracking-tight text-slate-900">Trustpilot Reviews</p>
+                  <p className="text-xl font-semibold tracking-tight text-[#F4F1EA]">Trustpilot Reviews</p>
                   <div className="mt-1.5 flex items-center gap-2.5">
                     <div className="rounded-xl bg-emerald-500 px-2.5 py-1.5 text-white shadow-sm">
                       <span className="text-sm tracking-[0.2em]">★★★★★</span>
                     </div>
-                    <p className="text-xl font-semibold text-slate-900">
-                      4.5 <span className="font-medium text-slate-400">(22)</span>
+                    <p className="text-xl font-semibold text-[#F4F1EA]">
+                      4.5 <span className="font-medium text-[#8A93A6]">(22)</span>
                     </p>
                   </div>
                 </div>
               </div>
 
               <div className="flex items-center gap-3">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-slate-50 shadow-[0_0_0_10px_rgba(15,23,42,0.03)]">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[rgba(244,241,234,0.06)] shadow-[0_0_0_10px_rgba(244,241,234,0.03)]">
                   <span className="bg-[conic-gradient(from_210deg,#4285F4_0_25%,#34A853_25%_50%,#FBBC05_50%_75%,#EA4335_75%_100%)] bg-clip-text text-3xl font-bold text-transparent">
                     G
                   </span>
                 </div>
                 <div className="text-left">
-                  <p className="text-xl font-semibold tracking-tight text-slate-900">Google Reviews</p>
+                  <p className="text-xl font-semibold tracking-tight text-[#F4F1EA]">Google Reviews</p>
                   <div className="mt-1.5 flex items-center gap-2.5">
                     <div className="px-1 text-xl text-amber-400">★★★★★</div>
-                    <p className="text-xl font-semibold text-slate-900">
-                      4.9 <span className="font-medium text-slate-400">(45)</span>
+                    <p className="text-xl font-semibold text-[#F4F1EA]">
+                      4.9 <span className="font-medium text-[#8A93A6]">(45)</span>
                     </p>
                   </div>
                 </div>
@@ -221,7 +243,13 @@ const AboutPage = () => (
               <div className="mb-5 aspect-[4/4.5] overflow-hidden rounded-xl">
                 <img loading="lazy" decoding="async" src={t.image} alt={t.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
               </div>
-              <h3 className="text-xl font-semibold text-foreground">{t.name}</h3>
+              <h3 className="flex flex-wrap items-baseline gap-x-1.5 text-xl font-semibold text-foreground">
+                <span>{t.name.split(" ")[0]}</span>
+                {t.firstNameEn ? (
+                  <span className="text-base font-normal text-[#8A93A6]">({t.firstNameEn})</span>
+                ) : null}
+                <span>{t.name.split(" ").slice(1).join(" ")}</span>
+              </h3>
               <p className="mt-1 text-sm font-medium text-accent">{t.role}</p>
               <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{t.desc}</p>
             </motion.div>
@@ -231,6 +259,7 @@ const AboutPage = () => (
     </section>
 
     <ContactSection />
+    <SiteFooter />
   </div>
 );
 

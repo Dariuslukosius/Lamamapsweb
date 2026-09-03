@@ -3,6 +3,7 @@ import HeroSection from "@/components/HeroSection";
 import BrandsSection from "@/components/BrandsSection";
 import CaseStudiesSection from "@/components/CaseStudiesSection";
 import ContactSection from "@/components/ContactSection";
+import SiteFooter from "@/components/SiteFooter";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import SEO from "@/components/SEO";
@@ -23,7 +24,7 @@ const Index = () => (
         variant="hero"
         size="lg"
         onClick={openCalendlyPopup}
-        className="bg-[#8b5cf6] text-white hover:bg-[#7c3aed] shadow-[0_12px_30px_rgba(139,92,246,0.30)]"
+        className="bg-[#8A6A1F] text-white hover:bg-[#A37D26] shadow-[0_4px_24px_rgba(0,0,0,0.4)]"
       >
         Start 7-Day Free Trial <ArrowRight className="ml-2 w-4 h-4" />
       </Button>
@@ -31,6 +32,7 @@ const Index = () => (
     <CaseStudiesSection />
     <BrandsSection />
     <ContactSection />
+    <SiteFooter />
   </div>
 );
 

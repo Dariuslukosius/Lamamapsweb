@@ -5,7 +5,7 @@ import { openCalendlyPopup } from "@/lib/calendlyPopup";
 const stats = [
   { value: "8x", label: "Average client growth" },
   { value: "7+", label: "Years expertise in Google marketing" },
-  { value: "Europe", label: "We work with clients across Europe" },
+  { value: "Worldwide", label: "We work with clients worldwide" },
   { value: "Our core focus", label: "Local service businesses and ecommerce brands" },
 ];
 

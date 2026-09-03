@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import ContactSection from "@/components/ContactSection";
+import SiteFooter from "@/components/SiteFooter";
 import CalendlyWidget from "@/components/CalendlyWidget";
 import { motion } from "framer-motion";
 import SEO from "@/components/SEO";
@@ -38,6 +39,7 @@ const ContactsPage = () => (
 
     <CalendlyWidget />
     <ContactSection />
+    <SiteFooter />
   </div>
 );
 

@@ -27,14 +27,14 @@ const CalendlyBadge = () => {
         bottom: "20px",
         right: "20px",
         zIndex: 9999,
-        backgroundColor: "#0069ff",
+        backgroundColor: "#8A6A1F",
         color: "#ffffff",
         border: "none",
         borderRadius: "9999px",
         padding: "12px 20px",
         fontSize: "14px",
         fontWeight: 600,
-        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+        boxShadow: "0 4px 24px rgba(0, 0, 0, 0.4)",
         cursor: "pointer",
       }}
     >

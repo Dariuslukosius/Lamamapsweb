@@ -76,7 +76,7 @@ const CalendlyWidget = () => {
           className="text-center mb-10"
         >
           <h2 className="text-3xl font-bold md:text-4xl lg:text-5xl text-white mb-4">
-            Schedule a <span className="bg-gradient-to-r from-[#f4b04b] via-[#d76acf] to-[#b548ff] bg-clip-text text-transparent">Meeting</span>
+            Schedule a <span className="text-[#C9A24A]">Meeting</span>
           </h2>
           <p className="text-white/70 text-lg max-w-2xl mx-auto">
             Pick a time that works best for you and let's discuss how we can help your business grow.

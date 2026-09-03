@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import ContactSection from "@/components/ContactSection";
+import SiteFooter from "@/components/SiteFooter";
 import SEO from "@/components/SEO";
 import { organizationSchema, breadcrumbSchema } from "@/lib/structuredData";
 
@@ -175,6 +176,7 @@ const PrivacyPage = () => (
     </section>
 
     <ContactSection />
+    <SiteFooter />
   </div>
 );
 
