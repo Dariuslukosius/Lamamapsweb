@@ -37,6 +37,18 @@ const GROUPS = [
     ceilingKb: 90,
   },
   {
+    what: "case-study grid scans (v2)",
+    dir: "src/assets/results-v2",
+    // Same page frame as "results" above (.l3-baf-frame is also max-width:
+    // 460px, aspect-ratio 800/743) but these were saved at 1600x1486 — a
+    // second, literally 2x-too-large copy of the same technique. They render
+    // on /, /services and /trial now (LandingV3CaseHighlights + the full case
+    // study list), so this is no longer a landing-page-only cost.
+    maxWidth: 800,
+    quality: 72,
+    ceilingKb: 90,
+  },
+  {
     what: "testimonial avatars",
     dir: "src/assets/testimonials",
     // .tp-testimonial-avatar is 52px square.

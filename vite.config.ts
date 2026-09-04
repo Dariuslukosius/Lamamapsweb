@@ -7,16 +7,7 @@ import path from "path";
 // string literals at build time, so a typo in VITE_DEPLOY_TARGET would not
 // surface until a visitor's browser hit an unmatched route on the live site.
 // This turns it into a failed build instead.
-const DEPLOY_TARGETS = [
-  "main",
-  "trial",
-  "landingpage",
-  "trial-v2",
-  "trial-v3",
-  "trial-v4",
-  "landingpage-v2",
-  "landingpage-v3",
-];
+const DEPLOY_TARGETS = ["main"];
 
 function validateDeployEnv() {
   const target = process.env.VITE_DEPLOY_TARGET;
@@ -37,28 +28,22 @@ function validateDeployEnv() {
 
 /**
  * Preloads the display font, but only on the builds whose "/" actually renders
- * it. Fraunces is `--tp-serif` — the face the trial hero's <h1> is set in, and
- * that <h1> is the LCP element on both landing pages. Without a preload the
- * browser cannot discover it until it has downloaded the stylesheet, matched a
- * rule and laid out the text, which puts three serial hops in front of the
- * largest paint.
+ * it. Fraunces is `--l3-serif` — the face the /trial and /services hero's <h1>
+ * is set in. Without a preload the browser cannot discover it until it has
+ * downloaded the stylesheet, matched a rule and laid out the text, which puts
+ * three serial hops in front of the largest paint.
  *
- * The main build is deliberately excluded: its "/" is the marketing homepage,
- * which is set in Space Grotesk and DM Sans. It still routes /trial and
- * /landingpage, and those still render Fraunces correctly — they just discover
- * it the normal way rather than paying 67 kB of preload on every homepage hit.
+ * This build is deliberately excluded, and always has been: this project only
+ * ever builds llamamaps.com, whose "/" is the marketing homepage, set in Space
+ * Grotesk and DM Sans. /trial and /services still render Fraunces correctly —
+ * they just discover it the normal way rather than paying 67 kB of preload on
+ * every homepage hit. A dedicated single-page build whose "/" WAS the Fraunces
+ * hero (llamamaps.eu / llamamaps.co.uk, built from a different codebase) would
+ * list its target here; there is no such build in this one.
  * @returns {import("vite").Plugin}
  */
 function preloadDisplayFont() {
-  const TRIAL_TARGETS = [
-    "trial",
-    "landingpage",
-    "trial-v2",
-    "trial-v3",
-    "trial-v4",
-    "landingpage-v2",
-    "landingpage-v3",
-  ];
+  const TRIAL_TARGETS: string[] = [];
   return {
     name: "llamamaps-preload-display-font",
     transformIndexHtml() {
@@ -81,34 +66,27 @@ function preloadDisplayFont() {
 }
 
 /**
- * Google Analytics (GA4). One Measurement ID per deployment target, injected
- * as a raw <script> block the same way Meta Pixel already is in index.html —
- * inline in the <head> rather than added by a React component, so it is
- * present in the prerendered HTML itself (see scripts/prerender.mjs's own
- * fbq('init') assertion for why that distinction matters: a client-inserted
- * tag would be invisible to anything that reads the static snapshot instead
- * of running the page's JS).
+ * Google Analytics (GA4), injected as a raw <script> block the same way Meta
+ * Pixel already is in index.html — inline in the <head> rather than added by a
+ * React component, so it is present in the prerendered HTML itself (see
+ * scripts/prerender.mjs's own fbq('init') assertion for why that distinction
+ * matters: a client-inserted tag would be invisible to anything that reads the
+ * static snapshot instead of running the page's JS).
  *
- * Keyed on VITE_DEPLOY_TARGET rather than on the deployment name (com/eu/couk)
- * because that is what every other target-conditional in this file and in
- * src/lib/siteConfig.ts already keys on, and — as of scripts/deployTargets.mjs
- * — the three deployments and the three targets are in exact 1:1
- * correspondence (com -> main, eu -> trial, couk -> landingpage). If that ever
- * stops being true (say, a second domain is added on the "trial" target), this
- * map needs to move to keying on deployment name instead, because two domains
- * sharing one target must not end up sharing one GA property.
+ * This build only ever produces "main" (llamamaps.com), so there is one
+ * Measurement ID rather than a map. llamamaps.eu and llamamaps.co.uk have
+ * their own GA4 properties and their own codebase; this file does not build
+ * them.
  *
- * All three properties were created 2026-08-29 under the "LamaLocal" GA4
- * account as fresh properties for the llamamaps.* domains — the account's
- * pre-existing lamalocal.com/.lt properties are an unrelated, differently
- * branded site and were left alone.
+ * This property was created 2026-08-29 under the "LamaLocal" GA4 account as a
+ * fresh property for llamamaps.com — the account's pre-existing lamalocal.com/
+ * .lt properties are an unrelated, differently branded site and were left
+ * alone.
  * @returns {import("vite").Plugin}
  */
 function injectGoogleAnalytics() {
-  const MEASUREMENT_ID = {
+  const MEASUREMENT_ID: Record<string, string> = {
     main: "G-0SQNS6XPTR", // llamamaps.com
-    trial: "G-8KQKQFLFCP", // llamamaps.eu
-    landingpage: "G-KH8804YVNL", // llamamaps.co.uk
   };
 
   return {

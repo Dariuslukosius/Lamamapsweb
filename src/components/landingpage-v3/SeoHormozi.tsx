@@ -1,9 +1,11 @@
-// Copy of components/SEO.tsx, owned by /landingpage alone.
+// Copy of components/SEO.tsx, owned by the landingpage-v3 content alone.
 //
-// Why a copy rather than an edit: SEO.tsx is imported by seven live pages, and
-// /landingpage needs one thing none of them do — a canonical that points at a
-// *different* URL than its own. It is an A/B duplicate of /trial, so it must
-// declare /trial as the authoritative original instead of itself.
+// Why a copy rather than an edit: SEO.tsx is imported by every other page, and
+// /trial needs one thing none of them do — a canonical that points at a
+// *different* URL than its own. /trial and /services render the same content
+// under different chrome (see LandingV3Chrome), so one of the two identical
+// bodies has to declare the other as canonical or search engines see
+// duplicate content; /trial is the one that does, pointing at /services.
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { SITE_URL, webPageSchema } from "@/lib/structuredData";
@@ -61,10 +63,10 @@ const SeoHormozi = ({
     // stays correct when prerendered on a build host.
     const ownPath = location.pathname === "/" ? "/" : location.pathname.replace(/\/$/, "");
     const target = canonicalPath ?? ownPath;
-    // canonicalPath accepts an absolute URL as well as a path. It has to: once
-    // /trial moves to its own domain, the page this one defers to is no longer
-    // on this origin, and joining it to SITE_URL would produce a 404 on our own
-    // host. See landingPageCanonical() in lib/siteConfig.ts.
+    // canonicalPath accepts an absolute URL as well as a path — /trial passes
+    // a plain path ("/services") since both pages now live on this origin, but
+    // the absolute form stays supported for any future page that has to defer
+    // to a URL on a different domain.
     const canonicalUrl = /^https?:\/\//.test(target) ? target : `${SITE_URL}${target}`;
     const imageUrl = absoluteUrl(image ?? DEFAULT_OG_IMAGE);
 

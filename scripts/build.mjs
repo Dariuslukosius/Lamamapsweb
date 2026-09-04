@@ -1,17 +1,11 @@
-// Build one deployment, or all of them, each into its own folder.
+// Build the "com" deployment (llamamaps.com), the only one this project
+// produces now — see CLEANUP-TRIAL-ONLY-PROMPT.md for why llamamaps.eu and
+// llamamaps.co.uk (built from a different codebase) are no longer here.
 //
-//   node scripts/build.mjs            # all three
-//   node scripts/build.mjs com        # llamamaps.com   -> dist/
-//   node scripts/build.mjs eu         # llamamaps.eu    -> dist-eu/
-//   node scripts/build.mjs couk       # llamamaps.co.uk -> dist-couk/
-//   node scripts/build.mjs eu --verify
-//   node scripts/build.mjs eu --zip     # also produce dist-eu.zip for upload
-//
-// Separate folders rather than rebuilding into dist/ each time, because all
-// three are deployed from the same checkout: with one shared folder, whichever
-// build ran last silently decides what `wrangler pages deploy dist` uploads,
-// and putting the Hormozi variant on the .com domain is not a mistake you find
-// out about quickly.
+//   node scripts/build.mjs            # llamamaps.com -> dist/
+//   node scripts/build.mjs com        # same, named explicitly
+//   node scripts/build.mjs com --verify
+//   node scripts/build.mjs com --zip    # also produce dist.zip for upload
 //
 // This also calls ./node_modules/.bin/vite directly rather than going through
 // npm, because this checkout's path contains a ":" and npm run cannot cope
@@ -21,13 +15,8 @@ import { rmSync, statSync } from "node:fs";
 import { DEPLOYMENTS, deployment } from "./deployTargets.mjs";
 
 // The bare, no-argument invocation ("npm run build:all") is the production
-// build-everything command — CI and the release checklist both call it
-// expecting exactly the three real deployments, unattended. trialv2 and
-// landingpagev2 are temporary review builds (see deployTargets.mjs) with no
-// real domain to deploy to yet; they must be named explicitly
-// ("node scripts/build.mjs trialv2") rather than swept into that default, or
-// every future "build everything" run would start silently producing them too.
-const PRODUCTION_DEPLOYMENTS = ["com", "eu", "couk"];
+// build command — CI and the release checklist both call it unattended.
+const PRODUCTION_DEPLOYMENTS = ["com"];
 
 const args = process.argv.slice(2);
 const verify = args.includes("--verify");

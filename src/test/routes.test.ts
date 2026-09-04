@@ -22,48 +22,23 @@ import {
 
 const APP_SOURCE = readFileSync(path.resolve(__dirname, "../App.tsx"), "utf-8");
 
-/**
- * Pulls the <Route path="..."> literals out of one target's branch of
- * AppRoutes. Each branch is a self-contained <Routes> element, so slicing on
- * the element boundaries is enough — no JSX parser needed.
- */
-function declaredPaths(target: string): string[] {
-  const branches = [...APP_SOURCE.matchAll(/<Routes>([\s\S]*?)<\/Routes>/g)].map((m) => m[1]);
-  // Branches appear in source order: trial, landingpage, trial-v2, trial-v3,
-  // trial-v4, landingpage-v2, landingpage-v3, then main (the fallback
-  // return). Matching that order here keeps the mapping explicit.
-  const byTarget: Record<string, string> = {
-    trial: branches[0],
-    landingpage: branches[1],
-    "trial-v2": branches[2],
-    "trial-v3": branches[3],
-    "trial-v4": branches[4],
-    "landingpage-v2": branches[5],
-    "landingpage-v3": branches[6],
-    main: branches[7],
-  };
-  const branch = byTarget[target];
-  if (!branch) throw new Error(`No <Routes> branch found in App.tsx for target "${target}"`);
+/** Pulls the <Route path="..."> literals out of AppRoutes' single <Routes>
+ * element. No JSX parser needed — there is exactly one branch now that this
+ * project builds only "main" (see CLEANUP-TRIAL-ONLY-PROMPT.md). */
+function declaredPaths(): string[] {
+  const match = APP_SOURCE.match(/<Routes>([\s\S]*?)<\/Routes>/);
+  if (!match) throw new Error("No <Routes> block found in App.tsx");
 
-  return [...branch.matchAll(/path="([^"]+)"/g)]
+  return [...match[1].matchAll(/path="([^"]+)"/g)]
     .map((m) => m[1])
     // The catch-all is not a page; it is prerendered separately to 404.html.
     .filter((p) => p !== "*");
 }
 
 describe("deploy targets", () => {
-  it("App.tsx declares exactly the targets deployTargets.mjs knows about", () => {
-    expect([...DEPLOY_TARGETS].sort()).toEqual([
-      "landingpage",
-      "landingpage-v2",
-      "landingpage-v3",
-      "main",
-      "trial",
-      "trial-v2",
-      "trial-v3",
-      "trial-v4",
-    ]);
-    expect(APP_SOURCE.match(/<Routes>/g)).toHaveLength(DEPLOY_TARGETS.length);
+  it("this project builds only the main target", () => {
+    expect([...DEPLOY_TARGETS]).toEqual(["main"]);
+    expect(APP_SOURCE.match(/<Routes>/g)).toHaveLength(1);
   });
 
   for (const target of DEPLOY_TARGETS) {
@@ -71,7 +46,7 @@ describe("deploy targets", () => {
       const { routes, redirects } = targetConfig(target);
       const redirectSources = redirects.map((rule) => rule[0]);
 
-      for (const declared of declaredPaths(target)) {
+      for (const declared of declaredPaths()) {
         // A path is safe to ship if Cloudflare has a static file for it
         // (prerendered) or answers it with a 301 before the SPA loads.
         const covered = routes.includes(declared) || redirectSources.includes(declared);
@@ -80,7 +55,7 @@ describe("deploy targets", () => {
     });
 
     it(`"${target}" prerenders nothing App.tsx cannot render`, () => {
-      const declared = declaredPaths(target);
+      const declared = declaredPaths();
       for (const route of targetConfig(target).routes) {
         expect(declared, `deployTargets.mjs prerenders "${route}" but App.tsx has no route for it`).toContain(route);
       }

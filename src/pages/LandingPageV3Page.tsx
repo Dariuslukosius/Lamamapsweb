@@ -1854,16 +1854,16 @@ const LandingPageV3Page = () => {
   return (
     <>
       <SeoHormozi
-        title="Free 7-Day Google Maps Trial (V2) | LlamaMaps"
+        title="Free 7-Day Google Maps Trial | LlamaMaps"
         description="Top 3 on Google Maps in 90 days. Start your free 7-day trial with LlamaMaps: no card, no account access, no contract."
         noindex
-        // Same A/B relationship as the V1 pair, one level down: this page is
-        // the duplicate and /trial-v2 is its original, so the canonical points
-        // there. A literal path rather than landingPageCanonical(), which
-        // resolves the V1 pair across the .eu/.co.uk domain split -- the V2
-        // pages are review builds that exist on the main site only, so there
-        // is no second origin for it to resolve against.
-        canonicalPath="/trial-v2"
+        // /trial and /services render the same content (this component,
+        // mounted with a different `chrome`) -- see the LandingV3Chrome
+        // comment above. Only one of the two identical bodies can be the
+        // indexed original or search engines see duplicate content; /services
+        // is that page because it sits in the site's own navigation, so /trial
+        // stays noindex and points its canonical there rather than at itself.
+        canonicalPath="/services"
         jsonLd={[organizationSchema(), faqSchema(faqs)]}
       />
       <TrialModalProvider>

@@ -15,58 +15,18 @@ import {
 } from "./deployTargets.mjs";
 
 // Which paths this deployment serves is decided by scripts/deployTargets.mjs.
-// On the main target that is every route the site has ever had; on the
-// landing-page targets it is a single page promoted to "/".
 //
-// /trial and /free-trial are noindex ad landing pages, but they are still
-// prerendered: link-preview scrapers and ad quality reviewers do not run JS,
-// and the snapshot also removes the blank-screen flash on first paint.
-// /landingpage is the A/B variant of /trial. It is prerendered on the same
-// terms so first-paint timing stays comparable between the two — an LCP gap
-// caused by one side lacking a snapshot would contaminate the test.
+// /trial is a noindex ad landing page, but it is still prerendered: link-preview
+// scrapers and ad quality reviewers do not run JS, and the snapshot also removes
+// the blank-screen flash on first paint.
 const TARGET = currentTarget();
 const ROUTES = targetConfig(TARGET).routes;
 const OUT_DIR = currentOutDir();
 
-// Which of this target's routes render the trial landing page (or its A/B
-// variant), and therefore must carry the before/after screenshots. The
-// landing-page builds promote that page to "/", where the main build serves its
-// homepage instead — so this cannot be one fixed list.
-// Each maps to the CSS prefix that page's markup uses, because the assertion
-// below greps the snapshot by class name. The V2 pages are deliberate copies
-// scoped under their own prefixes so they cannot restyle the originals, which
-// means a check hard-coded to "tp-" silently passes on them: it finds zero
-// slider images, and zero images all have a src.
-// Root-promoted targets (trial, landingpage, and the temporary trial-v2 /
-// trial-v3 / trial-v4 / landingpage-v2 / landingpage-v3 review builds) each
-// serve exactly one page at "/", so the prefix for that one entry has to
-// follow which page THIS target promotes — a blanket "tp" for every non-main
-// target silently passed on trial-v2 / trial-v3 / trial-v4 / landingpage-v2 /
-// landingpage-v3, whose markup uses "t2-" / "t3-" / "t4-" / "l2-" / "l3-" and
-// so matched zero slider images under a "tp-" search.
-const ROOT_PROMOTED_PREFIX = {
-  trial: "tp",
-  landingpage: "tp",
-  "trial-v2": "t2",
-  "trial-v3": "t3",
-  "trial-v4": "t4",
-  "landingpage-v2": "l2",
-  "landingpage-v3": "l3",
-};
-
-const TRIAL_ROUTES = new Map(
-  TARGET === "main"
-    ? [
-        ["/trial", "tp"],
-        ["/landingpage", "tp"],
-        ["/trial-v2", "t2"],
-        ["/trial-v3", "t3"],
-        ["/trial-v4", "t4"],
-        ["/landingpage-v2", "l2"],
-        ["/landingpage-v3", "l3"],
-      ]
-    : [["/", ROOT_PROMOTED_PREFIX[TARGET]]],
-);
+// Which route renders the landingpage-v3 content, and therefore must carry the
+// before/after screenshots — mapped to the CSS class prefix that page's markup
+// uses, because the assertion below greps the snapshot by class name.
+const TRIAL_ROUTES = new Map([["/trial", "l3"]]);
 
 // Serverless and CI build containers have no local Chromium install and are
 // missing the shared libraries a vanilla `playwright install chromium` binary

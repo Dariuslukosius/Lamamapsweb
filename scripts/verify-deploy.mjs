@@ -53,19 +53,15 @@ async function checkRoutes() {
 
     // The point of the whole dist/<route>.html layout: the URL that serves the
     // page and the URL the page claims as canonical have to be the same one.
-    // The A/B variant is the one deliberate exception — it defers to /trial.
-    const isVariant = (TARGET === "main" && route === "/landingpage") || TARGET === "landingpage";
+    // /trial is the one deliberate exception — it renders the exact same
+    // content as /services under different chrome (see LandingV3Chrome in
+    // LandingPageV3Page.tsx), so it defers to /services rather than declaring
+    // itself canonical, or the two identical bodies read as duplicate content.
+    const isVariant = route === "/trial";
     if (isVariant) {
-      const trialUrl = process.env.VITE_TRIAL_URL?.replace(/\/+$/, "");
-      const acceptable = TARGET === "main"
-        ? `${expectedOrigin()}/trial`
-        : (trialUrl ? `${trialUrl}/` : `${expectedOrigin()}/`);
-      check(canonical === acceptable, `${route} A/B variant canonical must point at the trial page`,
+      const acceptable = `${expectedOrigin()}/services`;
+      check(canonical === acceptable, `${route} A/B variant canonical must point at /services`,
         `got ${canonical}, expected ${acceptable}`);
-      // Whatever it points at must at least be a real URL, never a path that
-      // only exists on some other host.
-      check(Boolean(canonical) && /^https:\/\/[^/]+\//.test(canonical),
-        `${route} canonical must be an absolute URL`, `got ${canonical}`);
     } else {
       const canonicalPath = canonical ? new URL(canonical).pathname : "";
       check(canonicalPath === (route === "/" ? "/" : route),

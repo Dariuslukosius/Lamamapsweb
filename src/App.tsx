@@ -1,54 +1,31 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import ScrollToTop from "@/components/ScrollToTop";
 import MetaPixelPageView from "@/components/MetaPixelPageView";
-import { DEPLOY_TARGET } from "@/lib/siteConfig";
 import Index from "./pages/Index.tsx";
 import AboutPage from "./pages/AboutPage.tsx";
 import ServicesPage from "./pages/ServicesPage.tsx";
 import ContactsPage from "./pages/ContactsPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
-import FreeTrialPage from "./pages/FreeTrialPage.tsx";
-import TrialPage from "./pages/TrialPage.tsx";
-import TrialHormoziPage from "./pages/TrialHormoziPage.tsx";
-import TrialV2Page from "./pages/TrialV2Page.tsx";
-import TrialV3Page from "./pages/TrialV3Page.tsx";
-import TrialV4Page from "./pages/TrialV4Page.tsx";
-import LandingPageV2Page from "./pages/LandingPageV2Page.tsx";
 import LandingPageV3Page from "./pages/LandingPageV3Page.tsx";
 import PrivacyPage from "./pages/PrivacyPage.tsx";
 import CalendlyBadge from "./components/CalendlyBadge.tsx";
 
 const queryClient = new QueryClient();
 
-// The /trial landing page is a fully isolated destination for ad traffic — it
-// must only ever open its own dedicated booking modal, never the site-wide
-// Calendly badge's popup. /landingpage is its A/B variant and has to be
-// suppressed on the same terms, or the variant would carry an extra CTA the
-// control does not and the test would measure that instead of the copy.
+// /trial is a fully isolated destination for ad traffic — it must only ever
+// open its own dedicated booking modal, never the site-wide Calendly badge's
+// popup, or the badge would sit in the same bottom corner as the page's own
+// floating CTA and intercept its clicks.
 //
-// On the single-landing-page targets the badge is not rendered at all, so the
-// path list only has to cover the main site, where both live on sub-paths.
-//
-// /services joins the list for a different reason than the rest. It is an
-// ordinary page of the site, not an isolated ad destination — but it now renders
-// the landingpage-v3 content, which brings that page's own floating CTA with it.
-// That CTA sits in the same bottom corner as the site-wide Calendly badge, so
-// leaving both on would stack two buttons on top of each other and let the badge
-// swallow the clicks meant for the page's own booking flow.
-const ISOLATED_LANDING_PATHS = new Set([
-  "/trial",
-  "/landingpage",
-  "/trial-v2",
-  "/trial-v3",
-  "/trial-v4",
-  "/landingpage-v2",
-  "/landingpage-v3",
-  "/services",
-]);
+// /services carries the same landingpage-v3 content (see LandingPageV3Page's
+// `chrome` prop) and therefore the same floating CTA, so it is isolated for
+// the identical reason even though it is an ordinary, indexable page of the
+// site rather than an ad landing.
+const ISOLATED_LANDING_PATHS = new Set(["/trial", "/services"]);
 
 const GlobalCalendlyBadge = () => {
   const { pathname } = useLocation();
@@ -57,131 +34,29 @@ const GlobalCalendlyBadge = () => {
   // "/trial/" with a 200 rather than redirecting it to "/trial" — so the raw
   // lookup missed, the badge rendered on the landing page anyway, and it sits
   // in the same corner as the page's own floating CTA, intercepting its clicks.
-  // Paid traffic would have been sent to the one URL shape that breaks the CTA.
   const normalizedPath = pathname.replace(/\/+$/, "").toLowerCase() || "/";
   if (ISOLATED_LANDING_PATHS.has(normalizedPath)) return null;
   return <CalendlyBadge />;
 };
 
-// Written as a literal if/else on a build-time constant rather than a lookup
-// table so Rollup can fold the comparison and drop the branches this build does
-// not take — a landing-page deployment then ships without the rest of the site
-// in its bundle, which is the whole point of giving it its own domain.
-//
-// The old sub-path stays mapped on the landing targets and redirects to "/".
-// Ads, QR codes and bookmarks pointing at <domain>/trial were created before
-// the split and must not start 404ing the day the domain changes; Cloudflare
-// answers them with a 301 before the SPA loads (see scripts/site-files.mjs),
-// and this route is the client-side equivalent for in-app navigation.
-const AppRoutes = () => {
-  if (DEPLOY_TARGET === "trial") {
-    return (
-      <Routes>
-        <Route path="/" element={<TrialPage />} />
-        <Route path="/trial" element={<Navigate to="/" replace />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    );
-  }
-
-  if (DEPLOY_TARGET === "landingpage") {
-    return (
-      <Routes>
-        <Route path="/" element={<TrialHormoziPage />} />
-        <Route path="/landingpage" element={<Navigate to="/" replace />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    );
-  }
-
-  // Temporary review targets for the V2 redesigns, promoting each to "/" the
-  // same way "trial" and "landingpage" do above. Not a permanent product
-  // split like those two — this exists only so the V2 pages can be uploaded
-  // somewhere and reviewed in a real browser before either replaces its V1.
-  //
-  // Why this had to be a real target and not just a copy of the prerendered
-  // trial-v2.html renamed to index.html: the prerendered HTML is only what a
-  // crawler (or curl) sees before JS runs. The instant the "main" bundle's
-  // client-side router hydrates and reads pathname "/", it matches "main"'s
-  // own <Route path="/" element={<Index />} /> above and replaces the
-  // correctly-prerendered markup with the ordinary homepage — a real visitor
-  // in a real browser would see the V2 page flash and then get swapped out
-  // from under them. Only a build whose OWN root route renders TrialV2Page
-  // avoids that mismatch.
-  if (DEPLOY_TARGET === "trial-v2") {
-    return (
-      <Routes>
-        <Route path="/" element={<TrialV2Page />} />
-        <Route path="/trial-v2" element={<Navigate to="/" replace />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    );
-  }
-
-  if (DEPLOY_TARGET === "trial-v3") {
-    return (
-      <Routes>
-        <Route path="/" element={<TrialV3Page />} />
-        <Route path="/trial-v3" element={<Navigate to="/" replace />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    );
-  }
-
-  if (DEPLOY_TARGET === "trial-v4") {
-    return (
-      <Routes>
-        <Route path="/" element={<TrialV4Page />} />
-        <Route path="/trial-v4" element={<Navigate to="/" replace />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    );
-  }
-
-  if (DEPLOY_TARGET === "landingpage-v2") {
-    return (
-      <Routes>
-        <Route path="/" element={<LandingPageV2Page />} />
-        <Route path="/landingpage-v2" element={<Navigate to="/" replace />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    );
-  }
-
-  if (DEPLOY_TARGET === "landingpage-v3") {
-    return (
-      <Routes>
-        <Route path="/" element={<LandingPageV3Page />} />
-        <Route path="/landingpage-v3" element={<Navigate to="/" replace />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    );
-  }
-
-  return (
-    <Routes>
-      <Route path="/" element={<Index />} />
-      <Route path="/about" element={<AboutPage />} />
-      <Route path="/services" element={<ServicesPage />} />
-      <Route path="/contacts" element={<ContactsPage />} />
-      <Route path="/free-trial" element={<FreeTrialPage />} />
-      <Route path="/trial" element={<TrialPage />} />
-      <Route path="/landingpage" element={<TrialHormoziPage />} />
-      {/* Reworked versions of the two landing pages, kept alongside the
-          originals so the two can be compared at the same time. Main
-          target only: the single-page deployments each ship one product,
-          and adding a second copy of it to those bundles is exactly the
-          weight the domain split exists to avoid. */}
-      <Route path="/trial-v2" element={<TrialV2Page />} />
-      <Route path="/trial-v3" element={<TrialV3Page />} />
-      <Route path="/trial-v4" element={<TrialV4Page />} />
-      <Route path="/landingpage-v2" element={<LandingPageV2Page />} />
-      <Route path="/landingpage-v3" element={<LandingPageV3Page />} />
-      <Route path="/privacy" element={<PrivacyPage />} />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
-  );
-};
+// This project now builds one product only — llamamaps.com — so there is no
+// longer a DEPLOY_TARGET branch to pick between. See CLEANUP-TRIAL-ONLY-PROMPT.md
+// for what used to live here: /free-trial, /landingpage, /trial-v2..v4 and
+// /landingpage-v2 were each their own page or their own single-page domain
+// build; all of that was retired in favour of one /trial landing page carrying
+// the landingpage-v3 content, and the redirects below send anything that still
+// links to the old paths there instead of 404ing.
+const AppRoutes = () => (
+  <Routes>
+    <Route path="/" element={<Index />} />
+    <Route path="/about" element={<AboutPage />} />
+    <Route path="/services" element={<ServicesPage />} />
+    <Route path="/contacts" element={<ContactsPage />} />
+    <Route path="/trial" element={<LandingPageV3Page />} />
+    <Route path="/privacy" element={<PrivacyPage />} />
+    <Route path="*" element={<NotFound />} />
+  </Routes>
+);
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -191,7 +66,7 @@ const App = () => (
       <BrowserRouter>
         <ScrollToTop />
         <MetaPixelPageView />
-        {DEPLOY_TARGET === "main" && <GlobalCalendlyBadge />}
+        <GlobalCalendlyBadge />
         <AppRoutes />
       </BrowserRouter>
     </TooltipProvider>
