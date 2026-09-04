@@ -29,9 +29,12 @@ const SiteFooter = () => (
     className="border-t border-[rgba(138,147,166,0.18)] bg-[#0D1F17] pb-8 pt-14"
   >
     <div className="mx-auto flex w-full max-w-[1440px] flex-col items-center gap-6 px-5 text-center md:px-11">
-      <Link to="/" className="flex flex-col items-center gap-1.5">
+      <Link to="/" className="flex flex-col items-center gap-1">
         <img src={llamaLogo} alt="Llamamaps" className="h-[30px] w-auto" />
         <span className="text-[0.85rem] font-bold tracking-tight text-[#F4F1EA]">llamamaps</span>
+        <span className="text-[0.55rem] font-semibold uppercase tracking-[0.08em] text-[#C9A24A]">
+          Be First On Google
+        </span>
       </Link>
 
       <p className="max-w-[520px] text-[1.2rem] font-semibold leading-[1.4] tracking-tight text-[#F4F1EA]">
